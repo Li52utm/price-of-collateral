@@ -1,0 +1,178 @@
+{
+ "data_as_of": "2026-11-03",
+ "changes": [
+  {
+   "date": "2016-02-16",
+   "change_bp": -20.0,
+   "new_rate": -0.1,
+   "tona": {
+    "available": true,
+    "pre_mean": 0.06789999999999999,
+    "target": -0.13210000000000002,
+    "half_gap_days": 43,
+    "after_20d_mean": -0.0022500000000000003,
+    "pass_through_20d": 0.35074999999999995
+   },
+   "collat": {
+    "available": false
+   }
+  },
+  {
+   "date": "2024-03-21",
+   "change_bp": 20.0,
+   "new_rate": 0.1,
+   "tona": {
+    "available": true,
+    "pre_mean": -0.007999999999999998,
+    "target": 0.192,
+    "half_gap_days": null,
+    "after_20d_mean": 0.07669999999999999,
+    "pass_through_20d": 0.4234999999999999
+   },
+   "collat": {
+    "available": false
+   }
+  },
+  {
+   "date": "2024-08-01",
+   "change_bp": 15.0,
+   "new_rate": 0.25,
+   "tona": {
+    "available": true,
+    "pre_mean": 0.0789,
+    "target": 0.2289,
+    "half_gap_days": 0,
+    "after_20d_mean": 0.2271,
+    "pass_through_20d": 0.988
+   },
+   "collat": {
+    "available": false
+   }
+  },
+  {
+   "date": "2025-01-27",
+   "change_bp": 25.0,
+   "new_rate": 0.5,
+   "tona": {
+    "available": true,
+    "pre_mean": 0.22719999999999999,
+    "target": 0.47719999999999996,
+    "half_gap_days": 0,
+    "after_20d_mean": 0.47764999999999996,
+    "pass_through_20d": 1.0017999999999998
+   },
+   "collat": {
+    "available": true,
+    "pre_mean": 0.18,
+    "target": 0.43,
+    "half_gap_days": 0,
+    "after_20d_mean": 0.43,
+    "pass_through_20d": 1.0
+   }
+  },
+  {
+   "date": "2025-12-22",
+   "change_bp": 25.0,
+   "new_rate": 0.75,
+   "tona": {
+    "available": true,
+    "pre_mean": 0.4782,
+    "target": 0.7282,
+    "half_gap_days": 0,
+    "after_20d_mean": 0.72725,
+    "pass_through_20d": 0.9961999999999998
+   },
+   "collat": {
+    "available": true,
+    "pre_mean": 0.43,
+    "target": 0.6799999999999999,
+    "half_gap_days": 0,
+    "after_20d_mean": 0.6799999999999999,
+    "pass_through_20d": 0.9999999999999998
+   }
+  },
+  {
+   "date": "2026-06-17",
+   "change_bp": 25.0,
+   "new_rate": 1.0,
+   "tona": {
+    "available": true,
+    "pre_mean": 0.7269,
+    "target": 0.9769,
+    "half_gap_days": 0,
+    "after_20d_mean": 0.9772000000000001,
+    "pass_through_20d": 1.0012000000000003
+   },
+   "collat": {
+    "available": true,
+    "pre_mean": 0.6799999999999999,
+    "target": 0.9299999999999999,
+    "half_gap_days": 0,
+    "after_20d_mean": 0.93,
+    "pass_through_20d": 1.0000000000000004
+   }
+  },
+  {
+   "date": "2026-09-24",
+   "change_bp": 25.0,
+   "new_rate": 1.25,
+   "tona": {
+    "available": true,
+    "pre_mean": 0.9771000000000001,
+    "target": 1.2271,
+    "half_gap_days": 0,
+    "after_20d_mean": 1.2272000000000003,
+    "pass_through_20d": 1.0004000000000008
+   },
+   "collat": {
+    "available": true,
+    "pre_mean": 0.93,
+    "target": 1.1800000000000002,
+    "half_gap_days": 0,
+    "after_20d_mean": 1.18,
+    "pass_through_20d": 0.9999999999999996
+   }
+  }
+ ],
+ "ecm_full": {
+  "start": "2016-02-17",
+  "end": "2026-10-30",
+  "n": 2615,
+  "gamma": -0.014109029049476942,
+  "gamma_p": 7.784519606610878e-06,
+  "beta": 0.9163334726888208,
+  "beta_se": 0.07643685310061352,
+  "half_life_days": 48.78052068766646,
+  "n_changes": 6,
+  "mean_gap_bp": 3.9976681957186546
+ },
+ "ecm_negative": {
+  "start": "2016-02-17",
+  "end": "2024-03-19",
+  "n": 1977,
+  "gamma": -0.051240000048977934,
+  "gamma_p": 2.0523457738416926e-13,
+  "beta": null,
+  "beta_se": null,
+  "half_life_days": 13.177850816008634,
+  "n_changes": 0,
+  "mean_gap_bp": 6.0203741152679475
+ },
+ "ecm_exit": {
+  "start": "2024-03-22",
+  "end": "2026-10-30",
+  "n": 637,
+  "gamma": -0.8009738079247928,
+  "gamma_p": 8.872208008116928e-57,
+  "beta": 0.9988501434764011,
+  "beta_se": 0.0013590425197874823,
+  "half_life_days": 0.4293743970981197,
+  "n_changes": 5,
+  "mean_gap_bp": -2.2733542319749223
+ },
+ "latest": {
+  "date": "2026-10-30",
+  "tona": 1.227,
+  "policy": 1.25
+ }
+}

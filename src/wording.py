@@ -354,3 +354,28 @@ def oat_answer(in_episode: bool, median_months: float, p_half_12: float, share_c
                    "widening France-specific, what would help most is a France-specific improvement in the fiscal "
                    "outlook; the data cannot say whether that will happen.")
     return answer, explanation
+
+
+# --------------------------------------------------------------------------- #
+# Chapter VI: Japan
+# --------------------------------------------------------------------------- #
+def japan_change_sentence(date: str, change_bp: float, days: int | None, pass_20d: float) -> str:
+    direction = "rise" if change_bp > 0 else "cut"
+    speed = ("on the effective day" if days == 0 else f"after {days} business days" if days is not None
+             else "not within 60 business days")
+    return (f"{pd_day(date)}, a {bp(change_bp, 0)} {direction}: TONA closed half the gap {speed} and moved "
+            f"{pass_20d:.0%} of the change on average over the first 20 business days.")
+
+
+def japan_answer(n_changes: int, n_same_day: int, exit_half_life: float, negative_half_life: float,
+                 latest_gap_bp: float) -> tuple[str, str]:
+    if n_same_day == n_changes:
+        answer = "Yes, immediately"
+    elif n_same_day >= n_changes / 2:
+        answer = "Yes, since the exit; the regime changes passed through more slowly"
+    else:
+        answer = "Only partly"
+    return answer, (f"{n_same_day} of {n_changes} BoJ policy changes since 2016 reached TONA on the effective day. "
+                    f"After the exit, a gap between TONA and the policy rate halves in {exit_half_life:.1f} business "
+                    f"days (against {negative_half_life:.1f} under negative rates). TONA now sits "
+                    f"{bp(latest_gap_bp)} {above_or_below(latest_gap_bp)} the policy rate.")

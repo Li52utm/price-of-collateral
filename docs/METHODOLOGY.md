@@ -212,6 +212,21 @@ Code: `src/collateral.py`, `src/france.py`, `src/survival.py`, `src/events.py`.
 - Monthly: change in the FR-DE spread from the month before the event to the event month, compared with
   every monthly change since 2010 (percentile and z-score).
 
+## Phase 5: Japan (fixed 2026-11-04, before any result was computed)
+
+Code: `src/japan.py`.
+
+- Policy changes: every change in `data.boj_policy` from 16 Feb 2016 (the start of negative rates) on,
+  detected from the data.
+- Per change, days to close half the gap: the target after a change is TONA's mean over the 10 business
+  days before the change plus the size of the change; day 0 is the effective date; the half-gap day is
+  the first business day on which |TONA - target| <= half the size of the change. The same measure is
+  computed for the collateralized overnight call rate (daily from 2025, so the 2025-2026 changes only).
+- Error-correction model, daily, from 16 Feb 2016 to the latest day (TONA, percent):
+  d TONA_t = a + g (TONA_{t-1} - policy_{t-1}) + b d policy_t + e_t, Newey-West errors (10 lags).
+  Half-life of a gap in business days: ln(0.5) / ln(1 + g). b is the same-day pass-through.
+- Sub-samples: negative-rate period (16 Feb 2016 to 20 Mar 2024) and after the exit (21 Mar 2024 on).
+
 ## Corrections log
 
 - **2026-11-04, Phase 2 sample filter.** Wrong: `forecast.dataset` dropped every day on which the
