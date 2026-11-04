@@ -1,0 +1,378 @@
+{
+ "data_as_of": "2026-11-03",
+ "regimes": {
+  "EUR": [
+   {
+    "kind": "cutting",
+    "start": "2008-11-12",
+    "end": "2009-04-08",
+    "total_pp": -3.0
+   },
+   {
+    "kind": "hiking",
+    "start": "2011-04-13",
+    "end": "2011-07-13",
+    "total_pp": 0.5
+   },
+   {
+    "kind": "cutting",
+    "start": "2011-11-09",
+    "end": "2019-09-18",
+    "total_pp": -1.25
+   },
+   {
+    "kind": "negative rates",
+    "start": "2014-06-11",
+    "end": "2022-07-26"
+   },
+   {
+    "kind": "hiking",
+    "start": "2022-07-27",
+    "end": "2023-09-20",
+    "total_pp": 4.5
+   },
+   {
+    "kind": "cutting",
+    "start": "2024-06-12",
+    "end": "2025-06-11",
+    "total_pp": -2.0
+   },
+   {
+    "kind": "hiking",
+    "start": "2026-06-17",
+    "end": "2026-09-16",
+    "total_pp": 0.5
+   }
+  ],
+  "USD": [
+   {
+    "kind": "zero lower bound",
+    "start": "2008-12-16",
+    "end": "2015-12-15"
+   },
+   {
+    "kind": "hiking",
+    "start": "2015-12-17",
+    "end": "2018-12-20",
+    "total_pp": 2.15
+   },
+   {
+    "kind": "cutting",
+    "start": "2019-05-02",
+    "end": "2019-10-31",
+    "total_pp": -0.8499999999999999
+   },
+   {
+    "kind": "cutting",
+    "start": "2020-03-04",
+    "end": "2020-03-16",
+    "total_pp": -1.5
+   },
+   {
+    "kind": "zero lower bound",
+    "start": "2020-03-16",
+    "end": "2022-03-16"
+   },
+   {
+    "kind": "hiking",
+    "start": "2021-06-17",
+    "end": "2023-07-27",
+    "total_pp": 5.300000000000001
+   },
+   {
+    "kind": "cutting",
+    "start": "2024-09-19",
+    "end": "2025-12-11",
+    "total_pp": -1.7500000000000004
+   }
+  ],
+  "JPY": [
+   {
+    "kind": "cutting",
+    "start": "2008-10-31",
+    "end": "2016-02-16",
+    "total_pp": -0.6000000000000001
+   },
+   {
+    "kind": "negative rates",
+    "start": "2016-02-16",
+    "end": "2024-03-20"
+   },
+   {
+    "kind": "hiking",
+    "start": "2024-03-21",
+    "end": "2026-09-24",
+    "total_pp": 1.35
+   }
+  ]
+ },
+ "markov": {
+  "EUR": {
+   "stressed_regime": 1,
+   "mean_bp": {
+    "calm": -4.570919022890221,
+    "stressed": -7.6719477942923096
+   },
+   "sd_bp": {
+    "calm": 0.8555283200785647,
+    "stressed": 1.1114268084243875
+   },
+   "test_ll_per_day": -1.9346638894633343,
+   "normal_ll_per_day": -2.32688110543678,
+   "share_stressed_train": 0.6172248803827751,
+   "share_stressed_test": 1.0,
+   "share_stressed_by_year": {
+    "2023": 1.0,
+    "2024": 1.0,
+    "2025": 1.0,
+    "2026": 1.0
+   },
+   "latest_probability": 0.7613777806270242,
+   "latest_date": "2026-11-03"
+  },
+  "USD": {
+   "stressed_regime": 1,
+   "mean_bp": {
+    "calm": -5.715437036449628,
+    "stressed": 8.611516342284482
+   },
+   "sd_bp": {
+    "calm": 5.061268087535687,
+    "stressed": 25.098848242593057
+   },
+   "test_ll_per_day": -2.996153422888802,
+   "normal_ll_per_day": -3.5414579956478525,
+   "share_stressed_train": 0.15235690235690236,
+   "share_stressed_test": 0.060542797494780795,
+   "share_stressed_by_year": {
+    "2023": 0.0,
+    "2024": 0.02,
+    "2025": 0.1927710843373494,
+    "2026": 0.023809523809523808
+   },
+   "latest_probability": 0.6013078675566028,
+   "latest_date": "2026-11-03"
+  },
+  "JPY": {
+   "stressed_regime": 0,
+   "mean_bp": {
+    "calm": 8.13380982722888,
+    "stressed": 4.415838751151473
+   },
+   "sd_bp": {
+    "calm": 0.9155502543473779,
+    "stressed": 1.7104947520587341
+   },
+   "test_ll_per_day": -6.735221937692227,
+   "normal_ll_per_day": -6.043733951845306,
+   "share_stressed_train": 0.6678362573099416,
+   "share_stressed_test": 0.7871657754010695,
+   "share_stressed_by_year": {
+    "2023": 0.3983739837398374,
+    "2024": 0.7918367346938775,
+    "2025": 1.0,
+    "2026": 1.0
+   },
+   "latest_probability": 1.0,
+   "latest_date": "2026-10-30"
+  }
+ },
+ "reserves": {
+  "USD": {
+   "currency": "USD",
+   "label": "reserve balances (USD trillion)",
+   "n_weeks": 449,
+   "n_train": 249,
+   "n_test": 200,
+   "test_rmse": {
+    "linear": 4.749216774141496,
+    "piecewise": 4.919508765687365,
+    "logistic": 5.855806653856236
+   },
+   "winner": "linear",
+   "full_model": {
+    "kind": "linear",
+    "params": [
+     14.68785665703626,
+     -6.414831969070744
+    ]
+   },
+   "pressure_point": 1.5666830169491526,
+   "pressure_from": "piecewise",
+   "slope_per_unit": -6.414831969070744,
+   "pressure_band": [
+    1.5184036,
+    2.8914970923728807
+   ],
+   "latest_liq": 2.89377,
+   "latest_date": "2026-10-28"
+  },
+  "EUR": {
+   "currency": "EUR",
+   "label": "liquidity (EUR trillion)",
+   "n_weeks": 370,
+   "n_train": 171,
+   "n_test": 199,
+   "test_rmse": {
+    "linear": 2.7439289252035612,
+    "piecewise": 2.9654382105344737,
+    "logistic": 3.114033428740702
+   },
+   "winner": "linear",
+   "full_model": {
+    "kind": "linear",
+    "params": [
+     -3.273551663067129,
+     -1.2385475271745234
+    ]
+   },
+   "pressure_point": 3.1864059042372883,
+   "pressure_from": "piecewise",
+   "slope_per_unit": -1.2385475271745234,
+   "pressure_band": [
+    2.4341931738135596,
+    4.087708749427966
+   ],
+   "latest_liq": 2.270045,
+   "latest_date": "2026-10-23"
+  }
+ },
+ "stats": {
+  "EUR": {
+   "start": "2019-10-01",
+   "n_days": 1817,
+   "inside_share": 0.0,
+   "below_floor_share": 1.0,
+   "recent_median_bp": -6.800000000000006,
+   "recent_p95_bp": -6.000000000000005,
+   "recent_iqr_bp": 0.40000000000000036,
+   "corridor_width_bp": 39.99999999999999,
+   "latest_spread_bp": -5.500000000000016,
+   "latest_date": "2026-11-03"
+  },
+  "USD": {
+   "start": "2018-04-02",
+   "n_days": 2146,
+   "inside_share": 0.9636533084808947,
+   "below_floor_share": 0.007455731593662628,
+   "recent_median_bp": 0.0,
+   "recent_p95_bp": 10.000000000000009,
+   "recent_iqr_bp": 3.000000000000025,
+   "corridor_width_bp": 25.0,
+   "latest_spread_bp": 7.000000000000028,
+   "latest_date": "2026-11-03"
+  },
+  "JPY": {
+   "start": "2008-01-04",
+   "n_days": 4604,
+   "inside_share": 0.5219374456993918,
+   "below_floor_share": 0.4780625543006082,
+   "recent_median_bp": -2.300000000000002,
+   "recent_p95_bp": -2.100000000000002,
+   "recent_iqr_bp": 0.10000000000000009,
+   "corridor_width_bp": 25.0,
+   "latest_spread_bp": -2.299999999999991,
+   "latest_date": "2026-10-30"
+  }
+ },
+ "cases": [
+  {
+   "case": "September 2019",
+   "currency": "USD",
+   "start": "2019-09-02",
+   "end": "2019-09-30",
+   "peak_bp": 315.0,
+   "peak_date": "2019-09-17",
+   "trough_bp": 2.0000000000000018,
+   "before_bp": 1.799999999999993,
+   "peak_vs_before_bp": 313.2,
+   "liquidity": 1.49868,
+   "liquidity_label": "reserve balances (USD trillion)"
+  },
+  {
+   "case": "September 2019",
+   "currency": "JPY",
+   "start": "2019-09-02",
+   "end": "2019-09-30",
+   "peak_bp": 5.800000000000001,
+   "peak_date": "2019-09-13",
+   "trough_bp": 3.3000000000000003,
+   "before_bp": 4.700000000000001,
+   "peak_vs_before_bp": 1.0999999999999996
+  },
+  {
+   "case": "March 2020",
+   "currency": "USD",
+   "start": "2020-03-02",
+   "end": "2020-03-31",
+   "peak_bp": 44.00000000000001,
+   "peak_date": "2020-03-17",
+   "trough_bp": -9.000000000000002,
+   "before_bp": -1.200000000000001,
+   "peak_vs_before_bp": 45.20000000000001,
+   "liquidity": 1.62647,
+   "liquidity_label": "reserve balances (USD trillion)"
+  },
+  {
+   "case": "March 2020",
+   "currency": "EUR",
+   "start": "2020-03-02",
+   "end": "2020-03-31",
+   "peak_bp": -2.200000000000002,
+   "peak_date": "2020-03-31",
+   "trough_bp": -4.300000000000004,
+   "before_bp": -3.880000000000004,
+   "peak_vs_before_bp": 1.680000000000002,
+   "liquidity": 1.866217,
+   "liquidity_label": "liquidity (EUR trillion)"
+  },
+  {
+   "case": "March 2020",
+   "currency": "JPY",
+   "start": "2020-03-02",
+   "end": "2020-03-31",
+   "peak_bp": 8.3,
+   "peak_date": "2020-03-27",
+   "trough_bp": 3.0,
+   "before_bp": 8.320000000000002,
+   "peak_vs_before_bp": -0.02000000000000135
+  },
+  {
+   "case": "Year-end 2025",
+   "currency": "USD",
+   "start": "2025-12-01",
+   "end": "2026-01-09",
+   "peak_bp": 22.00000000000002,
+   "peak_date": "2025-12-01",
+   "trough_bp": -0.9999999999999787,
+   "before_bp": 7.800000000000011,
+   "peak_vs_before_bp": 14.20000000000001,
+   "liquidity": 2.89659,
+   "liquidity_label": "reserve balances (USD trillion)"
+  },
+  {
+   "case": "Year-end 2025",
+   "currency": "EUR",
+   "start": "2025-12-01",
+   "end": "2026-01-09",
+   "peak_bp": -6.400000000000006,
+   "peak_date": "2026-01-02",
+   "trough_bp": -7.899999999999996,
+   "before_bp": -7.270000000000001,
+   "peak_vs_before_bp": 0.8699999999999957,
+   "liquidity": 2.6346410000000002,
+   "liquidity_label": "liquidity (EUR trillion)"
+  },
+  {
+   "case": "Year-end 2025",
+   "currency": "JPY",
+   "start": "2025-12-01",
+   "end": "2026-01-09",
+   "peak_bp": -1.8000000000000016,
+   "peak_date": "2025-12-09",
+   "trough_bp": -2.300000000000002,
+   "before_bp": -2.2300000000000018,
+   "peak_vs_before_bp": 0.43000000000000016
+  }
+ ]
+}

@@ -132,3 +132,76 @@ def calendar_answer(usd_win: bool, eur_win: bool, usd_p: float | None, eur_p: fl
     return answer, (f"Judged on the test period from {test_start}: the forecasts are compared with what happened. "
                     f"Across every year-end in the data, {direction} "
                     f"({signed_bp(usd_mean)} and {signed_bp(eur_mean)} on an average year-end).")
+
+
+# --------------------------------------------------------------------------- #
+# Chapter II: three corridors
+# --------------------------------------------------------------------------- #
+CURRENCY_NAMES = {"EUR": "the ECB", "USD": "the Fed", "JPY": "the BoJ"}
+MARKET_NAMES = {"EUR": "€STR", "USD": "SOFR", "JPY": "TONA"}
+
+
+def corridor_sentence(currency: str, inside_share: float, below_share: float, median_bp: float, iqr_bp: float,
+                      start: str) -> str:
+    tight = "tightly" if iqr_bp <= 3 else "loosely"
+    where = (f"{MARKET_NAMES[currency]} stayed inside {CURRENCY_NAMES[currency]}'s corridor on {inside_share:.1%} of days"
+             if below_share < 0.5 else
+             f"{MARKET_NAMES[currency]} traded below {CURRENCY_NAMES[currency]}'s floor on {below_share:.1%} of days, "
+             "as expected in a floor system: its lenders include institutions that cannot deposit at the central "
+             "bank, so they accept less than the floor")
+    return (f"Since {start[:4]}, {where}. Over the past year it sat {bp(median_bp)} {above_or_below(median_bp)} the "
+            f"policy rate, held {tight} (interquartile range {bp(iqr_bp)}).")
+
+
+def markov_sentence(currency: str, calm_mean: float, stressed_mean: float, stressed_sd: float, calm_sd: float,
+                    test_ll: float, normal_ll: float, share_test: float) -> str:
+    better = test_ll > normal_ll
+    fit = ("fitted the test period better than a single normal distribution" if better
+           else "fitted the test period worse than a single normal distribution, so it does not travel out of sample")
+    meaning = ("the volatile regime is also the expensive one, so it reads as funding stress"
+               if stressed_mean > calm_mean else
+               "the volatile regime is the one further below the policy rate, so the regimes describe how deep the "
+               "floor sits rather than stress")
+    return (f"For {MARKET_NAMES[currency]}, the two regimes average {signed_bp(calm_mean)} (sd {bp(calm_sd)}) and "
+            f"{signed_bp(stressed_mean)} (sd {bp(stressed_sd)}); {meaning}. Estimated on 2022 and earlier, the model "
+            f"{fit}, and it placed {share_test:.0%} of test days in the volatile regime.")
+
+
+def reserves_sentence(currency: str, winner: str, slope: float, point: float, band: list, latest: float,
+                      unit: str) -> str:
+    move = "rises" if slope < 0 else "falls"
+    head = (f"Out of sample, the best description of the link between {unit} and the spread is {winner}: "
+            f"the spread {move} by about {bp(slope)} for each 1 trillion less.")
+    if point != point:
+        return head
+    where = ("below" if latest < band[0] else "inside" if latest <= band[1] else "above")
+    caveat = "" if winner != "linear" else " (a reference only: the threshold model did not win out of sample)"
+    return (f"{head} The estimated point where pressure starts is {point:.2f} trillion{caveat}, with a 95% band of "
+            f"{band[0]:.2f} to {band[1]:.2f}; the latest level, {latest:.2f}, is {where} that band.")
+
+
+def case_sentence(case: str, currency: str, peak: float, peak_date: str, before: float) -> str:
+    jump = peak - before
+    return (f"{case}: {MARKET_NAMES[currency]} peaked at {signed_bp(peak)} against the policy rate on "
+            f"{pd_day(peak_date)}, {bp(jump)} {'above' if jump > 0 else 'below'} its level in the two weeks before.")
+
+
+def pd_day(iso: str) -> str:
+    import pandas as pd
+    ts = pd.Timestamp(iso)
+    return f"{ts.day} {ts:%B %Y}"
+
+
+def corridors_answer(stats: dict, reserves: dict) -> tuple[str, str]:
+    """(answer, explanation) for chapter II: held tightly over the past year, and the balance-sheet effect."""
+    tight = [c for c, s in stats.items() if s["recent_iqr_bp"] <= 3]
+    answer = ("Yes, within a few basis points" if len(tight) == len(stats) else
+              f"Mostly: {share_words(len(tight), len(stats))} held tightly")
+    usd = reserves.get("USD", {})
+    slope = usd.get("slope_per_unit", 0)
+    tail = (f"As balance sheets shrink, SOFR has drifted up relative to the Fed's interest on reserves, about "
+            f"{bp(slope)} per trillion of reserves lost" if slope < 0 else
+            "Shrinking reserves have not pushed SOFR up relative to interest on reserves")
+    spreads = ", ".join(f"{MARKET_NAMES[c]} {signed_bp(s['recent_median_bp'])} (IQR {bp(s['recent_iqr_bp'])})"
+                        for c, s in stats.items())
+    return answer, f"Past-year median spread to the policy rate: {spreads}. {tail}."

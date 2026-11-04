@@ -107,6 +107,50 @@ target over the 10 business days before the turn day (bp). Reported per currency
   the actual target, whether it is inside the 5-95 interval, and the pinball loss per quantile are
   written to `results/forecasts/yearend_2026_score.json` by every refresh.
 
+## Phase 3: Three Corridors (fixed 2026-11-04, before any result was computed)
+
+Code: `src/corridors.py`.
+
+### Corridors and regimes
+
+- ECB: floor DFR, MRO, ceiling MLF; market rate €STR (EONIA before Oct 2019, for context).
+- Fed: target range lower and upper bound, IOR (IOER, then IORB); market rates SOFR and EFFR.
+- BoJ: policy rate (`data.boj_policy`), ceiling the basic loan rate; market rate TONA.
+- Regime annotations are computed from the data, never typed: negative-rate periods (policy rate
+  below zero), the US zero lower bound (upper bound <= 0.25%), and hiking / cutting phases (runs of
+  policy changes in one direction, from the first to the last change).
+
+### Markov regime switching
+
+- Model: `statsmodels` `MarkovRegression`, two regimes, switching intercept and switching variance,
+  on the DAILY spread to policy of each currency (the Phase 2 targets, in bp).
+- Fitted on the train period (to 31 Dec 2022). The "stressed" regime is the one with the higher
+  variance. Test (2023 onward): the train parameters are held fixed and the model is run forward over
+  the full sample, so each day's filtered probability uses only data up to that day.
+- Random starting values (`search_reps=20`) are drawn with a fixed seed (`rng=0`) so results are reproducible.
+- Evaluation on test: (1) log-likelihood per test day against a one-regime normal fitted on train;
+  (2) the share of test days in the stressed regime (filtered probability > 0.5), per year.
+
+### Reserves and liquidity against the spread
+
+- USD: weekly reserve balances (Wednesday, USD trillion) against the mean of SOFR minus IOR over the
+  following five business days (Thursday to the next Wednesday). EUR: weekly liquidity proxy (EUR
+  trillion) against the mean of €STR minus DFR over the following week. JPY is not modelled: the
+  negative-rate tiering system breaks the link between balances and the marginal rate.
+- Three fits: linear; piecewise linear with one kink (kink chosen by least squares on a grid of the
+  5th-95th percentiles of the training reserves); S-shaped (logistic in reserves, four parameters).
+- Chosen out of sample: fitted on weeks to 31 Dec 2022, the model with the lowest root mean squared
+  error on weeks from 2023 wins.
+- Where pressure starts: for the piecewise fit, the kink; for the logistic, the reserve level at which
+  the fitted spread is 2 bp above its abundant-reserve plateau. 95% confidence band from a moving-block
+  bootstrap on the full sample (blocks of 8 weeks, 500 resamples, seed 42).
+
+### Case studies
+
+Windows fixed in advance: September 2019 (2 to 30 Sep 2019), March 2020 (2 to 31 Mar 2020), year-end
+2025 (1 Dec 2025 to 9 Jan 2026). For each currency with data in the window: peak spread and its date,
+the mean over the 10 business days before the window, and the reserve or liquidity level at the start.
+
 ## Corrections log
 
 - **2026-11-04, Phase 2 sample filter.** Wrong: `forecast.dataset` dropped every day on which the
