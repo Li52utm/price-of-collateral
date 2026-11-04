@@ -27,7 +27,7 @@ RATE_RANGE = (-1.5, 12.0)                   # money-market and policy rates, per
 YIELD_RANGE = (-1.5, 40.0)                  # 10-year sovereign yields (Greece reached 29% in 2012)
 MMSR_RANGE = (-5.0, 12.0)                   # collateral-specific repo: bonds trading special can go deeply
                                             # negative (Dutch 1-week repo -2.66% in April 2019)
-JPY_COVERAGE_PASS = 0.92                    # weekday calendar: about 16 Japanese holidays a year count as gaps
+JPY_COVERAGE_PASS = 0.95                    # moving Japanese holidays (about 6 a year) count as gaps
 NEGATIVE_DFR = ("2014-06-11", "2022-07-26")  # ECB deposit rate below zero (inclusive)
 NEGATIVE_BOJ = ("2016-02-16", "2024-03-20")  # BoJ negative interest rate policy
 EONIA_SPREAD = 0.085                        # EONIA = €STR + 8.5 bp from 2 Oct 2019
@@ -81,7 +81,7 @@ def check_calendar(long: pd.DataFrame, names: tuple[str, ...] = ("estr", "sofr",
         status = PASS if share >= need else WARN if share >= need - 0.03 else FAIL
         statuses.append(status)
         lines.append(f"{name} {share:.1%} of business days (longest gap {gap})")
-    detail = "; ".join(lines) + ". Japan uses a weekday calendar, so its national holidays count as gaps."
+    detail = "; ".join(lines) + ". The Japanese calendar omits moving holidays, so a few count as gaps."
     return result("Calendar coverage", worst(statuses), detail)
 
 

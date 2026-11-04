@@ -15,7 +15,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 
-STEPS: list[tuple[str, str]] = []  # (module, function); filled in phase by phase
+STEPS: list[tuple[str, str]] = [  # (module, function); filled in phase by phase
+    ("forecast", "run"),
+]
 
 
 def main() -> None:

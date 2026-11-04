@@ -41,16 +41,30 @@ class TargetCalendar(AbstractHolidayCalendar):
              Holiday("Boxing Day", month=12, day=26)]
 
 
-CALENDARS = {"EUR": TargetCalendar(), "USD": USFederalHolidayCalendar(), "JPY": None}
+class JapanCalendar(AbstractHolidayCalendar):
+    """Japanese bank holidays: the 31 Dec - 3 Jan closure and the fixed-date national holidays.
+
+    Moving holidays (Coming of Age Day, Marine Day, Respect for the Aged Day, Sports Day, equinoxes)
+    are not modelled; Japanese publication lags are set conservatively to absorb them.
+    """
+    rules = [Holiday("New Year 1", month=1, day=1), Holiday("New Year 2", month=1, day=2),
+             Holiday("New Year 3", month=1, day=3), Holiday("Foundation Day", month=2, day=11),
+             Holiday("Emperor's Birthday", month=2, day=23, start_date="2020-01-01"),
+             Holiday("Showa Day", month=4, day=29), Holiday("Constitution Day", month=5, day=3),
+             Holiday("Greenery Day", month=5, day=4), Holiday("Children's Day", month=5, day=5),
+             Holiday("Culture Day", month=11, day=3), Holiday("Labour Thanksgiving", month=11, day=23),
+             Holiday("Year end", month=12, day=31)]
+
+
+CALENDARS = {"EUR": TargetCalendar(), "USD": USFederalHolidayCalendar(), "JPY": JapanCalendar()}
 CURRENCY_OF_SOURCE = {"ecb": "EUR", "bbk": "EUR", "fred": "USD", "nyfed": "USD", "ofr": "USD",
                       "fiscal": "USD", "boj": "JPY"}
 
 
 @lru_cache(maxsize=None)
 def bday(currency: str) -> CustomBusinessDay:
-    """Business-day offset for a currency's calendar (Japan: weekdays only; its lags are set conservatively)."""
-    calendar = CALENDARS.get(currency)
-    return CustomBusinessDay(calendar=calendar) if calendar is not None else CustomBusinessDay()
+    """Business-day offset for a currency's calendar."""
+    return CustomBusinessDay(calendar=CALENDARS[currency])
 
 
 def business_days(currency: str, start, end) -> pd.DatetimeIndex:
