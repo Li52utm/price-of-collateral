@@ -335,7 +335,10 @@
    "term_days": 14,
    "start_bd": 7,
    "saving_vs_on": 14861.111111111008,
-   "saving_vs_term": 36305.55555555504
+   "saving_vs_term": 36305.55555555504,
+   "latest_premium_bp": -2.0000000000000018,
+   "latest_term_rate": 3.94,
+   "latest_on_rate": 3.96
   },
   "EUR": {
    "skipped": true,

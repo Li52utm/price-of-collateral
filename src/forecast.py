@@ -368,6 +368,12 @@ def run(long: pd.DataFrame | None = None, out_dir: Path = OUT_DIR) -> dict:
         summary["currencies"][currency]["turns"] = turn_summary(effects)
     tvo = term_vs_overnight(evaluations["USD"], long)
     tvo["windows"].to_csv(out_dir / "term_vs_overnight_USD.csv", index=False, float_format="%.2f")
+    as_of = data.as_of(long)
+    day = pd.DatetimeIndex([as_of + data.bday("USD")])
+    term_now = data.point_in_time(data.get("repo_dvp_term", long), 1, day, "USD").iloc[0]
+    on_now = data.point_in_time(data.get("repo_dvp_on", long), 1, day, "USD").iloc[0]
+    tvo["latest_premium_bp"] = float((term_now - on_now) * 100)
+    tvo["latest_term_rate"], tvo["latest_on_rate"] = float(term_now), float(on_now)
     summary["term_vs_overnight"] = {"USD": {k: v for k, v in tvo.items() if k != "windows"},
                                     "EUR": {"skipped": True,
                                             "reason": "no free daily euro term repo rate (see CLAUDE.md, Plan adjustments)"}}

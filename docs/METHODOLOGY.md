@@ -227,6 +227,19 @@ Code: `src/japan.py`.
   Half-life of a gap in business days: ln(0.5) / ln(1 + g). b is the same-day pass-through.
 - Sub-samples: negative-rate period (16 Feb 2016 to 20 Mar 2024) and after the exit (21 Mar 2024 on).
 
+## Phase 6: the desk note's client verdict (fixed 2026-11-04, before the desk note was generated)
+
+Code: `src/desk_note.py`. "Would I advise a client to term out their year-end funding?"
+
+- Turn window: 14 calendar days starting 7 business days before 31 Dec 2026 (the Phase 2 term rule).
+- Expected excess overnight cost per currency = mean of the frozen forecast's medians over the window's
+  business days minus the latest published level of the target (both from the frozen file).
+- USD: term out if the expected excess cost exceeds the latest published term premium (OFR DVP term
+  minus overnight). EUR: no free term rate, so term out only if the expected excess cost is positive by
+  more than 1 bp (a conservative stand-in for a term premium).
+- Verdict: **Yes** if both currencies say term out, **Partly** if one does, **No** if neither.
+- The recommendation box: "Term out" / "Stay overnight" per currency from the same rule.
+
 ## Corrections log
 
 - **2026-11-04, Phase 2 sample filter.** Wrong: `forecast.dataset` dropped every day on which the

@@ -129,7 +129,10 @@ def calendar_answer(usd_win: bool, eur_win: bool, usd_p: float | None, eur_p: fl
         answer = "Not better than a naive rule"
     direction = ("dollar turns push funding costs up while euro turns push them down" if usd_mean > 0 >= eur_mean
                  else "the two currencies' turns move in the same direction")
-    return answer, (f"Judged on the test period from {test_start}: the forecasts are compared with what happened. "
+    beat = " and ".join(beaten) if beaten else "neither currency"
+    sig = " and ".join(significant) if significant else "neither"
+    return answer, (f"On the test period from {test_start}, a quantile model with calendar and state variables beat "
+                    f"the naive same-as-last-turn rule on turn days in {beat} (significantly in {sig}). "
                     f"Across every year-end in the data, {direction} "
                     f"({signed_bp(usd_mean)} and {signed_bp(eur_mean)} on an average year-end).")
 
@@ -379,3 +382,42 @@ def japan_answer(n_changes: int, n_same_day: int, exit_half_life: float, negativ
                     f"After the exit, a gap between TONA and the policy rate halves in {exit_half_life:.1f} business "
                     f"days (against {negative_half_life:.1f} under negative rates). TONA now sits "
                     f"{bp(latest_gap_bp)} {above_or_below(latest_gap_bp)} the policy rate.")
+
+
+# --------------------------------------------------------------------------- #
+# Chapter I and VII
+# --------------------------------------------------------------------------- #
+def story_answer(it_mean: float, it_latest: float, fr_latest: float, it_latest_2: float) -> tuple[str, str]:
+    """Repo in one line, and the collateral effect in numbers."""
+    ranking = ("French collateral now costs more than Italian" if fr_latest > it_latest_2 else
+               "French collateral still costs less than Italian")
+    return ("A secured overnight loan, and the bond changes the price",
+            f"Repo is borrowing cash against a government bond, like a pawn shop for bonds. Lending against Italian "
+            f"bonds has paid {bp(it_mean)} more than lending against German bonds on average since 2018 "
+            f"(latest {signed_bp(it_latest)}); {ranking} ({signed_bp(fr_latest)}).")
+
+
+def term_out_line(currency: str, excess_bp: float, premium_bp: float | None, threshold_bp: float) -> tuple[bool, str]:
+    """(term out?, sentence) for one currency (rule in METHODOLOGY.md, Phase 6)."""
+    hurdle = premium_bp if premium_bp is not None else threshold_bp
+    lock = excess_bp > hurdle
+    what = f"the term premium ({signed_bp(premium_bp)})" if premium_bp is not None else         f"a {bp(threshold_bp, 0)} hurdle (no free term rate exists)"
+    verdict = "Term out" if lock else "Stay overnight"
+    return lock, (f"{currency}: {verdict}. The forecast puts overnight funding over the turn {signed_bp(excess_bp)} "
+                  f"away from today's level, {'above' if lock else 'below'} {what}.")
+
+
+def client_verdict(usd_lock: bool, eur_lock: bool) -> tuple[str, str]:
+    n = int(usd_lock) + int(eur_lock)
+    verdict = {2: "Yes", 1: "Partly", 0: "No"}[n]
+    if n == 2:
+        sentence = "Both the dollar and the euro forecasts imply that locking in term funding across 31 December 2026 should cost less than rolling overnight."
+    elif usd_lock:
+        sentence = ("Term out the dollar leg, where the forecast year-end spike exceeds the term premium; keep euro "
+                    "funding overnight, where the turn has historically pushed rates down rather than up.")
+    elif eur_lock:
+        sentence = "Term out the euro leg only; the dollar forecast does not exceed the term premium."
+    else:
+        sentence = ("Neither forecast spike is large enough to pay for term funding; rolling overnight is the "
+                    "cheaper expected choice in both currencies, with the upper tail as the risk to manage.")
+    return verdict, sentence

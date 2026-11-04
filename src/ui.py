@@ -115,15 +115,15 @@ def style_figure(fig: go.Figure, title: str | None = None, height: int = 380) ->
 # --------------------------------------------------------------------------- #
 # As-of date and source lines
 # --------------------------------------------------------------------------- #
-MANIFEST_PATH = RESULTS_DIR / "snapshots" / "manifest.json"
 STALE_DAYS = 7  # calendar days after which the snapshot is flagged as possibly stale
 
 
 def load_manifest() -> dict | None:
     """results/snapshots/manifest.json (written by the refresh), or None if missing."""
-    if not MANIFEST_PATH.exists():
+    path = RESULTS_DIR / "snapshots" / "manifest.json"
+    if not path.exists():
         return None
-    return _read_json(str(MANIFEST_PATH), MANIFEST_PATH.stat().st_mtime)
+    return _read_json(str(path), path.stat().st_mtime)
 
 
 def data_as_of() -> pd.Timestamp | None:
@@ -362,7 +362,7 @@ def answer_box(question: str, answer: str, explanation: str = "",
 
 def verdict_box(label: str, verdict: str, sentence: str) -> None:
     """A boxed one-line verdict, e.g. 'Would I advise ...? Partly.' plus its generated reason."""
-    with st.container(key=_key("answer", label, verdict)):
+    with st.container(key=_key("answer", "verdict", label, verdict)):
         separator = "" if label.endswith("?") else ":"
         st.markdown(escape_dollars(f"**{label}{separator} {verdict}.** {sentence}"))
 
@@ -383,14 +383,12 @@ def section_heading(numeral: str, title: str) -> None:
     st.html(f'<h2 class="section-heading">{number}{html.escape(title)}</h2>')
 
 
-VALIDATION_PATH = RESULTS_DIR / "data_validation.json"
-
-
 def load_validation() -> dict | None:
     """results/data_validation.json (written by the refresh), or None if missing."""
-    if not VALIDATION_PATH.exists():
+    path = RESULTS_DIR / "data_validation.json"
+    if not path.exists():
         return None
-    return _read_json(str(VALIDATION_PATH), VALIDATION_PATH.stat().st_mtime)
+    return _read_json(str(path), path.stat().st_mtime)
 
 
 def validation_summary_line(rep: dict | None) -> str:
@@ -434,3 +432,62 @@ def read_result_json(name: str) -> dict | None:
     if not path.exists():
         return None
     return _read_json(str(path), path.stat().st_mtime)
+
+
+# --------------------------------------------------------------------------- #
+# Results (written by scripts/run_all.py; never recomputed on page load)
+# --------------------------------------------------------------------------- #
+def results() -> dict:
+    """Every chapter summary (findings.load_results), cached on the files' modification times."""
+    import findings
+    stamps = tuple((rel, (RESULTS_DIR / rel).stat().st_mtime if (RESULTS_DIR / rel).exists() else 0)
+                   for rel in findings.SUMMARIES.values())
+    return _read_results(str(RESULTS_DIR), stamps)
+
+
+@st.cache_data(show_spinner=False)
+def _read_results(results_dir: str, stamps: tuple) -> dict:
+    import findings
+    return findings.load_results(Path(results_dir))
+
+
+def question_box(key: str) -> None:
+    """The question / the answer box under each chapter heading, generated from the results."""
+    import findings
+    q, a, e = findings.answer(key, results())
+    answer_box(q, a, e)
+
+
+def csv(rel: str, index_col: int | None = 0, parse_dates: bool = True) -> pd.DataFrame | None:
+    """A results CSV (cached on its modification time), or None if missing."""
+    path = RESULTS_DIR / rel
+    if not path.exists():
+        return None
+    return _read_any_csv(str(path), path.stat().st_mtime, index_col, parse_dates)
+
+
+@st.cache_data(show_spinner=False)
+def _read_any_csv(path: str, stamp: float, index_col, parse_dates) -> pd.DataFrame:
+    df = pd.read_csv(path, index_col=index_col)
+    if parse_dates and index_col is not None:
+        df.index = pd.to_datetime(df.index)
+    return df
+
+
+def missing_results(name: str) -> None:
+    note(f"The {name} results are not available yet. They are written by `scripts/run_all.py` "
+         "(run by the scheduled data refresh).", "warning")
+
+
+def shade_periods(fig: go.Figure, periods: list[dict], kinds: tuple[str, ...], color: str = COLORS["mist"],
+                  opacity: float = 0.25) -> None:
+    """Grey bands for regime periods (e.g. negative rates), generated from the data."""
+    for p in periods:
+        if p["kind"] in kinds:
+            fig.add_vrect(x0=p["start"], x1=p["end"], fillcolor=color, opacity=opacity, line_width=0,
+                          annotation_text=p["kind"], annotation_position="top left",
+                          annotation_font=dict(size=10, color=COLORS["slate"]))
+
+
+def table(df: pd.DataFrame, **kwargs) -> None:
+    st.dataframe(df, hide_index=True, width="stretch", **kwargs)

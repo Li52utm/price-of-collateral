@@ -1,0 +1,124 @@
+"""IV. Italy Then, France Now: will French OATs bounce back, and what would it take?"""
+
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
+
+import pandas as pd  # noqa: E402
+import plotly.graph_objects as go  # noqa: E402
+import streamlit as st  # noqa: E402
+
+import ui  # noqa: E402
+import wording as w  # noqa: E402
+
+SRC = "ECB Data Portal (IRS monthly yields, MMSR), Assemblée nationale"
+
+ui.apply_theme()
+ui.chapter_heading(**ui.CHAPTERS["france"])
+ui.question_box("france")
+
+f = ui.results().get("france")
+spreads = ui.csv("collateral/yield_spreads_monthly.csv")
+if f is None or spreads is None:
+    ui.missing_results("France")
+    ui.footer()
+    st.stop()
+
+ui.note("All yields in this chapter are monthly averages: daily French and Italian 10-year yields are not "
+        "available free without registration (see the plan adjustments in CLAUDE.md).")
+
+ui.section_heading("i", "Italy then, France now")
+fig = go.Figure()
+for cty in ("IT", "ES", "PT", "FR"):
+    fig.add_scatter(x=spreads.index, y=spreads[cty], name=cty, line=dict(color=ui.COUNTRY_COLORS[cty],
+                                                                         width=2.5 if cty == "FR" else 1.2))
+fig.update_yaxes(title="10-year spread to Germany (bp)", range=[0, 700])
+ui.show_chart(fig, "Ten-year government bond spreads to Germany, monthly", sources=SRC)
+
+d, e = f["decomposition"], f["euro_wide"]
+ui.section_heading("ii", "Bund leg or OAT leg; France or the euro area?")
+ui.md(w.decomposition_sentence(d["base_month"], d["last_month"], d["spread_base"], d["spread_last"], d["oat_leg"],
+                               d["bund_leg"]))
+ui.md(w.france_specific_sentence(e["since"], e["cum_change"], e["cum_euro_wide"], e["cum_france_specific"]))
+split = ui.csv("france/france_specific_monthly.csv")
+if split is not None:
+    since = split.loc[e["since"]:]
+    fig = go.Figure()
+    fig.add_scatter(x=since.index, y=since["fr_change"].cumsum(), name="OAT-Bund spread change",
+                    line=dict(color=ui.COUNTRY_COLORS["FR"], width=2.5))
+    fig.add_scatter(x=since.index, y=since["euro_wide"].cumsum(), name="euro-wide part (implied by IT and ES)",
+                    line=dict(color=ui.COLORS["slate"], dash="dash"))
+    fig.add_scatter(x=since.index, y=since["france_specific"].cumsum(), name="France-specific part",
+                    line=dict(color=ui.COLORS["loss"]))
+    fig.update_yaxes(title="cumulative change since the dissolution month (bp)")
+    ui.show_chart(fig, "Where the French widening came from", height=320, sources=SRC)
+st.caption(f"Euro-wide beta estimated on {f['euro_wide']['n_fit']} months to December 2023: "
+           f"{e['params']['IT']:.2f} on Italy and {e['params']['ES']:.2f} on Spain (R² {e['r2']:.2f}).")
+
+ui.section_heading("iii", "How long do blowouts last?")
+v, now = f["survival"], f["france_now"]
+a12 = v["at"]["12"]
+ui.md(w.survival_sentence(v["n_episodes"], v["n_countries"], v["median_months"], a12["survival"], a12["lower"],
+                          a12["upper"], f["threshold_bp"]))
+sens20 = f["sensitivity"].get("20", {}).get("france")
+ui.md(w.france_status_sentence(now["in_episode"], now["spread_now"], now.get("trailing_baseline"),
+                               now.get("gap_to_threshold"), f["threshold_bp"], 20 if sens20 else None,
+                               sens20["start"] if sens20 else None, sens20["p_recover_next_12m"] if sens20 else None))
+km = ui.csv("france/kaplan_meier.csv", None, False)
+if km is not None:
+    fig = go.Figure()
+    fig.add_scatter(x=km["time"], y=km["upper"], line=dict(width=0, shape="hv"), showlegend=False, hoverinfo="skip")
+    fig.add_scatter(x=km["time"], y=km["lower"], fill="tonexty", fillcolor=ui.hex_to_rgba(ui.COLORS["ink"], 0.12),
+                    line=dict(width=0, shape="hv"), name="95% band")
+    fig.add_scatter(x=km["time"], y=km["survival"], line=dict(color=ui.COLORS["ink"], width=2, shape="hv"),
+                    name="share of episodes not yet half-retraced")
+    fig.update_xaxes(title="months since the blowout started")
+    fig.update_yaxes(title="share", range=[0, 1])
+    ui.show_chart(fig, "Kaplan-Meier: time to retrace half the widening", height=320, sources=SRC)
+eps = ui.csv("france/episodes.csv", None, False)
+if eps is not None:
+    with st.expander(f"All {len(eps)} episodes"):
+        show = eps[["country", "start", "baseline", "peak", "peak_date", "recovery", "duration"]].copy()
+        show.columns = ["Country", "Start", "Baseline (bp)", "Peak (bp)", "Peak month", "Half retraced", "Months"]
+        ui.table(show.round(1))
+sens = f["sensitivity"]
+st.caption("Sensitivity (thresholds fixed in advance): " + "; ".join(
+    f"{k} bp rule: {s['n_episodes']} episodes, median {s['median_months']:.0f} months"
+    for k, s in sens.items()) + ".")
+
+ui.section_heading("iv", "What preceded recoveries, and where France stands")
+cs, cond = f["conditions_share"], now["conditions"]
+rows = [{"Condition (6 months before recovery)": "The ECB had cut the deposit rate during the episode",
+         "Share of past recoveries": f"{cs['ecb_cut'][0]:.0%} of {cs['ecb_cut'][1]}",
+         "France now": "yes" if cond["ecb_cut"] else "no"},
+        {"Condition (6 months before recovery)": "Other countries' spreads were tightening",
+         "Share of past recoveries": f"{cs['peers_tightening'][0]:.0%} of {cs['peers_tightening'][1]}",
+         "France now": "yes" if cond["peers_tightening"] else "no"},
+        {"Condition (6 months before recovery)": "The Eurosystem was a net buyer of the country's bonds",
+         "Share of past recoveries": f"{cs['eurosystem_buying'][0]:.0%} of {cs['eurosystem_buying'][1]}",
+         "France now": "yes" if cond["eurosystem_buying"] else "no"}]
+ui.table(pd.DataFrame(rows))
+
+ui.section_heading("v", "Is French collateral now priced like Italian?")
+r = f["repo"]
+ui.md(w.repo_treatment_sentence(r["fr_de_before"], r["fr_de_after"], r["it_de_before"], r["it_de_after"],
+                                r["position_before"], r["position_after"], r["chow_it_fr"]["p_value"],
+                                r["latest"]["fr_de"], r["latest"]["it_de"]))
+panel = ui.csv("collateral/period_panel.csv")
+if panel is not None:
+    fig = go.Figure()
+    for cty in ("IT", "FR"):
+        fig.add_scatter(x=panel.index, y=panel[f"repo_{cty}"], name=w.COUNTRY_NAMES[cty] + " collateral",
+                        line=dict(color=ui.COUNTRY_COLORS[cty], width=2))
+    fig.add_vline(x=r["split_period"], line=ui.ref_line(dash="dash"), annotation_text="June 2024")
+    fig.update_yaxes(title="repo premium over German collateral (bp)")
+    ui.show_chart(fig, "French and Italian collateral in repo", height=300, sources=SRC)
+
+ui.section_heading("vi", "Events")
+for ev in f["events"]:
+    ui.md("- " + w.event_sentence(ev["event"], ev["month"], ev["change_bp"], ev["percentile"])
+          + f" Source: [{ev['source']}]({ev['url']}).")
+st.caption(f"Only events with an official source that loaded when checked ({f['events_checked_on']}) are included. "
+           "Excluded: " + "; ".join(f"{x['event']} ({x['reason']})" for x in f["excluded_events"]) + ".")
+ui.footer()
