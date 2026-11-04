@@ -205,3 +205,152 @@ def corridors_answer(stats: dict, reserves: dict) -> tuple[str, str]:
     spreads = ", ".join(f"{MARKET_NAMES[c]} {signed_bp(s['recent_median_bp'])} (IQR {bp(s['recent_iqr_bp'])})"
                         for c, s in stats.items())
     return answer, f"Past-year median spread to the policy rate: {spreads}. {tail}."
+
+
+# --------------------------------------------------------------------------- #
+# Chapter III: credit or scarcity
+# --------------------------------------------------------------------------- #
+COUNTRY_NAMES = {"IT": "Italian", "FR": "French", "ES": "Spanish", "DE": "German"}
+
+
+def verdict_phrase(verdict: str) -> str:
+    return {"credit": "mainly credit risk", "scarcity": "mainly scarcity of German collateral",
+            "both / unclear": "neither clearly credit nor scarcity"}[verdict]
+
+
+def collateral_sentence(country: str, verdict: str, credit_effect: float, scarcity_effect: float, r2: float,
+                        mean_spread: float, latest: float) -> str:
+    return (f"{COUNTRY_NAMES[country]} collateral cost {bp(mean_spread)} more than German collateral in repo on "
+            f"average (latest {signed_bp(latest)}). The regression explains {r2:.0%} of the variation and reads as "
+            f"{verdict_phrase(verdict)}: a one-standard-deviation move in the yield spread is worth "
+            f"{signed_bp(credit_effect)}, the two scarcity measures together {bp(scarcity_effect)}.")
+
+
+def qt_break_sentence(country: str, p_value: float, before: str | None, after: str | None) -> str:
+    changed = p_value < 0.05
+    head = (f"The relationship for {COUNTRY_NAMES[country]} collateral changed at the start of quantitative "
+            f"tightening; the break is {significance_phrase(p_value)}" if changed else
+            f"There is no significant break for {COUNTRY_NAMES[country]} collateral at the start of quantitative "
+            f"tightening; the test is {significance_phrase(p_value)}")
+    if before and after:
+        if before == after:
+            return head + f"; it reads as {verdict_phrase(before)} both before and after."
+        return head + f": {verdict_phrase(before)} before, {verdict_phrase(after)} after."
+    return head + "."
+
+
+def collateral_answer(it_verdict: str, fr_verdict: str, it_break_p: float, fr_break_p: float) -> tuple[str, str]:
+    verdicts = (it_verdict, fr_verdict)
+    if it_verdict == fr_verdict and it_verdict != "both / unclear":
+        answer = "Mostly " + ("credit risk" if it_verdict == "credit" else "scarcity")
+    elif "scarcity" in verdicts and "credit" not in verdicts:
+        answer = ("Scarcity for Italy; no clear driver for France" if it_verdict == "scarcity"
+                  else "Scarcity for France; no clear driver for Italy")
+    elif "credit" in verdicts and "scarcity" not in verdicts:
+        answer = ("Credit for Italy; no clear driver for France" if it_verdict == "credit"
+                  else "Credit for France; no clear driver for Italy")
+    elif it_verdict == fr_verdict:
+        answer = "Neither clearly"
+    else:
+        answer = "Both, in different places"
+    breaks = sum(p < 0.05 for p in (it_break_p, fr_break_p))
+    which = {0: "neither country", 1: "one of the two countries", 2: "both countries"}[breaks]
+    return answer, (f"Italian collateral: {verdict_phrase(it_verdict)}; French collateral: {verdict_phrase(fr_verdict)}. "
+                    f"The relationship broke at the start of quantitative tightening for {which}.")
+
+
+# --------------------------------------------------------------------------- #
+# Chapter IV: Italy then, France now
+# --------------------------------------------------------------------------- #
+def decomposition_sentence(base_month: str, last_month: str, spread_base: float, spread_last: float,
+                           oat_leg: float, bund_contribution: float) -> str:
+    """oat_leg = change in the OAT yield; bund_contribution = minus the change in the Bund yield (bp)."""
+    bund_move = "fell" if bund_contribution > 0 else "rose"
+    widened = spread_last > spread_base
+    if oat_leg * bund_contribution > 0:
+        source = "both legs"
+    elif abs(oat_leg) > abs(bund_contribution):
+        source = "the OAT leg, partly offset by the Bund leg"
+    else:
+        source = "the Bund leg, partly offset by the OAT leg"
+    return (f"From {base_month} to {last_month} the OAT-Bund spread went from {bp(spread_base, 0)} to "
+            f"{bp(spread_last, 0)}. OAT yields {rose_or_fell(oat_leg)} by {bp(oat_leg, 0)} and Bund yields "
+            f"{bund_move} by {bp(bund_contribution, 0)}, so the {'widening' if widened else 'tightening'} came from "
+            f"{source}.")
+
+
+def france_specific_sentence(since: str, cum_change: float, euro_wide: float, france_specific: float) -> str:
+    share = france_specific / cum_change if cum_change else float("nan")
+    own = "France-specific" if abs(france_specific) > abs(euro_wide) else "euro-wide"
+    return (f"Since {since} the French spread moved {signed_bp(cum_change)}: {signed_bp(euro_wide)} is what Italian "
+            f"and Spanish spreads would have implied (euro-wide), {signed_bp(france_specific)} is France-specific "
+            f"({share:.0%} of the move). The move has been mainly {own}.")
+
+
+def survival_sentence(n: int, n_countries: int, median: float, s12: float, s12_lo: float, s12_hi: float,
+                      threshold: float) -> str:
+    return (f"Across {n} blowouts of {bp(threshold, 0)} or more in {n_countries} euro countries since 2008, the "
+            f"median time to retrace half the widening was {median:.0f} months; {1 - s12:.0%} had done so within a "
+            f"year (95% band {1 - s12_hi:.0%} to {1 - s12_lo:.0%}). The sample is small and the episodes overlap in "
+            "time, so these are base rates, not forecasts.")
+
+
+def france_status_sentence(in_episode: bool, spread_now: float, baseline: float | None, gap: float | None,
+                           threshold: float, sens_threshold: float | None = None, sens_start: str | None = None,
+                           sens_p12: float | None = None) -> str:
+    if in_episode:
+        return f"By the {bp(threshold, 0)} rule France is in a blowout episode, with the spread at {bp(spread_now, 0)}."
+    text = (f"By the {bp(threshold, 0)} rule France is not in a blowout: at {bp(spread_now, 0)} the spread is "
+            f"{bp(gap, 1)} short of its trailing one-year average ({bp(baseline, 0)}) plus {bp(threshold, 0)}. The "
+            "widening since 2024 has been a steady grind rather than a jump, so the trailing average has risen with it.")
+    if sens_threshold is not None and sens_start is not None:
+        text += (f" With the looser {bp(sens_threshold, 0)} rule an episode starts in {sens_start}; for episodes of "
+                 f"that kind the chance of retracing half the widening within 12 months was {sens_p12:.0%}.")
+    return text
+
+
+def repo_treatment_sentence(fr_before: float, fr_after: float, it_before: float, it_after: float,
+                            pos_before: float, pos_after: float, p_gap: float, latest_fr: float,
+                            latest_it: float) -> str:
+    closer = pos_after > pos_before
+    text = (f"In repo, French collateral moved {'closer to Italian' if closer else 'away from Italian'} pricing after "
+            f"June 2024: its premium over German collateral went from {bp(fr_before)} to {bp(fr_after)}, the Italian "
+            f"premium from {bp(it_before)} to {bp(it_after)}, and France's position between Germany (0) and Italy (1) "
+            f"from {pos_before:.2f} to {pos_after:.2f}. The change in the Italy-France gap is "
+            f"{significance_phrase(p_gap)}.")
+    if latest_fr > latest_it:
+        text += (f" In the latest period French collateral cost more than Italian ({signed_bp(latest_fr)} against "
+                 f"{signed_bp(latest_it)}).")
+    return text
+
+
+def event_sentence(event: str, month: str, change: float, percentile: float) -> str:
+    size = ("an unusually large" if percentile >= 0.9 else "a larger than typical" if percentile >= 0.5
+            else "a smaller than typical")
+    move = "widened" if change > 0 else "narrowed" if change < 0 else "was unchanged"
+    return (f"{event} ({month}): the OAT-Bund spread {move} by {bp(change)} that month, {size} move "
+            f"({percentile:.0%} of months since 2010 saw a smaller change).")
+
+
+def oat_answer(in_episode: bool, median_months: float, p_half_12: float, share_cut: float, share_peers: float,
+               share_buying: float | None, now_cut: bool, now_peers: bool, now_buying: bool | None,
+               france_specific_share: float) -> tuple[str, str]:
+    """Will French OATs bounce back? Base rates and conditions only; never a political prediction."""
+    met = [name for name, ok in (("ECB easing", now_cut), ("other spreads tightening", now_peers),
+                                 ("Eurosystem buying", bool(now_buying))) if ok]
+    if len(met) >= 2:
+        answer = "Possibly: most of the conditions that preceded past recoveries are in place"
+    elif len(met) == 1:
+        answer = "Not yet: only one of the three conditions that preceded past recoveries is in place"
+    else:
+        answer = "Not yet: none of the conditions that preceded past recoveries is in place"
+    status = ("France is in a blowout episode by the main rule" if in_episode else
+              "By the main rule France is not in a blowout: its spread has widened steadily rather than jumped")
+    buying = f", and the Eurosystem was a net buyer in {share_buying:.0%}" if share_buying is not None else ""
+    explanation = (f"{status}. Historically the median euro blowout retraced half its widening in {median_months:.0f} "
+                   f"months and {p_half_12:.0%} did so within a year. Before those recoveries the ECB had cut rates in "
+                   f"{share_cut:.0%} of cases, other countries' spreads were tightening in {share_peers:.0%}{buying}. "
+                   f"Now: {', '.join(met) if met else 'none of these'}. With {france_specific_share:.0%} of the "
+                   "widening France-specific, what would help most is a France-specific improvement in the fiscal "
+                   "outlook; the data cannot say whether that will happen.")
+    return answer, explanation

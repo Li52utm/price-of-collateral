@@ -1,0 +1,124 @@
+{
+ "data_as_of": "2026-11-03",
+ "n_periods": 69,
+ "qt_start": "2023-03-01",
+ "regressions": {
+  "IT": {
+   "country": "IT",
+   "n": 69,
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "params": {
+    "const": -4.041911681779627,
+    "credit": 0.08166324357475675,
+    "liquidity": 5.296397359885636,
+    "de_holdings": -2.6660023832461186
+   },
+   "pvalues": {
+    "const": 0.6772568631119462,
+    "credit": 8.32645204399095e-06,
+    "liquidity": 0.022644777630123767,
+    "de_holdings": 0.4043210741081469
+   },
+   "r2": 0.5095582461573024,
+   "std_effect": {
+    "credit": 4.762183373800795,
+    "liquidity": 5.221164333703218,
+    "de_holdings": -1.776993861937332
+   },
+   "verdict": "scarcity",
+   "chow": {
+    "F": 2.7776167195456622,
+    "p_value": 0.034628498628240606,
+    "n1": 40,
+    "n2": 29
+   },
+   "qt_split_period": "2023-03-21",
+   "sub_periods": {
+    "before_qt": {
+     "n": 40,
+     "verdict": "both / unclear",
+     "std_effect": {
+      "credit": 3.473333197653225,
+      "liquidity": 5.5278348449203465,
+      "de_holdings": -0.9750589116107081
+     },
+     "mean_spread": 14.025000000000002
+    },
+    "after_qt": {
+     "n": 29,
+     "verdict": "scarcity",
+     "std_effect": {
+      "credit": 0.6479847776114372,
+      "liquidity": 9.965851184066345,
+      "de_holdings": -6.8563514501449845
+     },
+     "mean_spread": 6.827586206896556
+    }
+   },
+   "mean_spread": 11.000000000000004,
+   "latest_spread": 2.9999999999999805
+  },
+  "FR": {
+   "country": "FR",
+   "n": 69,
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "params": {
+    "const": -10.245578573089414,
+    "credit": -0.012742964067544523,
+    "liquidity": 1.97861939237838,
+    "de_holdings": 1.947693717892685
+   },
+   "pvalues": {
+    "const": 0.5141028267384482,
+    "credit": 0.8392074909050217,
+    "liquidity": 0.23200412305039664,
+    "de_holdings": 0.5207922413345618
+   },
+   "r2": 0.36872991513812714,
+   "std_effect": {
+    "credit": -0.20368414580816233,
+    "liquidity": 1.9505139625102823,
+    "de_holdings": 1.2982133112030636
+   },
+   "verdict": "both / unclear",
+   "chow": {
+    "F": 13.456428559261912,
+    "p_value": 6.397012452760467e-08,
+    "n1": 40,
+    "n2": 29
+   },
+   "qt_split_period": "2023-03-21",
+   "sub_periods": {
+    "before_qt": {
+     "n": 40,
+     "verdict": "both / unclear",
+     "std_effect": {
+      "credit": 3.269478433592466,
+      "liquidity": 3.2396404898246964,
+      "de_holdings": -0.6673883355871703
+     },
+     "mean_spread": 7.775
+    },
+    "after_qt": {
+     "n": 29,
+     "verdict": "both / unclear",
+     "std_effect": {
+      "credit": -0.973805621445952,
+      "liquidity": 2.031339631246084,
+      "de_holdings": -1.8325456981479036
+     },
+     "mean_spread": 4.137931034482763
+    }
+   },
+   "mean_spread": 6.246376811594205,
+   "latest_spread": 4.0000000000000036
+  }
+ },
+ "labels": {
+  "credit": "10-year yield spread to Germany (bp)",
+  "liquidity": "euro liquidity (EUR trillion)",
+  "de_holdings": "Eurosystem holdings of German bonds (EUR 100 billion)"
+ }
+}

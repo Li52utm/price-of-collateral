@@ -114,6 +114,15 @@ Every place where data or tools forced a change to the original plan, with the r
 - **2026-11-04, AFT auction results, French CDS and historical haircut schedules**: not available
   free (AFT blocks scripts; no free CDS; clearing houses publish current PDFs only). Dropped as
   model inputs; haircuts are described qualitatively in Chapter I.
+- **2026-11-04, event study list.** Only two events could be verified against an official source
+  (Assemblée nationale verbatim records of 4 Dec 2024 and 8 Sep 2025, HTTP 200). The dissolution of
+  9 Jun 2024 (Élysée and Légifrance unreachable or 403) and every rating action (agency releases not
+  found; the AFT ratings page returns 403 to scripts) are excluded and listed in `src/events.py`.
+  With monthly yields, the event study measures the event month against all months since 2010.
+- **2026-11-04, France and the blowout rule.** By the rule fixed in advance (30 bp above the trailing
+  12-month average) France is NOT in an episode: the spread rose steadily (51 bp in May 2024 to 97 bp
+  in Sep 2026) and the trailing average rose with it. The rule was not changed. France appears as an
+  ongoing, censored episode only under the pre-set 20 bp sensitivity (from Sep 2026), reported beside it.
 
 ## Environment
 

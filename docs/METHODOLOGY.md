@@ -151,6 +151,67 @@ Windows fixed in advance: September 2019 (2 to 30 Sep 2019), March 2020 (2 to 31
 2025 (1 Dec 2025 to 9 Jan 2026). For each currency with data in the window: peak spread and its date,
 the mean over the 10 business days before the window, and the reserve or liquidity level at the start.
 
+## Phase 4: collateral and France (fixed 2026-11-04, before any result was computed)
+
+Code: `src/collateral.py`, `src/france.py`, `src/survival.py`, `src/events.py`.
+
+### III. Credit risk or scarcity?
+
+- Frequency: ECB maintenance periods (MMSR, 69 periods from Mar 2018; dated at the period end).
+- Repo rate by collateral country: MMSR secured, **lending** side (cash lent against the collateral),
+  **spot-next** tenor (the largest-volume tenor). Spread = country rate minus the German-collateral rate (bp).
+- Credit proxy: 10-year yield spread to Germany (ECB IRS, monthly), averaged over the calendar months the
+  period covers. Scarcity proxies: euro liquidity (weekly proxy, mean over the period, EUR trillion) and
+  Eurosystem PSPP holdings of German bonds (cumulative net purchases, EUR 100 billion, month-end before
+  the period end).
+- Regression per country (IT, FR): spread = a + b credit + c liquidity + d German holdings, Newey-West
+  errors with 3 lags. Comparison on standardised coefficients (coefficient x standard deviation of the
+  regressor). **Decision rule:** "credit" if the credit term is significant at 5% and its absolute
+  standardised effect exceeds the sum of the two scarcity terms; "scarcity" if at least one scarcity term
+  is significant and their sum exceeds the credit term; otherwise "both / unclear".
+- Structural break at the start of quantitative tightening, **1 March 2023** (the ECB stopped reinvesting
+  part of its APP portfolio from March 2023, the first fall in its bond holdings). Chow test of the full
+  regression, split at the first period ending after that date.
+- Rolling coefficients: windows of 24 periods (about 2.8 years).
+
+### IV(a). Decomposition and France-specific stress (monthly)
+
+- Exact split: change in (FR - DE) = change in FR (OAT leg) - change in DE (Bund leg).
+- Euro-wide vs France-specific: regress the monthly change in the FR-DE spread on the changes in the IT-DE
+  and ES-DE spreads, estimated on **Jan 2010 - Dec 2023** (before the French political episode). From
+  2024 the out-of-sample residual is the France-specific stress; the fitted part is the euro-wide part.
+  Cumulated from **June 2024** (the dissolution of the National Assembly, 9 June 2024).
+
+### IV(b). Survival of spread blowouts
+
+- Spreads to Germany, monthly, for IT, ES, PT, FR, BE, GR, IE, AT, NL, FI; episodes counted from Jan 2008.
+- **Blowout start:** the first month in which the spread is at least **X = 30 bp** above its average over
+  the previous 12 months (the baseline). Why 30 bp: about two standard deviations of the monthly change in
+  core euro spreads, and roughly the size of the widening that euro government bond desks call a
+  repricing rather than noise. Sensitivity (fixed in advance, reported but not used for the answer):
+  X = 20 bp and X = 50 bp.
+- Peak: the running maximum after the start. **Recovery:** the first month in which the spread has
+  retraced half the widening: spread <= peak - 0.5 x (peak - baseline). Duration: months from start to
+  recovery. Episodes not recovered by the last month are right-censored (France's, if ongoing).
+- Kaplan-Meier estimator with Greenwood 95% bands (log-log), implemented in `src/survival.py`.
+- What preceded recoveries, over the 6 months before each recovery: (1) the ECB cut the DFR during the
+  episode; (2) the average spread of the other countries fell; (3) the Eurosystem was a net buyer of the
+  country's bonds (PSPP, from 2015 only). France now: the same three conditions over the latest 6 months.
+
+### IV(c). Is French collateral priced more like Italian?
+
+- Position of French collateral between German (0) and Italian (1): (FR - DE) / (IT - DE), MMSR spot-next
+  lending rates, periods with |IT - DE| >= 1 bp only.
+- Break test at **9 June 2024** (dissolution): Chow test of a constant mean in the FR-DE repo spread and in
+  the FR-IT repo spread, split at the first period ending after that date.
+
+### IV(d). Event study
+
+- Events: only those with an official source URL (government or rating agency) that returned HTTP 200 when
+  checked (`src/events.py`, `EVENTS`, with the date checked). Anything not verifiable is excluded.
+- Monthly: change in the FR-DE spread from the month before the event to the event month, compared with
+  every monthly change since 2010 (percentile and z-score).
+
 ## Corrections log
 
 - **2026-11-04, Phase 2 sample filter.** Wrong: `forecast.dataset` dropped every day on which the
