@@ -1,0 +1,1194 @@
+{
+ "as_of": "2026-11-03",
+ "fetched_at": "2026-11-04 18:56:53",
+ "series": {
+  "bgcr": {
+   "first": "2018-04-02",
+   "last": "2026-11-03",
+   "n": 2146,
+   "lag_bd": 1
+  },
+  "boj_current_accounts": {
+   "first": "1998-01-01",
+   "last": "2026-10-01",
+   "n": 346,
+   "lag_bd": 3
+  },
+  "boj_loan_rate": {
+   "first": "2008-01-01",
+   "last": "2026-11-01",
+   "n": 6880,
+   "lag_bd": 0
+  },
+  "bund10_daily": {
+   "first": "2008-01-02",
+   "last": "2026-11-04",
+   "n": 4785,
+   "lag_bd": 1
+  },
+  "call_collat_on": {
+   "first": "2025-01-06",
+   "last": "2026-10-30",
+   "n": 443,
+   "lag_bd": 2
+  },
+  "call_collat_on_m": {
+   "first": "1998-01-01",
+   "last": "2026-09-01",
+   "n": 243,
+   "lag_bd": 3
+  },
+  "dfr": {
+   "first": "2008-01-01",
+   "last": "2026-11-04",
+   "n": 6883,
+   "lag_bd": 0
+  },
+  "effr": {
+   "first": "2018-04-02",
+   "last": "2026-11-03",
+   "n": 2158,
+   "lag_bd": 1
+  },
+  "eonia": {
+   "first": "1999-01-04",
+   "last": "2021-12-31",
+   "n": 5890,
+   "lag_bd": 1
+  },
+  "estr": {
+   "first": "2019-10-01",
+   "last": "2026-11-03",
+   "n": 1817,
+   "lag_bd": 1
+  },
+  "estr_p25": {
+   "first": "2019-10-01",
+   "last": "2026-11-03",
+   "n": 1817,
+   "lag_bd": 1
+  },
+  "estr_p75": {
+   "first": "2019-10-01",
+   "last": "2026-11-03",
+   "n": 1817,
+   "lag_bd": 1
+  },
+  "estr_volume": {
+   "first": "2019-10-01",
+   "last": "2026-11-03",
+   "n": 1817,
+   "lag_bd": 1
+  },
+  "excess_liquidity": {
+   "first": "2024-09-27",
+   "last": "2026-11-03",
+   "n": 768,
+   "lag_bd": 1
+  },
+  "fed_lower": {
+   "first": "2008-12-16",
+   "last": "2026-11-04",
+   "n": 6533,
+   "lag_bd": 0
+  },
+  "fed_repo_ops": {
+   "first": "2008-01-02",
+   "last": "2026-11-03",
+   "n": 1937,
+   "lag_bd": 1
+  },
+  "fed_securities": {
+   "first": "2008-01-02",
+   "last": "2026-10-28",
+   "n": 983,
+   "lag_bd": 1
+  },
+  "fed_upper": {
+   "first": "2008-12-16",
+   "last": "2026-11-04",
+   "n": 6533,
+   "lag_bd": 0
+  },
+  "ilm_current_accounts": {
+   "first": "2008-01-11",
+   "last": "2026-10-30",
+   "n": 982,
+   "lag_bd": 2
+  },
+  "ilm_deposit_facility": {
+   "first": "2008-01-11",
+   "last": "2026-10-30",
+   "n": 982,
+   "lag_bd": 2
+  },
+  "ilm_mlf": {
+   "first": "2008-01-11",
+   "last": "2026-10-30",
+   "n": 982,
+   "lag_bd": 2
+  },
+  "ioer": {
+   "first": "2008-10-09",
+   "last": "2021-07-28",
+   "n": 4676,
+   "lag_bd": 0
+  },
+  "iorb": {
+   "first": "2021-07-29",
+   "last": "2026-11-04",
+   "n": 1925,
+   "lag_bd": 0
+  },
+  "min_reserves": {
+   "first": "2024-09-27",
+   "last": "2026-11-03",
+   "n": 768,
+   "lag_bd": 1
+  },
+  "mlf": {
+   "first": "2008-01-01",
+   "last": "2026-11-04",
+   "n": 6883,
+   "lag_bd": 0
+  },
+  "mmsr_rate_bo_KS_ALL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_KS_BE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_KS_DE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_KS_ES": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_KS_FR": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_KS_IT": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_KS_NL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_KT_ALL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_KT_BE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_KT_DE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_KT_ES": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_KT_FR": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_KT_IT": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_KT_NL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_MA_ALL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_MA_BE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_MA_DE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_MA_ES": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_MA_FR": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_MA_IT": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_MA_NL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_TA_ALL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_TA_BE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 64,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_TA_DE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_TA_ES": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 65,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_TA_FR": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_TA_IT": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_TA_NL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 59,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_TC_ALL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_TC_BE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 61,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_TC_DE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 68,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_TC_ES": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 66,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_TC_FR": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_TC_IT": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_bo_TC_NL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 45,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_KS_ALL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_KS_BE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_KS_DE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_KS_ES": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_KS_FR": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_KS_IT": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_KS_NL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_KT_ALL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_KT_BE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_KT_DE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_KT_ES": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_KT_FR": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_KT_IT": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_KT_NL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_MA_ALL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_MA_BE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_MA_DE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_MA_ES": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_MA_FR": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_MA_IT": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_MA_NL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_TA_ALL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_TA_BE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 63,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_TA_DE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_TA_ES": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 66,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_TA_FR": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_TA_IT": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_TA_NL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 59,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_TC_ALL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_TC_BE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 59,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_TC_DE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_TC_ES": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 68,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_TC_FR": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_TC_IT": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_rate_le_TC_NL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 54,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_KS_ALL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_KS_BE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_KS_DE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_KS_ES": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_KS_FR": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_KS_IT": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_KS_NL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_KT_ALL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_KT_BE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_KT_DE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_KT_ES": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_KT_FR": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_KT_IT": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_KT_NL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_MA_ALL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_MA_BE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_MA_DE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_MA_ES": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_MA_FR": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_MA_IT": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_MA_NL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_TA_ALL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_TA_BE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 64,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_TA_DE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_TA_ES": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 65,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_TA_FR": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_TA_IT": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_TA_NL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 59,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_TC_ALL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_TC_BE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 61,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_TC_DE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 68,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_TC_ES": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 66,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_TC_FR": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_TC_IT": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_bo_TC_NL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 45,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_KS_ALL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_KS_BE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_KS_DE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_KS_ES": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_KS_FR": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_KS_IT": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_KS_NL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_KT_ALL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_KT_BE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_KT_DE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_KT_ES": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_KT_FR": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_KT_IT": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_KT_NL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_MA_ALL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_MA_BE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_MA_DE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_MA_ES": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_MA_FR": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_MA_IT": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_MA_NL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_TA_ALL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_TA_BE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 63,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_TA_DE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_TA_ES": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 66,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_TA_FR": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_TA_IT": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_TA_NL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 59,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_TC_ALL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_TC_BE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 59,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_TC_DE": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_TC_ES": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 68,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_TC_FR": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_TC_IT": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 69,
+   "lag_bd": 10
+  },
+  "mmsr_volume_le_TC_NL": {
+   "first": "2018-03-13",
+   "last": "2026-09-15",
+   "n": 54,
+   "lag_bd": 10
+  },
+  "mp_securities": {
+   "first": "2009-07-03",
+   "last": "2026-10-30",
+   "n": 905,
+   "lag_bd": 2
+  },
+  "mro": {
+   "first": "2008-10-15",
+   "last": "2026-11-04",
+   "n": 6595,
+   "lag_bd": 0
+  },
+  "onrrp": {
+   "first": "2008-03-19",
+   "last": "2026-11-03",
+   "n": 3344,
+   "lag_bd": 1
+  },
+  "pspp_AT": {
+   "first": "2015-03-31",
+   "last": "2026-10-31",
+   "n": 140,
+   "lag_bd": 25
+  },
+  "pspp_BE": {
+   "first": "2015-03-31",
+   "last": "2026-10-31",
+   "n": 140,
+   "lag_bd": 25
+  },
+  "pspp_DE": {
+   "first": "2015-03-31",
+   "last": "2026-10-31",
+   "n": 140,
+   "lag_bd": 25
+  },
+  "pspp_ES": {
+   "first": "2015-03-31",
+   "last": "2026-10-31",
+   "n": 140,
+   "lag_bd": 25
+  },
+  "pspp_FI": {
+   "first": "2015-03-31",
+   "last": "2026-10-31",
+   "n": 140,
+   "lag_bd": 25
+  },
+  "pspp_FR": {
+   "first": "2015-03-31",
+   "last": "2026-10-31",
+   "n": 140,
+   "lag_bd": 25
+  },
+  "pspp_IE": {
+   "first": "2015-03-31",
+   "last": "2026-10-31",
+   "n": 140,
+   "lag_bd": 25
+  },
+  "pspp_IT": {
+   "first": "2015-03-31",
+   "last": "2026-10-31",
+   "n": 140,
+   "lag_bd": 25
+  },
+  "pspp_PT": {
+   "first": "2015-03-31",
+   "last": "2026-10-31",
+   "n": 140,
+   "lag_bd": 25
+  },
+  "repo_dvp_on": {
+   "first": "2018-05-08",
+   "last": "2026-11-02",
+   "n": 2036,
+   "lag_bd": 1
+  },
+  "repo_dvp_term": {
+   "first": "2018-05-08",
+   "last": "2026-11-02",
+   "n": 1985,
+   "lag_bd": 1
+  },
+  "reserves": {
+   "first": "2008-01-02",
+   "last": "2026-10-28",
+   "n": 983,
+   "lag_bd": 1
+  },
+  "sofr": {
+   "first": "2018-04-02",
+   "last": "2026-11-03",
+   "n": 2146,
+   "lag_bd": 1
+  },
+  "sofr_p99": {
+   "first": "2018-04-02",
+   "last": "2026-11-03",
+   "n": 2144,
+   "lag_bd": 1
+  },
+  "sofr_volume": {
+   "first": "2018-04-02",
+   "last": "2026-11-03",
+   "n": 2146,
+   "lag_bd": 1
+  },
+  "tga_daily": {
+   "first": "2018-01-02",
+   "last": "2026-11-02",
+   "n": 2083,
+   "lag_bd": 2
+  },
+  "tga_weekly": {
+   "first": "2008-01-02",
+   "last": "2026-10-28",
+   "n": 983,
+   "lag_bd": 1
+  },
+  "tgcr": {
+   "first": "2018-04-02",
+   "last": "2026-11-03",
+   "n": 2146,
+   "lag_bd": 1
+  },
+  "tona": {
+   "first": "2008-01-04",
+   "last": "2026-10-30",
+   "n": 4604,
+   "lag_bd": 2
+  },
+  "y10_AT": {
+   "first": "1999-01-01",
+   "last": "2026-09-01",
+   "n": 333,
+   "lag_bd": 25
+  },
+  "y10_BE": {
+   "first": "1999-01-01",
+   "last": "2026-09-01",
+   "n": 333,
+   "lag_bd": 25
+  },
+  "y10_DE": {
+   "first": "1999-01-01",
+   "last": "2026-09-01",
+   "n": 333,
+   "lag_bd": 25
+  },
+  "y10_ES": {
+   "first": "1999-01-01",
+   "last": "2026-09-01",
+   "n": 333,
+   "lag_bd": 25
+  },
+  "y10_FI": {
+   "first": "1999-01-01",
+   "last": "2026-09-01",
+   "n": 333,
+   "lag_bd": 25
+  },
+  "y10_FR": {
+   "first": "1999-01-01",
+   "last": "2026-09-01",
+   "n": 333,
+   "lag_bd": 25
+  },
+  "y10_GR": {
+   "first": "1999-01-01",
+   "last": "2026-09-01",
+   "n": 332,
+   "lag_bd": 25
+  },
+  "y10_IE": {
+   "first": "1999-01-01",
+   "last": "2026-09-01",
+   "n": 333,
+   "lag_bd": 25
+  },
+  "y10_IT": {
+   "first": "1999-01-01",
+   "last": "2026-09-01",
+   "n": 333,
+   "lag_bd": 25
+  },
+  "y10_NL": {
+   "first": "1999-01-01",
+   "last": "2026-09-01",
+   "n": 333,
+   "lag_bd": 25
+  },
+  "y10_PT": {
+   "first": "1999-01-01",
+   "last": "2026-09-01",
+   "n": 333,
+   "lag_bd": 25
+  }
+ }
+}

@@ -83,6 +83,37 @@ Every place where data or tools forced a change to the original plan, with the r
   (formulaic) forces pandas down to 2.3.3. To keep pandas 3.1.0 (the version the framework was
   built and tested on), Kaplan-Meier with Greenwood confidence bands is implemented in
   `src/survival.py` and tested against hand-computed examples.
+- **2026-11-04, daily country yields.** No free official source without registration: the ECB
+  Data Portal has only monthly country yields (IRS convergence series), DBnomics mirrors only the
+  monthly Banque de France series, and Webstat's daily OAT/BTP series need a (free) API key the
+  project cannot register. Substitute: ECB IRS monthly 10-year yields for 11 countries (DE, FR, IT,
+  ES, PT, BE, NL, AT, GR, IE, FI) from 1999, plus the daily current 10-year Bund from the
+  Bundesbank. Consequence: Chapter IV (decomposition, survival, event study) runs at MONTHLY
+  frequency; the "daily France-specific stress series" becomes monthly. Upgrade path: a Webstat
+  key would allow daily OAT and BTP yields.
+- **2026-11-04, MMSR secured rates are maintenance-period averages**, not daily (69 periods,
+  Mar 2018 to Sep 2026, dated at the period end, rounded to 1 bp, published more than six business
+  days after the period ends). Chapter III uses them at that frequency. No free daily euro repo rate
+  exists (RepoFunds Rate and STOXX/Eurex GC Pooling need a login or offer no download), so the
+  "euro repo rate minus DFR" forecasting target is dropped; the euro target is €STR minus DFR.
+- **2026-11-04, pre-€STR** is not in the ECB API. Euro history before Oct 2019 is EONIA, kept for
+  context only; the euro forecasting target starts with €STR on 1 Oct 2019.
+- **2026-11-04, daily excess liquidity** (`ILM.D...EXLIQ`) starts only on 27 Sep 2024. Substitute
+  with full history: weekly current accounts + deposit facility - marginal lending (validated:
+  it equals excess liquidity plus reserve requirements to within EUR 1 bn on 110 common weeks).
+- **2026-11-04, JSDA Tokyo Repo Rate** unavailable (pages moved, HTTP 429; the BoJ's copy ended in
+  2012). Substitute: the BoJ collateralized overnight call rate (daily from 2025, monthly average
+  since 1960). Chapter VI's pass-through model uses TONA, the daily series with full history.
+- **2026-11-04, BoJ policy rate** has no daily series. Built from the BoJ's list of decisions up to
+  Jul 2024 and, from 1 Aug 2024, as the daily basic loan rate minus 0.25 (the BoJ's fixed spread),
+  validated against TONA (median gap 4.8 bp since Mar 2016).
+- **2026-11-04, NY Fed repo-operation search** rejects date ranges; Fed repo operations (including
+  the standing repo facility) come from FRED `RPONTSYD` instead. ON RRP from FRED `RRPONTSYD`.
+- **2026-11-04, OFR term repo buckets changed**: DVP "<=30 days" ends 13 Aug 2025, replaced by
+  "2-7 days" and "8-30 days". The term series splices <=30 days with 8-30 days.
+- **2026-11-04, AFT auction results, French CDS and historical haircut schedules**: not available
+  free (AFT blocks scripts; no free CDS; clearing houses publish current PDFs only). Dropped as
+  model inputs; haircuts are described qualitatively in Chapter I.
 
 ## Environment
 
