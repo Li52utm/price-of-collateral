@@ -1,0 +1,18 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  pytest:
+    runs-on: ubuntu-24.04   # pinned: a runner image upgrade must not change results silently
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7.0.1        # latest release on 4 Nov 2026 (node24)
+      - uses: actions/setup-python@v7.1.0    # latest release on 4 Nov 2026 (node24)
+        with:
+          python-version: "3.14"             # requirements.txt is pinned for Python 3.14
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python -m pytest -q             # offline: tests/conftest.py blocks every download

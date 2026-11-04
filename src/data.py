@@ -56,7 +56,13 @@ class JapanCalendar(AbstractHolidayCalendar):
              Holiday("Year end", month=12, day=31)]
 
 
-CALENDARS = {"EUR": TargetCalendar(), "USD": USFederalHolidayCalendar(), "JPY": JapanCalendar()}
+class USRepoCalendar(USFederalHolidayCalendar):
+    """US federal holidays plus Good Friday: SIFMA closes the bond market and SOFR is not published
+    (no SOFR on any Good Friday 2018-2026; corrected 2026-11-04, see docs/METHODOLOGY.md)."""
+    rules = USFederalHolidayCalendar.rules + [GoodFriday]
+
+
+CALENDARS = {"EUR": TargetCalendar(), "USD": USRepoCalendar(), "JPY": JapanCalendar()}
 CURRENCY_OF_SOURCE = {"ecb": "EUR", "bbk": "EUR", "fred": "USD", "nyfed": "USD", "ofr": "USD",
                       "fiscal": "USD", "boj": "JPY"}
 

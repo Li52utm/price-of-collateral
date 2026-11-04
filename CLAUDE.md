@@ -124,6 +124,38 @@ Every place where data or tools forced a change to the original plan, with the r
   in Sep 2026) and the trailing average rose with it. The rule was not changed. France appears as an
   ongoing, censored episode only under the pre-set 20 bp sensitivity (from Sep 2026), reported beside it.
 
+## Data pipeline
+
+- `scripts/refresh_snapshots.py`: download (`src/download.py`) -> pipeline checks (`src/pipeline.py`) ->
+  validation (`src/validation.py`; any FAIL stops before writing) -> write `results/snapshots/` and the
+  validation reports -> `scripts/run_all.py` (every results file, plus the forecast score once
+  31 Dec 2026 is in the data) -> `scripts/update_readme.py` (README auto-block from `src/findings.py`).
+  `--skip-download` recomputes from the committed snapshot.
+- `.github/workflows/refresh-data.yml`: weekdays 14:00 UTC (after the previous day's SOFR, 08:00 ET,
+  and €STR, 08:00 CET); fails if the frozen forecast changed; commits only if tests pass and files changed;
+  never stages the frozen forecast. `.github/workflows/tests.yml`: every push. Actions pinned to
+  `actions/checkout@v7.0.1` and `actions/setup-python@v7.1.0` (latest on 4 Nov 2026, node24), ubuntu-24.04.
+
+## The frozen forecast
+
+- `scripts/freeze_forecast.py` wrote `results/forecasts/yearend_2026.json` once (refuses to overwrite;
+  `forecast.create_frozen_forecast` opens the file in exclusive mode). It records the model version,
+  data as-of date, creation timestamp, git commit (the code commit made just before freezing) and a
+  SHA-256 of `src/data.py`, `src/features.py`, `src/forecast.py`, `src/stats_tools.py`.
+- `forecast.run` writes `results/forecasts/yearend_2026_score.json` only once the year-end values exist.
+  `tests/test_forecast.py` checks that a run leaves the frozen file byte for byte unchanged.
+
+## Dashboard
+
+- `app.py` routes over `chapters/1_story.py` ... `chapters/7_desk_note.py` (`ui.CHAPTERS`). Each page:
+  `ui.apply_theme()`, `ui.chapter_heading(...)`, `ui.question_box(key)` (answer from
+  `src/findings.py`), charts through `ui.show_chart` (title + source line), `ui.footer()` (data-check
+  status and "Educational project. Not investment advice.").
+- Pages read only `results/` through `ui.results()` / `ui.csv()` (cached on file modification times);
+  a missing results file shows a note, never an error. Chapter VII is built by `src/desk_note.py`
+  (pure; the downloadable Markdown note comes from `desk_note.markdown`).
+- `tests/test_app.py`: every chapter through the router, the missing-results case and the stale-data warning.
+
 ## Environment
 
 - Windows, virtual environment at `.venv` (Python 3.14).

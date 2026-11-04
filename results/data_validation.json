@@ -1,6 +1,6 @@
 {
  "as_of": "2026-11-03",
- "fetched_at": "2026-11-04 18:56:53",
+ "fetched_at": "2026-11-04 19:29:23",
  "counts": {
   "PASS": 9,
   "WARN": 0,
@@ -10,7 +10,7 @@
   {
    "name": "Calendar coverage",
    "status": "PASS",
-   "detail": "estr 100.0% of business days (longest gap 0); sofr 99.6% of business days (longest gap 1); tona 93.7% of business days (longest gap 6); dfr 100.0% of business days (longest gap 0); bund10_daily 99.2% of business days (longest gap 1). Japan uses a weekday calendar, so its national holidays count as gaps."
+   "detail": "estr 100.0% of business days (longest gap 0); sofr 99.6% of business days (longest gap 1); tona 96.7% of business days (longest gap 4); dfr 100.0% of business days (longest gap 0); bund10_daily 99.2% of business days (longest gap 1). The Japanese calendar omits moving holidays, so a few count as gaps."
   },
   {
    "name": "Ranges",

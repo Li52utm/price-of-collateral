@@ -262,3 +262,17 @@ Code: `src/desk_note.py`. "Would I advise a client to term out their year-end fu
   Baselines are unchanged (same fit). Term-vs-overnight rule unchanged (9 of 42 windows locked,
   USD 14.9k saved per 100m against always-overnight). Preview of the USD 31 Dec 2026 median:
   -1.8 bp -> +6.2 bp (EUR -6.8 -> -6.7 bp). The forecast was frozen only after this fix.
+
+- **2026-11-04, US calendar missed Good Friday (found by the independent audit, docs/AUDIT.md).** Wrong:
+  the USD business-day calendar was the US federal holiday calendar, which treats Good Friday as a
+  business day, but the bond market closes and SOFR is not published (no SOFR on any Good Friday
+  2018-2026). So Thursday 28 March 2024, the real quarter-end turn, was not flagged as a turn day
+  (Good Friday 29 March 2024 was), and publication lags spanning Good Friday were one day short. Fix:
+  `data.USRepoCalendar` = federal holidays + Good Friday. Before -> after (USD test period): turn days
+  45 -> 46; turn-day pinball loss baseline 2.016 -> 1.985, calendar 2.069 -> 2.071, state 1.501 -> 1.482;
+  state DM p on turns 0.043 -> 0.043; winner unchanged (state); mean quarter-end effect +5.39 -> +5.29 bp;
+  term rule 42 -> 43 windows, 9 locked, USD 14.9k saved vs overnight (unchanged), 36.3k -> 37.0k vs term.
+  EUR and JPY unchanged. **The frozen forecast was NOT regenerated** (it must never change): it was made
+  with the earlier calendar. For transparency, the corrected code would give USD 31 Dec 2026 q05/q50/q90/q95
+  of -5.65 / +6.19 / +31.58 / +31.76 bp against the frozen -5.64 / +6.21 / +31.68 / +31.76 (EUR identical).
+
