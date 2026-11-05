@@ -6,6 +6,9 @@ the downloadable version. The client rule is fixed in docs/METHODOLOGY.md, Phase
 
 from __future__ import annotations
 
+import json
+from pathlib import Path
+
 import pandas as pd
 
 import findings
@@ -202,3 +205,17 @@ def markdown(note: dict) -> str:
               "## Disclosures", "", *[f"- {x}" for x in note["disclosures"]], "",
               f"**{note['client']['question']} {note['client']['verdict']}.** {note['client']['sentence']}", ""]
     return "\n".join(lines)
+
+
+RULE_PATH = findings.RESULTS_DIR / "forecast" / "desk_note_rule.json"
+
+
+def run(path: Path = RULE_PATH) -> dict | None:
+    """Write the client rule's inputs and outcome (for the audit and the README); None without the inputs."""
+    note = build(findings.load_results())
+    if note is None:
+        return None
+    out = {"verdict": note["client"]["verdict"], "rule": note["rule"],
+           "recommendation": {c: note["recommendation"][c] for c in ("USD", "EUR")}}
+    path.write_text(json.dumps(out, indent=1), encoding="utf-8")
+    return out

@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parent.parent
 CHROME = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
 BASE = "http://localhost:8765"
 PAGES = {"1_story": "", "2_corridors": "corridors", "3_collateral": "collateral", "4_france": "france",
-         "5_calendar": "calendar", "6_japan": "japan", "7_desk_note": "desk-note"}
+         "5_calendar": "calendar", "6_japan": "japan", "7_desk_note": "desk-note", "8_appendix": "robustness"}
 WIDTH = 1280
 
 

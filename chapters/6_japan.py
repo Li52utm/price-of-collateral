@@ -52,9 +52,19 @@ rows = [{"Change": c["date"], "Size (bp)": round(c["change_bp"]), "New rate (%)"
 ui.table(pd.DataFrame(rows))
 
 ui.section_heading("iii", "Error-correction model")
+_hl = (ui.results().get("bootstrap") or {}).get("japan_half_life") or {}
+
+
+def hl_ci(label: str) -> str:
+    """Bootstrap interval of a sub-sample's half-life ('n/a' for the full sample, which was not bootstrapped)."""
+    key = {"Negative rates": "negative", "After the exit": "exit"}.get(label)
+    ci = _hl.get(key) if key else None
+    return f"{ci['lower']:.1f} to {ci['upper']:.1f}" if ci and ci.get("lower") is not None else "n/a"
+
 ecm = pd.DataFrame([{"Sample": label, "Days": e["n"], "Policy changes": e["n_changes"],
                      "Gap correction per day": round(e["gamma"], 4),
                      "Half-life of a gap (business days)": round(e["half_life_days"], 1),
+                     "95% CI (bootstrap)": hl_ci(label),
                      "Same-day pass-through": "n/a (no change in sample)" if e["beta"] is None else f"{e['beta']:.0%}",
                      "Mean gap (bp)": round(e["mean_gap_bp"], 1)}
                     for label, e in (("Since Feb 2016", j["ecm_full"]), ("Negative rates", j["ecm_negative"]),

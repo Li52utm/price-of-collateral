@@ -553,6 +553,14 @@ def term_out_line(currency: str, excess_bp: float, premium_bp: float | None, thr
                   f"nights), {above_or_below(excess_bp - hurdle)} {what}.")
 
 
+def term_freshness_sentence(term_date: str, age_bd: int, stale: bool, limit_bd: int) -> str:
+    """Always-shown status of the OFR term rate used for the term premium."""
+    state = ("stale, so the 1 bp hurdle replaces the premium" if stale else
+             "recent enough to use (the limit is " + str(limit_bd) + " business days)")
+    return (f"Term premium input: the latest published OFR term repo rate is from {pd_day(term_date)}, {age_bd} "
+            f"business day{'s' if age_bd != 1 else ''} before the data's as-of date: {state}.")
+
+
 def term_staleness_sentence(term_date: str | None, age_bd: int | None, stale: bool, limit_bd: int) -> str:
     """Empty when the term rate is fresh; otherwise says it is stale and that the hurdle replaced it."""
     if not stale or term_date is None:

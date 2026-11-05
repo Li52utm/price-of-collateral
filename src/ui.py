@@ -428,8 +428,8 @@ def validation_summary_line(rep: dict | None) -> str:
 def footer(lead: str = "Educational project. Not investment advice.") -> None:
     """The page footer: disclaimer, sources and the data-check status."""
     st.divider()
-    st.caption(f"{lead} Data: ECB Data Portal, Federal Reserve Bank of New York, FRED (St. Louis Fed), "
-               f"Bank of Japan. Source code: [GitHub]({REPO_URL}).")
+    st.caption(f"{lead} Data: ECB Data Portal, Banque de France, Deutsche Bundesbank, Federal Reserve Bank of New "
+               f"York, FRED (St. Louis Fed), OFR, US Treasury, Bank of Japan. Source code: [GitHub]({REPO_URL}).")
     st.caption(validation_summary_line(load_validation()))
 
 

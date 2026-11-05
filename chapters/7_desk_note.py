@@ -11,6 +11,7 @@ import streamlit as st  # noqa: E402
 
 import desk_note  # noqa: E402
 import ui  # noqa: E402
+import wording as w  # noqa: E402
 
 ui.apply_theme()
 ui.chapter_heading(**ui.CHAPTERS["desk_note"])
@@ -85,7 +86,7 @@ if turns is not None:
             fig.add_scatter(x=[2026.15, 2026.15], y=[f2["q05"], f2["q95"]], mode="lines",
                             name=f"{cur} v2 5-95% for 2026", line=dict(color=ui.CURRENCY_COLORS[cur], width=6,
                                                                        dash="dot"))
-    fig.update_xaxes(title="year-end", dtick=1)
+    fig.update_xaxes(title="year-end", dtick=1, range=[2017.5, 2026.6])
     fig.update_yaxes(title="spread to the policy rate on the year-end day (bp)")
     ui.show_chart(fig, "Every past year-end turn, and the 2026 ranges they support", height=360,
                   sources="New York Fed, FRED, ECB Data Portal")
@@ -97,6 +98,10 @@ for m in note["models"]:
 ui.section_heading("iii", "What the turn means for funding")
 for line in note["funding"]:
     ui.md(f"- {line}")
+ru = note["rule"]["USD"]
+if ru.get("term_date"):
+    ui.note(w.term_freshness_sentence(ru["term_date"], ru["term_age_bd"], ru["stale"], 20),
+            "warning" if ru["stale"] else "info")
 
 ui.section_heading("iv", "The France view")
 for line in note["france"]:

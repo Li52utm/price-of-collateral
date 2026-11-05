@@ -88,7 +88,55 @@ if pred is not None:
     fig.update_yaxes(title="SOFR minus IOR (bp)")
     ui.show_chart(fig, "USD test period: forecasts made 40 business days ahead against what happened", sources=SRC)
 
-ui.section_heading("iii", "Term or overnight across a turn?")
+ui.section_heading("iii", "Are the forecast ranges calibrated?")
+cal = ui.results().get("calibration") or {}
+if cal:
+    st.markdown("A well-calibrated 5-95% range contains the outcome on about 90% of days. The verdict uses an exact "
+                "binomial interval; since forecasts 40 days ahead overlap, the block-bootstrap interval is shown too.")
+    boot_f = (ui.results().get("bootstrap") or {}).get("forecast") or {}
+    for cur in ("USD", "EUR", "JPY"):
+        c = cal.get(cur)
+        if not c:
+            continue
+        label = next(m["label"] for m in fc["currencies"][cur]["models"] if m["model"] == c["model"])
+        b = boot_f.get(cur, {}).get("models", {}).get(c["model"], {}).get("ci_coverage", {})
+        extra = (f" Block-bootstrap interval: {b['lower']:.1%} to {b['upper']:.1%}." if b.get("lower") is not None
+                 else "")
+        ui.md("- " + w.calibration_sentence(cur, label, c["interval_coverage"], c["interval_lower"],
+                                            c["interval_upper"], c["verdict"], c["n"]) + extra)
+    fig = go.Figure()
+    for cur, symbol in (("USD", "circle"), ("EUR", "square"), ("JPY", "diamond")):
+        c = cal.get(cur)
+        if not c:
+            continue
+        qs = list(c["per_quantile"])
+        share = [c["per_quantile"][q]["share_below"] for q in qs]
+        fig.add_scatter(x=[f"{int(c['per_quantile'][q]['nominal'] * 100)}%" for q in qs], y=share, mode="markers",
+                        name=cur, marker=dict(color=ui.CURRENCY_COLORS[cur], size=10, symbol=symbol),
+                        error_y=dict(type="data", symmetric=False,
+                                     array=[c["per_quantile"][q]["upper"] - s for q, s in zip(qs, share, strict=True)],
+                                     arrayminus=[s - c["per_quantile"][q]["lower"] for q, s in
+                                                 zip(qs, share, strict=True)]))
+    fig.add_scatter(x=["5%", "50%", "90%", "95%"], y=[0.05, 0.5, 0.9, 0.95], mode="markers", name="nominal",
+                    marker=dict(color=ui.COLORS["ink"], symbol="line-ew-open", size=22))
+    fig.update_xaxes(type="category", title="forecast quantile")
+    fig.update_yaxes(title="share of test days below the forecast", range=[0, 1.02])
+    ui.show_chart(fig, "Coverage per quantile on the test period, with exact 95% intervals", height=320,
+                  sources="results/inference/calibration.json")
+    fig = go.Figure()
+    for cur in ("USD", "EUR", "JPY"):
+        c = cal.get(cur)
+        if c:
+            fig.add_bar(x=c["pit"]["bins"], y=c["pit"]["observed"], name=cur,
+                        marker=dict(color=ui.CURRENCY_COLORS[cur]))
+    first = next(iter(cal.values()))
+    fig.add_scatter(x=first["pit"]["bins"], y=first["pit"]["expected"], mode="markers", name="expected",
+                    marker=dict(color=ui.COLORS["ink"], symbol="line-ew-open", size=26))
+    fig.update_yaxes(title="share of test days")
+    ui.show_chart(fig, "Where outcomes fell relative to the forecast quantiles (PIT bins)", height=300,
+                  sources="results/inference/calibration.json")
+
+ui.section_heading("iv", "Term or overnight across a turn?")
 tvo = fc["term_vs_overnight"]["USD"]
 st.markdown("The rule: lock in two-week term funding seven business days before a month-end only when the "
             "forecast spike over the window exceeds today's term premium. Otherwise borrow overnight.")

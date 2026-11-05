@@ -107,3 +107,12 @@ def test_appendix_renders_with_robustness_and_tests(offline_app) -> None:
     for key, s in rob["summary"].items():
         assert f"**{key}.**" in text
         assert f"{s['holds']} of {s['n']}" in text or f"all {s['n']}" in text
+
+
+def test_desk_note_page_states_term_rate_freshness_and_v2(offline_app) -> None:
+    at = offline_app("chapters/7_desk_note.py")
+    assert not at.exception, [e.value for e in at.exception]
+    text = text_of(at)
+    assert "Term premium input: the latest published OFR term repo rate is from" in text
+    assert "v1 and v2 side by side" in text and "not a clean out-of-sample test" in text
+    assert "not separately identified" in text

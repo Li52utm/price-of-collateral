@@ -215,6 +215,8 @@ def boj_policy(long: pd.DataFrame | None = None) -> pd.Series:
 def usd_ior(long: pd.DataFrame | None = None) -> pd.Series:
     """Interest on reserves: IOER to 28 Jul 2021, IORB afterwards (the Fed renamed and merged the rate)."""
     ioer, iorb = raw("ioer", long), raw("iorb", long)
+    if iorb.empty:  # a view of the data before IORB existed (found by tests/test_point_in_time.py, U6)
+        return ioer.rename("usd_ior")
     return pd.concat([ioer[ioer.index < iorb.index.min()], iorb]).rename("usd_ior")
 
 

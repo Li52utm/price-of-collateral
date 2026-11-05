@@ -1,0 +1,23 @@
+{
+ "verdict": "No",
+ "rule": {
+  "USD": {
+   "excess_bp": -4.078571428571429,
+   "hurdle_bp": -2.0000000000000018,
+   "premium_bp": -2.0000000000000018,
+   "lock": false,
+   "stale": false,
+   "term_date": "2026-11-02",
+   "term_age_bd": 1
+  },
+  "EUR": {
+   "excess_bp": -0.04214285714285815,
+   "hurdle_bp": 1.0,
+   "lock": false
+  }
+ },
+ "recommendation": {
+  "USD": "Stay overnight",
+  "EUR": "Stay overnight"
+ }
+}

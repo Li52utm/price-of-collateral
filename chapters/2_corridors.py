@@ -75,6 +75,10 @@ for cur in ("USD", "EUR"):
     identified = ra.get("kink_identified", True)
     ui.md(w.reserves_sentence(cur, ra["winner"], ra["slope_per_unit"], ra["pressure_point"], ra["pressure_band"],
                               ra["latest_liq"], ra["label"], identified, ra.get("boot_edge_share")))
+    sl = ((ui.results().get("bootstrap") or {}).get("reserves_slope") or {}).get(cur)
+    if sl:
+        st.caption(f"Slope {sl['slope']:+.2f} bp per trillion, {w.ci_text(sl['lower'], sl['upper'], ' bp', 2)} "
+                   f"(moving-block bootstrap, blocks of {sl['block']} weeks, {sl['n_boot']} resamples).")
     if pairs is None or curve is None:
         continue
     fig = go.Figure()

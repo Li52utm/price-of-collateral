@@ -94,7 +94,7 @@ def fig_collateral(r: dict) -> str:
     fig, ax = plt.subplots(figsize=(7, 3.6))
     terms = ("credit", "liquidity", "de_holdings", "difference")
     labels = ("credit", "liquidity", "German holdings", "credit minus scarcity")
-    for k, (cty, offset, marker) in enumerate((("IT", -0.12, "o"), ("FR", 0.12, "s"))):
+    for cty, offset, marker in (("IT", -0.12, "o"), ("FR", 0.12, "s")):
         x = [i + offset for i in range(len(terms))]
         y = [cs[cty]["point"][t] for t in terms]
         lo = [y[i] - cs[cty][t]["lower"] for i, t in enumerate(terms)]
@@ -182,15 +182,13 @@ def load() -> dict:
 
 
 def build(r: dict) -> str:
-    fc, cor, col, fr, frd, jp = (r["forecast"], r["corridors"], r["collateral"], r["france"], r["france_daily"],
-                                 r["japan"])
+    fc, cor, col, fr, frd = r["forecast"], r["corridors"], r["collateral"], r["france"], r["france_daily"]
     boot, tests, cal, rob = r["bootstrap"], r["tests"]["tests"], r["calibration"], r["robustness"]
     note = desk_note.build(r)
     figs = {"corr": fig_corridors(), "res": fig_reserves(r), "col": fig_collateral(r), "fr": fig_france(),
             "cal": fig_calibration(r), "ye": fig_yearends(r)}
     ans = {k: findings.answer(k, r) for k in findings.QUESTIONS}
     as_of = w.pd_day(fc["data_as_of"])
-    usd, eur = fc["currencies"]["USD"], fc["currencies"]["EUR"]
     res_usd, res_eur = cor["reserves"]["USD"], cor["reserves"]["EUR"]
     sl = boot["reserves_slope"]
     rules = frd["rules"]
@@ -238,7 +236,7 @@ def build(r: dict) -> str:
         add(f"- **{q}** {a}.")
     add("")
     add("Uncertainty is reported as moving-block bootstrap intervals, every hypothesis test is corrected for "
-        f"multiple testing within its family (Holm), and each headline finding is re-derived under three to six "
+        "multiple testing within its family (Holm), and each headline finding is re-derived under three to six "
         "alternative specifications fixed in advance.")
     add("")
     add("## 1. Questions")
@@ -364,7 +362,8 @@ def build(r: dict) -> str:
     add("")
     add(f"![France daily]({figs['fr']})")
     add("")
-    add(w.survival_sentence(surv["n_episodes"], surv["n_countries"], surv["median_months"], surv["at"]["12"]["survival"],
+    add(w.survival_sentence(surv["n_episodes"], surv["n_countries"], surv["median_months"],
+                            surv["at"]["12"]["survival"],
                             surv["at"]["12"]["lower"], surv["at"]["12"]["upper"], fr["threshold_bp"]))
     add(" " + w.gradual_base_rate_sentence(gp["n_episodes"], gp["n_countries"], gp["median_months"],
                                            gp["at"]["12"]["survival"]))
@@ -456,7 +455,8 @@ def build(r: dict) -> str:
     add("")
     add(f"![Year-ends]({figs['ye']})")
     add("")
-    add(f"**Client verdict.** {note['client']['question']} **{note['client']['verdict']}.** {note['client']['sentence']}")
+    add(f"**Client verdict.** {note['client']['question']} **{note['client']['verdict']}.** "
+        f"{note['client']['sentence']}")
     add("")
     for line in note["recommendation"]["lines"]:
         add(f"- {line}")
@@ -488,7 +488,8 @@ def build(r: dict) -> str:
         "France Trésor (events).")
     add("")
     for ref in (
-        "Chow, G. C. (1960). Tests of equality between sets of coefficients in two linear regressions. Econometrica 28(3).",
+        "Chow, G. C. (1960). Tests of equality between sets of coefficients in two linear regressions. Econometrica "
+        "28(3).",
         "Clopper, C. J. and Pearson, E. S. (1934). The use of confidence or fiducial limits illustrated in the case of "
         "the binomial. Biometrika 26(4).",
         "Diebold, F. X., Gunther, T. A. and Tay, A. S. (1998). Evaluating density forecasts with applications to "
@@ -531,7 +532,8 @@ def word_count(text: str) -> int:
 def main() -> None:
     text = build(load())
     NOTE.write_text(text, encoding="utf-8")
-    print(f"Wrote {NOTE.relative_to(ROOT)}: {word_count(text)} words (body), {len(list(FIG_DIR.glob('*.png')))} figures")
+    n_figs = len(list(FIG_DIR.glob("*.png")))
+    print(f"Wrote {NOTE.relative_to(ROOT)}: {word_count(text)} words (body), {n_figs} figures")
 
 
 if __name__ == "__main__":

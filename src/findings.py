@@ -21,7 +21,8 @@ SUMMARIES = {"forecast": "forecast/summary.json", "corridors": "corridors/summar
              "tails": "forecast/tail_diagnosis.json", "france_daily": "france/daily_summary.json",
              "bootstrap": "inference/bootstrap.json", "tests": "inference/tests.json",
              "calibration": "inference/calibration.json", "frozen_v2": "forecasts/yearend_2026_v2.json",
-             "v2": "forecast/v2_summary.json", "score_v2": "forecasts/yearend_2026_v2_score.json"}
+             "v2": "forecast/v2_summary.json", "score_v2": "forecasts/yearend_2026_v2_score.json",
+             "robustness": "robustness/table.json"}
 
 QUESTIONS = {
     "story": "What is repo, and why does the bond you hand over matter?",
@@ -187,5 +188,7 @@ def readme_findings(results_dir: Path = RESULTS_DIR) -> list[str]:
     lines = []
     for key in ("corridors", "collateral", "france", "calendar", "japan", "desk_note"):
         q, a, e = answer(key, r)
-        lines.append(f"**{q}** {a}. {e}")
+        badges = [f"{w.robustness_badge_text(s['holds'], s['n'], s['not_computable'])} ({k})"
+                  for k, s in ((r.get("robustness") or {}).get("summary") or {}).items() if s["chapter"] == key]
+        lines.append(f"**{q}** {a}. {e}" + (f" *{'; '.join(badges)}.*" if badges else ""))
     return lines

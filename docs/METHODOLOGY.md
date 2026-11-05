@@ -611,3 +611,8 @@ the challenger shown beside it.
   daily France input at or before t unchanged (the ECB maintenance calendar is treated as known in advance).
   Coverage of src/ excluding ui.py: 92%. Ruff clean; every public function in src/ has type hints and a
   docstring.
+- **2026-11-05, U8: point-in-time fix found by the property test.** `data.usd_ior` returned an empty series
+  when IORB had no observations yet (a view of the data before 29 July 2021): the cut-off `ioer < NaT`
+  dropped every IOER row. It now falls back to IOER. No committed result changed (IORB exists in the
+  snapshot); the hypothesis test that perturbs or deletes data after a random date now passes for every
+  date drawn. Independent audit re-run: 19 of 19 checks match (docs/AUDIT.md).
