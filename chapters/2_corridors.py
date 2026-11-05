@@ -42,7 +42,8 @@ for cur in ("EUR", "USD", "JPY"):
     fig.add_scatter(x=frame.index, y=frame["ceiling"], name=ceiling, line=ui.ref_line(ui.COLORS["slate"], "dot"))
     fig.add_scatter(x=frame.index, y=frame["floor"], name=floor, line=ui.ref_line(ui.COLORS["slate"]))
     if cur == "USD":
-        fig.add_scatter(x=frame.index, y=frame["ior"], name="Interest on reserves", line=ui.ref_line(ui.COLORS["ink"], "dash"))
+        fig.add_scatter(x=frame.index, y=frame["ior"], name="Interest on reserves", line=ui.ref_line(ui.COLORS["ink"],
+                                                                                                     "dash"))
     fig.add_scatter(x=frame.index, y=frame["market"], name=market, line=dict(color=ui.CURRENCY_COLORS[cur], width=1.5))
     ui.shade_periods(fig, c["regimes"][cur], ("negative rates", "zero lower bound"))
     fig.update_yaxes(title="percent")
@@ -63,12 +64,14 @@ if probs is not None:
         fig.add_scatter(x=s.index, y=s, name=NAMES[cur][1], line=dict(color=ui.CURRENCY_COLORS[cur], width=1))
     fig.add_vline(x="2023-01-01", line=ui.ref_line(dash="dash"))
     fig.update_yaxes(title="probability of the volatile regime", range=[0, 1])
-    ui.show_chart(fig, "Filtered probability of the volatile regime (test period starts at the dashed line)", height=320)
+    ui.show_chart(fig, "Filtered probability of the volatile regime (test period starts at the dashed line)",
+                  height=320)
 
 ui.section_heading("iii", "What happens as balance sheets shrink")
 for cur in ("USD", "EUR"):
     ra = c["reserves"][cur]
-    pairs, curve = ui.csv(f"corridors/reserves_pairs_{cur}.csv"), ui.csv(f"corridors/reserves_curve_{cur}.csv", None, False)
+    pairs, curve = ui.csv(f"corridors/reserves_pairs_{cur}.csv"), ui.csv(f"corridors/reserves_curve_{cur}.csv", None,
+                                                                         False)
     identified = ra.get("kink_identified", True)
     ui.md(w.reserves_sentence(cur, ra["winner"], ra["slope_per_unit"], ra["pressure_point"], ra["pressure_band"],
                               ra["latest_liq"], ra["label"], identified, ra.get("boot_edge_share")))
@@ -90,13 +93,15 @@ for cur in ("USD", "EUR"):
     fig.update_yaxes(title="spread to policy rate, next week (bp)")
     if cur == "USD":
         fig.update_yaxes(range=[-25, 40])
-    ui.show_chart(fig, f"{cur}: liquidity against the overnight spread" + (" (band: 95% bootstrap range of the kink)" if identified
+    ui.show_chart(fig, f"{cur}: liquidity against the overnight spread" + (" (band: 95% bootstrap range of the "
+                                                                           "kink)" if identified
                                                              else " (kink not identified, no band shown)"), height=360)
 
 ui.section_heading("iv", "Three episodes")
 for case in c["cases"]:
     ui.md("- " + w.case_sentence(case["case"], case["currency"], case["peak_bp"], case["peak_date"], case["before_bp"]))
 cases = pd.DataFrame(c["cases"])[["case", "currency", "peak_bp", "peak_date", "before_bp", "liquidity"]]
-cases.columns = ["Episode", "Currency", "Peak spread (bp)", "Peak date", "Two weeks before (bp)", "Liquidity at start (tn)"]
+cases.columns = ["Episode", "Currency", "Peak spread (bp)", "Peak date", "Two weeks before (bp)", "Liquidity at start "
+                                                                                                  "(tn)"]
 ui.table(cases.round(2))
 ui.footer()

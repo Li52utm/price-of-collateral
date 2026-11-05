@@ -135,7 +135,7 @@ def fit_markov(y: pd.Series) -> dict:
         filtered = full.filter(params)
     # Parameter order: p[0->0], p[1->0], const0, const1, sigma2_0, sigma2_1
     names = full.param_names
-    p = dict(zip(names, params))
+    p = dict(zip(names, params, strict=False))
     var = [p["sigma2[0]"], p["sigma2[1]"]]
     stressed = int(np.argmax(var))
     probs = pd.Series(filtered.filtered_marginal_probabilities[:, stressed], index=y.index)
@@ -174,11 +174,13 @@ def weekly_pairs(currency: str, long: pd.DataFrame | None = None) -> pd.DataFram
 
 
 def fit_linear(x: np.ndarray, y: np.ndarray) -> dict:
+    """Least-squares line spread = a + b x (params [a, b])."""
     b, a = np.polyfit(x, y, 1)
     return {"kind": "linear", "params": [float(a), float(b)]}
 
 
 def predict_linear(m: dict, x: np.ndarray) -> np.ndarray:
+    """Fitted spread of a linear model at x."""
     a, b = m["params"]
     return a + b * x
 
@@ -210,11 +212,12 @@ def at_grid_edge(kink: float, x: np.ndarray) -> bool:
 
 
 def predict_piecewise(m: dict, x: np.ndarray) -> np.ndarray:
+    """Fitted spread of a one-kink piecewise model at x."""
     a, b, c = m["params"]
     return a + b * x + c * np.maximum(m["kink"] - x, 0)
 
 
-def _logistic(x, low, high, mid, scale):
+def _logistic(x: np.ndarray, low: float, high: float, mid: float, scale: float) -> np.ndarray:
     return low + (high - low) / (1 + np.exp((x - mid) / scale))
 
 
@@ -230,6 +233,7 @@ def fit_logistic(x: np.ndarray, y: np.ndarray) -> dict:
 
 
 def predict_logistic(m: dict, x: np.ndarray) -> np.ndarray:
+    """Fitted spread of the S-shaped model at x."""
     return _logistic(x, *m["params"])
 
 
@@ -251,6 +255,10 @@ def pressure_point(m: dict) -> float:
 
 
 def reserves_analysis(currency: str, long: pd.DataFrame | None = None) -> dict:
+    """Linear, piecewise and logistic fits chosen out of sample, the slope and the kink.
+
+    The kink comes with its bootstrap band and the U0 identification check.
+    """
     pairs = weekly_pairs(currency, long)
     train = pairs[pairs.index <= TRAIN_END]
     test = pairs[pairs.index >= TEST_START]
@@ -299,6 +307,7 @@ def reserves_analysis(currency: str, long: pd.DataFrame | None = None) -> dict:
 # Case studies
 # --------------------------------------------------------------------------- #
 def case_studies(long: pd.DataFrame | None = None) -> list[dict]:
+    """Peak spread, its date and the pre-window level for each fixed episode and currency."""
     out = []
     for name, (start, end) in CASES.items():
         for currency in ("USD", "EUR", "JPY"):
@@ -320,7 +329,7 @@ def case_studies(long: pd.DataFrame | None = None) -> list[dict]:
     return out
 
 
-def _clean(obj):
+def _clean(obj: object) -> object:
     if isinstance(obj, dict):
         return {str(k): _clean(v) for k, v in obj.items() if not isinstance(v, (pd.DataFrame, pd.Series))}
     if isinstance(obj, list):
@@ -335,6 +344,7 @@ def _clean(obj):
 
 
 def run(long: pd.DataFrame | None = None, out_dir: Path = OUT_DIR) -> dict:
+    """Write results/corridors/ (corridor frames, regimes, Markov probabilities, reserves curves, summary)."""
     out_dir.mkdir(parents=True, exist_ok=True)
     summary = {"data_as_of": str(data.as_of(long).date()), "regimes": {}, "markov": {}, "reserves": {}}
     probs = {}
@@ -358,5 +368,6 @@ def run(long: pd.DataFrame | None = None, out_dir: Path = OUT_DIR) -> dict:
 
 
 def load_summary(out_dir: Path = OUT_DIR) -> dict | None:
+    """The saved chapter II summary, or None if it has not been written."""
     path = out_dir / "summary.json"
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None

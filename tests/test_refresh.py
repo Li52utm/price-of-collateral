@@ -10,8 +10,9 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
 
-import pipeline  # noqa: E402
 import refresh_snapshots  # noqa: E402
+
+import pipeline  # noqa: E402
 from validation import demo_long  # noqa: E402
 
 

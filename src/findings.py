@@ -25,17 +25,20 @@ SUMMARIES = {"forecast": "forecast/summary.json", "corridors": "corridors/summar
 
 QUESTIONS = {
     "story": "What is repo, and why does the bond you hand over matter?",
-    "corridors": "Do the ECB, the Fed and the BoJ keep overnight rates where they want them, and what happens as balance sheets shrink?",
+    "corridors": "Do the ECB, the Fed and the BoJ keep overnight rates where they want them, and what happens as "
+                 "balance sheets shrink?",
     "collateral": "Is the extra repo cost of Italian and French collateral about credit risk or scarcity?",
     "france": "Will French OATs bounce back, and what would it take?",
     "calendar": "Why do euro year-ends behave differently from dollar year-ends, and can funding spikes be forecast?",
     "japan": "Does Japanese overnight pricing follow the BoJ out of negative rates?",
     "desk_note": "Would I advise a client to term out their year-end funding?",
 }
-NOT_AVAILABLE = ("Not available yet", "The results file for this chapter is missing; run scripts/run_all.py to create it.")
+NOT_AVAILABLE = ("Not available yet", "The results file for this chapter is missing; run scripts/run_all.py to create "
+                                      "it.")
 
 
 def load_results(results_dir: Path = RESULTS_DIR) -> dict:
+    """Every chapter summary under results/ (None where a file is missing)."""
     out = {}
     for key, rel in SUMMARIES.items():
         path = results_dir / rel
@@ -63,6 +66,7 @@ def collateral_verdict(r: dict, country: str) -> str:
 # Per chapter
 # --------------------------------------------------------------------------- #
 def story_answer(r: dict) -> tuple[str, str]:
+    """Chapter I answer: what repo is and what the collateral premium has been."""
     col, fr = r.get("collateral"), r.get("france")
     if not col or not fr:
         return NOT_AVAILABLE
@@ -72,12 +76,14 @@ def story_answer(r: dict) -> tuple[str, str]:
 
 
 def corridors_answer(r: dict) -> tuple[str, str]:
+    """Chapter II answer: how tightly each corridor held and the reserves slope."""
     c = r.get("corridors")
     ci = ((r.get("bootstrap") or {}).get("reserves_slope") or {}).get("USD")
     return w.corridors_answer(c["stats"], c["reserves"], ci) if c else NOT_AVAILABLE
 
 
 def collateral_answer(r: dict) -> tuple[str, str]:
+    """Chapter III answer: credit or scarcity, after Holm and the 'too close to call' rule."""
     c = r.get("collateral")
     if not c:
         return NOT_AVAILABLE
@@ -91,6 +97,7 @@ def collateral_answer(r: dict) -> tuple[str, str]:
 
 
 def france_answer(r: dict) -> tuple[str, str]:
+    """Chapter IV answer: France's episode status (daily rule) and recovery conditions."""
     f = r.get("france")
     if not f:
         return NOT_AVAILABLE
@@ -127,6 +134,7 @@ def model_winner(fc: dict, currency: str) -> tuple[bool, float | None]:
 
 
 def calendar_answer(r: dict) -> tuple[str, str]:
+    """Chapter V answer: whether the models beat the baseline (Holm-adjusted) and calibration."""
     fc = r.get("forecast")
     if not fc:
         return NOT_AVAILABLE
@@ -139,6 +147,7 @@ def calendar_answer(r: dict) -> tuple[str, str]:
 
 
 def japan_answer(r: dict) -> tuple[str, str]:
+    """Chapter VI answer: same-day pass-through and the half-lives with their intervals."""
     j = r.get("japan")
     if not j:
         return NOT_AVAILABLE
@@ -150,6 +159,7 @@ def japan_answer(r: dict) -> tuple[str, str]:
 
 
 def desk_note_answer(r: dict) -> tuple[str, str]:
+    """Chapter VII answer: the client verdict from the desk note rule."""
     import desk_note
     note = desk_note.build(r)
     if note is None:
@@ -172,6 +182,7 @@ def answer(key: str, r: dict) -> tuple[str, str, str]:
 
 
 def readme_findings(results_dir: Path = RESULTS_DIR) -> list[str]:
+    """One generated line per chapter for the README auto-block."""
     r = load_results(results_dir)
     lines = []
     for key in ("corridors", "collateral", "france", "calendar", "japan", "desk_note"):

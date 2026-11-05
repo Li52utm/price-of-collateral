@@ -25,13 +25,15 @@ EVENTS = [
     {"date": "2024-06-09", "kind": "political", "event": "President Macron dissolves the National Assembly",
      "sources": [
          _src("CNBC", "https://www.cnbc.com/2024/06/09/french-president-macron-calls-for-snap-election-after-heavy-"
-                      "defeat-in-eu-vote-.html", "France's Macron calls for snap election after losing big to the far right in EU vote"),
+                      "defeat-in-eu-vote-.html", "France's Macron calls for snap election after losing big to the far "
+                                                 "right in EU vote"),
          _src("Bloomberg", "https://www.bloomberg.com/news/articles/2024-06-18/macron-says-snap-election-was-needed-to-"
                            "avoid-chaos-in-france", "Macron Says Snap Election Was Needed to Avoid Chaos")]},
     {"date": "2024-10-25", "kind": "rating", "event": "Moody's moves France's Aa2 outlook to negative",
      "sources": [
          _src("Bloomberg", "https://www.bloomberg.com/news/articles/2024-10-25/france-rating-outlook-cut-to-negative-by-"
-                           "moody-s-on-deficit-woes", "France's Credit Rating Put on Negative Outlook by Moody's on Deficit Woes"),
+                           "moody-s-on-deficit-woes", "France's Credit Rating Put on Negative Outlook by Moody's on "
+                                                      "Deficit Woes"),
          _src("CNBC", "https://www.cnbc.com/video/2024/10/28/moodys-downgrades-frances-outlook.html",
               "Moody's downgrades France's outlook")]},
     {"date": "2024-12-04", "kind": "political",
@@ -51,7 +53,8 @@ EVENTS = [
     {"date": "2025-09-08", "kind": "political",
      "event": "The National Assembly refuses its confidence to the Bayrou government (article 49, paragraph 1)",
      "sources": [
-         _src("Assemblée nationale", AN + "2e-session-extraordinaire-de-2024-2025/seance-du-lundi-08-septembre-2025.pdf",
+         _src("Assemblée nationale",
+              AN + "2e-session-extraordinaire-de-2024-2025/seance-du-lundi-08-septembre-2025.pdf",
               "Compte rendu intégral, séance du lundi 8 septembre 2025", "fetched (HTTP 200)", "2026-11-04"),
          _src("CNBC", "https://www.cnbc.com/2025/09/08/french-prime-minister-francois-bayrou-ousted-in-confidence-vote.html",
               "French prime minister Francois Bayrou ousted in confidence vote")]},
@@ -66,11 +69,13 @@ EVENTS = [
          _src("CNBC", "https://www.cnbc.com/2025/10/06/frances-new-pm-resigns-as-political-chaos-continues.html",
               "French PM resigns after 27 days, sparking fresh political chaos"),
          _src("Bloomberg", "https://www.bloomberg.com/news/articles/2025-10-06/french-prime-minister-lecornu-has-"
-                           "resigned-after-cabinet-panned", "French Premier Lecornu Resigns After Cabinet Criticized")]},
+                           "resigned-after-cabinet-panned", "French Premier Lecornu Resigns After Cabinet "
+                                                            "Criticized")]},
     {"date": "2025-10-17", "kind": "rating", "event": "S&P downgrades France to A+ (Friday evening, unscheduled)",
      "sources": [
          _src("Bloomberg", "https://www.bloomberg.com/news/articles/2025-10-17/france-s-gets-debt-warning-as-s-p-"
-                           "downgrades-in-unscheduled-move", "France Gets Debt Warning as S&P Downgrades in Unscheduled Move"),
+                           "downgrades-in-unscheduled-move", "France Gets Debt Warning as S&P Downgrades in "
+                                                             "Unscheduled Move"),
          _src("CNBC", "https://www.cnbc.com/video/2025/10/20/sp-downgrades-france-as-political-uncertainty-takes-its-"
                       "toll.html", "S&P downgrades France as political uncertainty takes its toll")]},
     {"date": "2025-10-24", "kind": "rating", "event": "Moody's moves France's Aa3 outlook to negative",
@@ -85,7 +90,8 @@ EVENTS = [
          _src("CNBC", "https://www.cnbc.com/2026/10/23/moodys-holds-steady-on-frances-credit-rating-as-country-"
                       "grapples-with-turmoil-and-higher-yields.html", "Moody's holds steady on France's credit rating"),
          _src("Bloomberg", "https://www.bloomberg.com/news/articles/2026-10-23/france-avoids-moody-s-downgrade-in-"
-                           "reprieve-after-week-of-crisis", "France Avoids Moody's Downgrade in Reprieve After Week of Crisis")]},
+                           "reprieve-after-week-of-crisis", "France Avoids Moody's Downgrade in Reprieve After Week of "
+                                                            "Crisis")]},
     {"date": "2026-10-30", "kind": "rating", "event": "Fitch moves France's A+ outlook to negative (unscheduled)",
      "sources": [
          _src("Bloomberg", "https://www.bloomberg.com/news/articles/2026-10-30/france-gets-budget-warning-as-fitch-turns-"
@@ -98,7 +104,8 @@ EVENTS = [
 
 EXCLUDED = [
     {"date": "2024-05-31", "event": "S&P downgrades France to AA-",
-     "reason": "only one listed source reachable (Bloomberg, 31 May 2024); other confirming outlets are not on the list"},
+     "reason": "only one listed source reachable (Bloomberg, 31 May 2024); other confirming outlets are not on the "
+               "list"},
     {"date": "2024-10-11", "event": "Fitch moves France's AA- outlook to negative",
      "reason": "only one listed source reachable (Bloomberg, 11 Oct 2024); fitchratings.com refuses the search tool"},
     {"date": "2025-02-28", "event": "S&P moves France's AA- outlook to negative",

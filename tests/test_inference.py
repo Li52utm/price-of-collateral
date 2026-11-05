@@ -93,7 +93,7 @@ def test_calibration_verdict_rule(lo: float, hi: float, verdict: str) -> None:
 
 
 def test_calibration_on_real_results(r: dict) -> None:
-    for c, cal in r["calibration"].items():
+    for _c, cal in r["calibration"].items():
         lo, hi = cal["interval_lower"], cal["interval_upper"]
         expected = "well calibrated" if lo <= 0.9 <= hi else "too narrow" if hi < 0.9 else "too wide"
         assert cal["verdict"] == expected

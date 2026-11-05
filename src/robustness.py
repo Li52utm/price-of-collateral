@@ -47,12 +47,14 @@ def _row(finding: str, spec: str, holds: bool | None, value: str) -> dict:
 # R1 and R2: the calendar
 # --------------------------------------------------------------------------- #
 def beats_baseline(ev: dict) -> tuple[bool, str]:
+    """Whether a regression has a lower turn-day pinball loss than the baseline, and the numbers."""
     rows = {m["model"]: m["pinball_turn"] for m in ev["models"]}
     best = min(rows["calendar"], rows["state"])
     return best < rows["baseline"], f"{ev['currency']} best {best:.2f} vs baseline {rows['baseline']:.2f}"
 
 
 def r1(long: pd.DataFrame | None = None) -> list[dict]:
+    """R1 alternatives: horizon, train end, and the March 2023 exclusion."""
     specs = {"horizon 20 business days": {"horizon": 20}, "horizon 60 business days": {"horizon": 60},
              "train end 2021 (test 2022 on)": {"train_end": pd.Timestamp("2021-12-31"),
                                                "test_start": pd.Timestamp("2022-01-01")},
@@ -67,13 +69,15 @@ def r1(long: pd.DataFrame | None = None) -> list[dict]:
 
 
 def r2(long: pd.DataFrame | None = None) -> list[dict]:
+    """R2 alternatives: lookback length, median, and dropping the first year-end."""
     def stat(effects: pd.DataFrame, how: str = "mean", drop_first: bool = False) -> float:
         ye = effects[effects["type"] == "ye"]["effect"]
         ye = ye.iloc[1:] if drop_first else ye
         return float(ye.median() if how == "median" else ye.mean())
 
     out = []
-    for name, kw in {"lookback 5 business days": dict(lookback=5), "lookback 20 business days": dict(lookback=20)}.items():
+    for name, kw in {"lookback 5 business days": dict(lookback=5),
+                     "lookback 20 business days": dict(lookback=20)}.items():
         u, e = stat(fc.turn_effects("USD", long, **kw)), stat(fc.turn_effects("EUR", long, **kw))
         out.append(_row("R2", name, u > 0 > e, f"USD {u:+.1f} bp, EUR {e:+.1f} bp"))
     base = {c: fc.turn_effects(c, long) for c in ("USD", "EUR")}
@@ -103,6 +107,7 @@ def pairs_ahead(weeks_ahead: int, long: pd.DataFrame | None = None) -> pd.DataFr
 
 
 def r3(long: pd.DataFrame | None = None) -> list[dict]:
+    """R3 alternatives: block lengths, sub-samples and the two-week-ahead spread."""
     pairs = pd.read_csv(ROOT / "results" / "corridors" / "reserves_pairs_USD.csv", index_col=0, parse_dates=True)
     specs = {"bootstrap block 4 weeks": (pairs, 4), "bootstrap block 16 weeks": (pairs, 16),
              "train weeks only (to 2022)": (pairs.loc[:"2022-12-31"], 8),
@@ -132,6 +137,7 @@ def final_verdicts(panel: pd.DataFrame, block: int = inference.BLOCK_PERIODS,
 
 
 def r4(long: pd.DataFrame | None = None) -> list[dict]:
+    """R4 alternatives: MMSR tenor and side, block lengths, Newey-West lags."""
     base_panel = collateral.period_panel(long)
     baseline = final_verdicts(base_panel)
     specs = {"MMSR overnight instead of spot-next": (collateral.period_panel(long, tenor="MA"), {}),
@@ -150,12 +156,14 @@ def r4(long: pd.DataFrame | None = None) -> list[dict]:
 # R5 and R6: France
 # --------------------------------------------------------------------------- #
 def daily_in_episode(frame: pd.DataFrame, threshold: float) -> tuple[bool, str]:
+    """Whether the daily rule finds France in an episode at the last day, and since when."""
     eps = fd.find_episodes(frame["smoothed"], frame["baseline"], threshold, 1, pd.Timestamp("2008-01-01"))
     s = fd.status(eps, frame.index[-1], fd.BD_PER_MONTH)
     return s["in_episode"], (f"in an episode since {s['start']}" if s["in_episode"] else "not in an episode")
 
 
 def r5(long: pd.DataFrame | None = None) -> list[dict]:
+    """R5 alternatives: thresholds, smoothing, baseline window and the monthly rule."""
     base = fd.daily_frame(long)
     specs = {"threshold 20 bp": (base, 20.0), "threshold 50 bp": (base, 50.0),
              "no smoothing (1 day)": (fd.daily_frame(long, smooth=1), 30.0),
@@ -171,6 +179,7 @@ def r5(long: pd.DataFrame | None = None) -> list[dict]:
 
 
 def r6(long: pd.DataFrame | None = None) -> list[dict]:
+    """R6 alternatives: fit windows, regressors and the start of the cumulation."""
     spreads = collateral.monthly_spreads(long)
     specs = {"fit window 2015-2023": dict(fit_window=("2015-01-01", "2023-12-01")),
              "fit window 2010-2019": dict(fit_window=("2010-01-01", "2019-12-01")),
@@ -188,6 +197,7 @@ def r6(long: pd.DataFrame | None = None) -> list[dict]:
 # R7: Japan
 # --------------------------------------------------------------------------- #
 def r7() -> list[dict]:
+    """R7 alternatives: sample starts, no same-day term, and block lengths."""
     daily = pd.read_csv(ROOT / "results" / "japan" / "japan_daily.csv", index_col=0, parse_dates=True)
     neg, ex = inference.JAPAN_SAMPLES["negative"], inference.JAPAN_SAMPLES["exit"]
     specs = {"exit sample from 1 Aug 2024": ({"negative": neg, "exit": ("2024-08-01", None)}, {}),
@@ -225,6 +235,7 @@ def excess(fcast: dict, start_bd: int = desk_note.WINDOW_START_BD, nights: bool 
 
 
 def r8() -> list[dict]:
+    """R8 alternatives: weights, window start and the euro hurdle."""
     frozen = fc.load_frozen()
     tvo = json.loads((ROOT / "results" / "forecast" / "summary.json").read_text(encoding="utf-8"))[
         "term_vs_overnight"]["USD"]

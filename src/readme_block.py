@@ -25,6 +25,7 @@ def replace_auto_block(text: str, block: str) -> str:
 
 
 def current_block(text: str) -> str:
+    """The text between the README auto-block markers."""
     match = re.search(re.escape(START) + r"\n?(.*?)\n?" + re.escape(END), text, flags=re.S)
     return match.group(1) if match else ""
 

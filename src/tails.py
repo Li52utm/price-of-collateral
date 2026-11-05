@@ -39,7 +39,7 @@ def diagnose(currency: str, model_name: str = "state", long: pd.DataFrame | None
     for tau in (0.9, 0.95):
         resid = y.to_numpy() - D @ model["params"][tau].to_numpy()
         ye_resid = resid[ye]
-        pinned[tau] = [str(d.date()) for d, r in zip(X.index[ye], ye_resid) if abs(r) < ZERO_TOL]
+        pinned[tau] = [str(d.date()) for d, r in zip(X.index[ye], ye_resid, strict=False) if abs(r) < ZERO_TOL]
         above[tau] = int((ye_resid > ZERO_TOL).sum())
     n_ye = int(ye.sum())
     return {

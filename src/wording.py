@@ -12,10 +12,12 @@ from __future__ import annotations
 # Small building blocks
 # --------------------------------------------------------------------------- #
 def above_or_below(x: float) -> str:
+    """'above', 'below' or 'at' for the sign of x."""
     return "above" if x > 0 else "below" if x < 0 else "at"
 
 
 def wider_or_narrower(x: float) -> str:
+    """'wider', 'narrower' or 'unchanged' for the sign of x."""
     return "wider" if x > 0 else "narrower" if x < 0 else "unchanged"
 
 
@@ -25,6 +27,7 @@ def more_or_less(x: float) -> str:
 
 
 def rose_or_fell(x: float) -> str:
+    """'rose', 'fell' or 'was unchanged' for the sign of x."""
     return "rose" if x > 0 else "fell" if x < 0 else "was unchanged"
 
 
@@ -34,6 +37,7 @@ def bp(x: float, decimals: int = 1) -> str:
 
 
 def signed_bp(x: float, decimals: int = 1) -> str:
+    """x with its sign in basis points, e.g. '+3.2 bp'."""
     return f"{x:+.{decimals}f} bp"
 
 
@@ -175,8 +179,10 @@ MARKET_NAMES = {"EUR": "€STR", "USD": "SOFR", "JPY": "TONA"}
 
 def corridor_sentence(currency: str, inside_share: float, below_share: float, median_bp: float, iqr_bp: float,
                       start: str) -> str:
+    """How often the market rate stayed inside the corridor and how tightly over the past year."""
     tight = "tightly" if iqr_bp <= 3 else "loosely"
-    where = (f"{MARKET_NAMES[currency]} stayed inside {CURRENCY_NAMES[currency]}'s corridor on {inside_share:.1%} of days"
+    where = (f"{MARKET_NAMES[currency]} stayed inside {CURRENCY_NAMES[currency]}'s corridor on {inside_share:.1%} of "
+             "days"
              if below_share < 0.5 else
              f"{MARKET_NAMES[currency]} traded below {CURRENCY_NAMES[currency]}'s floor on {below_share:.1%} of days, "
              "as expected in a floor system: its lenders include institutions that cannot deposit at the central "
@@ -187,6 +193,7 @@ def corridor_sentence(currency: str, inside_share: float, below_share: float, me
 
 def markov_sentence(currency: str, calm_mean: float, stressed_mean: float, stressed_sd: float, calm_sd: float,
                     test_ll: float, normal_ll: float, share_test: float) -> str:
+    """The two Markov regimes and whether the model travels out of sample."""
     better = test_ll > normal_ll
     fit = ("fitted the test period better than a single normal distribution" if better
            else "fitted the test period worse than a single normal distribution, so it does not travel out of sample")
@@ -208,7 +215,8 @@ def reserves_sentence(currency: str, winner: str, slope: float, point: float, ba
     if point != point:
         return head
     if not identified:
-        share = f" ({edge_share:.0%} of bootstrap estimates sit at the edge of the search range)"             if edge_share is not None else ""
+        share = (f" ({edge_share:.0%} of bootstrap estimates sit at the edge of the search range)"
+                 if edge_share is not None else "")
         return (f"{head} The point where pressure starts is not identified: the estimated kink lies at the edge of "
                 f"the range searched{share}, so the data cannot place it.")
     where = ("below" if latest < band[0] else "inside" if latest <= band[1] else "above")
@@ -218,12 +226,14 @@ def reserves_sentence(currency: str, winner: str, slope: float, point: float, ba
 
 
 def case_sentence(case: str, currency: str, peak: float, peak_date: str, before: float) -> str:
+    """Peak of an episode against the level of the two weeks before."""
     jump = peak - before
     return (f"{case}: {MARKET_NAMES[currency]} peaked at {signed_bp(peak)} against the policy rate on "
             f"{pd_day(peak_date)}, {bp(jump)} {'above' if jump > 0 else 'below'} its level in the two weeks before.")
 
 
 def pd_day(iso: str) -> str:
+    """An ISO date as '3 November 2026'."""
     import pandas as pd
     ts = pd.Timestamp(iso)
     return f"{ts.day} {ts:%B %Y}"
@@ -239,8 +249,10 @@ def corridors_answer(stats: dict, reserves: dict, slope_ci: dict | None = None) 
     ci = ""
     if slope_ci and slope_ci.get("lower") is not None:
         # The interval is for the slope (negative = the spread rises as reserves fall); shown as a magnitude.
-        ci = f" (95% CI {abs(slope_ci['upper']):.1f} to {abs(slope_ci['lower']):.1f} bp)" if slope_ci["upper"] < 0 else \
-            f" ({ci_text(slope_ci['lower'], slope_ci['upper'])} for the slope)"
+        if slope_ci["upper"] < 0:
+            ci = f" (95% CI {abs(slope_ci['upper']):.1f} to {abs(slope_ci['lower']):.1f} bp)"
+        else:
+            ci = f" ({ci_text(slope_ci['lower'], slope_ci['upper'])} for the slope)"
     tail = (f"As balance sheets shrink, SOFR has drifted up relative to the Fed's interest on reserves, about "
             f"{bp(slope)} per trillion of reserves lost{ci}" if slope < 0 else
             "Shrinking reserves have not pushed SOFR up relative to interest on reserves")
@@ -281,6 +293,7 @@ def credit_scarcity_ci_sentence(country: str, diff: float, lower: float, upper: 
 
 def collateral_sentence(country: str, verdict: str, credit_effect: float, scarcity_effect: float, r2: float,
                         mean_spread: float, latest: float) -> str:
+    """Average collateral premium, fit and the standardised credit and scarcity effects."""
     return (f"{COUNTRY_NAMES[country]} collateral cost {bp(mean_spread)} {more_or_less(mean_spread)} than German "
             f"collateral in repo on "
             f"average (latest {signed_bp(latest)}). The regression explains {r2:.0%} of the variation and reads as "
@@ -329,7 +342,8 @@ def collateral_answer(it_verdict: str, fr_verdict: str, it_break_p: float, fr_br
         answer = "Both, in different places"
     breaks = sum(p < 0.05 for p in (it_break_p, fr_break_p))
     which = {0: "neither country", 1: "one of the two countries", 2: "both countries"}[breaks]
-    return answer, (f"Italian collateral: {verdict_phrase(it_verdict)}; French collateral: {verdict_phrase(fr_verdict)}. "
+    return answer, (f"Italian collateral: {verdict_phrase(it_verdict)}; French collateral: "
+                    f"{verdict_phrase(fr_verdict)}. "
                     + (" ".join(ci_lines) + " " if ci_lines else "") +
                     f"The relationship broke at the start of quantitative tightening for {which} (Holm-adjusted).")
 
@@ -371,6 +385,7 @@ def france_specific_sentence(since: str, cum_change: float, euro_wide: float, fr
 
 def survival_sentence(n: int, n_countries: int, median: float, s12: float, s12_lo: float, s12_hi: float,
                       threshold: float) -> str:
+    """Base rates of blowout recoveries from the Kaplan-Meier curve."""
     return (f"Across {n} blowouts of {bp(threshold, 0)} or more in {n_countries} euro countries since 2008, the "
             f"median time to retrace half the widening was {median:.0f} months; {1 - s12:.0%} had done so within a "
             f"year (95% band {1 - s12_hi:.0%} to {1 - s12_lo:.0%}). The sample is small and the episodes overlap in "
@@ -380,11 +395,13 @@ def survival_sentence(n: int, n_countries: int, median: float, s12: float, s12_l
 def france_status_sentence(in_episode: bool, spread_now: float, baseline: float | None, gap: float | None,
                            threshold: float, sens_threshold: float | None = None, sens_start: str | None = None,
                            sens_p12: float | None = None) -> str:
+    """France's status under the monthly blowout rule (and the 20 bp sensitivity)."""
     if in_episode:
         return f"By the {bp(threshold, 0)} rule France is in a blowout episode, with the spread at {bp(spread_now, 0)}."
     text = (f"By the {bp(threshold, 0)} rule France is not in a blowout: at {bp(spread_now, 0)} the spread is "
             f"{bp(gap, 1)} short of its trailing one-year average ({bp(baseline, 0)}) plus {bp(threshold, 0)}. The "
-            "widening since 2024 has been a steady grind rather than a jump, so the trailing average has risen with it.")
+            "widening since 2024 has been a steady grind rather than a jump, so the trailing average has risen with "
+            "it.")
     if sens_threshold is not None and sens_start is not None:
         text += (f" With the looser {bp(sens_threshold, 0)} rule an episode starts in {sens_start}; for episodes of "
                  f"that kind the chance of retracing half the widening within 12 months was {sens_p12:.0%}.")
@@ -394,10 +411,13 @@ def france_status_sentence(in_episode: bool, spread_now: float, baseline: float 
 def repo_treatment_sentence(fr_before: float, fr_after: float, it_before: float, it_after: float,
                             pos_before: float, pos_after: float, p_gap: float, latest_fr: float,
                             latest_it: float, adjusted: bool = False) -> str:
+    """Whether French collateral moved towards Italian pricing after June 2024."""
     closer = pos_after > pos_before
     text = (f"In repo, French collateral moved {'closer to Italian' if closer else 'away from Italian'} pricing after "
-            f"June 2024: its spread to German collateral went from {signed_bp(fr_before)} to {signed_bp(fr_after)}, the "
-            f"Italian spread from {signed_bp(it_before)} to {signed_bp(it_after)}, and France's position between Germany "
+            f"June 2024: its spread to German collateral went from {signed_bp(fr_before)} to {signed_bp(fr_after)}, "
+            "the "
+            f"Italian spread from {signed_bp(it_before)} to {signed_bp(it_after)}, and France's position between "
+            "Germany "
             f"(0) and Italy (1) "
             f"from {pos_before:.2f} to {pos_after:.2f}. The change in the Italy-France gap is "
             f"{significance_phrase(p_gap, adjusted=adjusted)}.")
@@ -408,6 +428,7 @@ def repo_treatment_sentence(fr_before: float, fr_after: float, it_before: float,
 
 
 def event_sentence(event: str, month: str, change: float, percentile: float) -> str:
+    """Monthly change in the spread in an event month and how unusual it was."""
     size = ("an unusually large" if percentile >= 0.9 else "a larger than typical" if percentile >= 0.5
             else "a smaller than typical")
     move = "widened" if change > 0 else "narrowed" if change < 0 else "was unchanged"
@@ -470,6 +491,7 @@ def _days_ci(ci: dict | None) -> str:
 
 
 def japan_change_sentence(date: str, change_bp: float, days: int | None, pass_20d: float) -> str:
+    """How fast TONA closed the gap after one BoJ policy change."""
     direction = "rise" if change_bp > 0 else "cut"
     speed = ("on the effective day" if days == 0 else f"after {days} business days" if days is not None
              else "not within 60 business days")
@@ -479,6 +501,7 @@ def japan_change_sentence(date: str, change_bp: float, days: int | None, pass_20
 
 def japan_answer(n_changes: int, n_same_day: int, exit_half_life: float, negative_half_life: float,
                  latest_gap_bp: float, exit_ci: dict | None = None, negative_ci: dict | None = None) -> tuple[str, str]:
+    """(answer, explanation) for chapter VI."""
     if n_same_day == n_changes:
         answer = "Yes, immediately"
     elif n_same_day >= n_changes / 2:
@@ -501,7 +524,8 @@ def story_answer(it_mean: float, it_latest: float, fr_latest: float, it_latest_2
                "French collateral still costs less than Italian")
     return ("A secured overnight loan, and the bond changes the price",
             f"Repo is borrowing cash against a government bond, like a pawn shop for bonds. Lending against Italian "
-            f"bonds has paid {bp(it_mean)} {more_or_less(it_mean)} than lending against German bonds on average since 2018 "
+            f"bonds has paid {bp(it_mean)} {more_or_less(it_mean)} than lending against German bonds on average since "
+            "2018 "
             f"(latest {signed_bp(it_latest)}); {ranking} ({signed_bp(fr_latest)}).")
 
 

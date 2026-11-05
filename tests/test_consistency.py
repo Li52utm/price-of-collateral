@@ -28,7 +28,7 @@ def r() -> dict:
 def test_desk_note_rule_words_match_numbers(r: dict) -> None:
     note = desk_note.build(r)
     rule = note["rule"]
-    for cur, line in zip(("USD", "EUR"), note["recommendation"]["lines"]):
+    for cur, line in zip(("USD", "EUR"), note["recommendation"]["lines"], strict=False):
         x = rule[cur]
         lock = x["excess_bp"] > x["hurdle_bp"]
         assert x["lock"] == lock
@@ -237,7 +237,7 @@ def test_desk_note_flips_when_forecast_flips(r: dict) -> None:
             day["q50"] += 40
     note = desk_note.build(flipped)
     assert note["client"]["verdict"] == "Yes"
-    for cur, line in zip(("USD", "EUR"), note["recommendation"]["lines"]):
+    for cur, line in zip(("USD", "EUR"), note["recommendation"]["lines"], strict=False):
         assert " above " in line and line.startswith(f"{cur}: Term out")
     # A stale term rate switches the dollar hurdle to 1 bp and says so.
     stale = copy.deepcopy(r)
@@ -262,7 +262,8 @@ def test_v1_v2_width_word_flips(hi2: float) -> None:
 def test_v2_test_sentence_words(r: dict) -> None:
     for c, e in r["v2"]["currencies"].items():
         m = e["models"]
-        s = w.v2_test_sentence(c, m["cqr"]["pinball_turn"], m["v1_state"]["pinball_turn"], m["baseline"]["pinball_turn"],
+        s = w.v2_test_sentence(c, m["cqr"]["pinball_turn"], m["v1_state"]["pinball_turn"],
+                               m["baseline"]["pinball_turn"],
                                m["cqr"]["coverage"], m["cqr"]["verdict"], m["v1_state"]["coverage"],
                                sum(a["inside"] for a in e["analogue_test"]), len(e["analogue_test"]))
         assert ("lower than v1" in s) == (m["cqr"]["pinball_turn"] < m["v1_state"]["pinball_turn"])

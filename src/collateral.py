@@ -35,7 +35,7 @@ def repo_rate(country: str, long: pd.DataFrame | None = None, side: str = SIDE, 
     return data.get(f"mmsr_rate_{side}_{tenor}_{country}", long)
 
 
-def monthly_spreads(long: pd.DataFrame | None = None, countries=None) -> pd.DataFrame:
+def monthly_spreads(long: pd.DataFrame | None = None, countries: list[str] | None = None) -> pd.DataFrame:
     """10-year yield spreads to Germany (bp), monthly, from the ECB IRS series."""
     import sources
     countries = countries or [c for c in sources.YIELD_COUNTRIES if c != "DE"]
@@ -52,7 +52,7 @@ def period_panel(long: pd.DataFrame | None = None, side: str = SIDE, tenor: str 
     liquidity = data.get("eur_liquidity", long) / 1e3
     holdings = data.get("pspp_DE", long) / 1e5
     rows = []
-    for start, end in zip(starts, ends):
+    for start, end in zip(starts, ends, strict=False):
         row = {"end": end, "start": start, "de_rate": float(de[end])}
         for c in COUNTRIES:
             rate = repo_rate(c, long, side, tenor)
@@ -96,7 +96,8 @@ def regression(panel: pd.DataFrame, country: str, hac_lags: int = HAC_LAGS) -> d
             sub_verdicts[name] = {"n": len(part), "verdict": decide(eff, pv), "pvalues": pv,
                                   "std_effect": eff, "mean_spread": float(part[f"repo_{country}"].mean())}
     return {"country": country, "n": int(len(df)), "first": str(df.index[0].date()), "last": str(df.index[-1].date()),
-            "params": {k: float(v) for k, v in res.params.items()}, "pvalues": {k: float(v) for k, v in res.pvalues.items()},
+            "params": {k: float(v) for k, v in res.params.items()}, "pvalues": {k: float(v) for k,
+                                                                                v in res.pvalues.items()},
             "r2": float(res.rsquared), "std_effect": std_effect, "verdict": verdict,
             "chow": chow, "qt_split_period": str(df.index[split].date()), "sub_periods": sub_verdicts,
             "mean_spread": float(y.mean()), "latest_spread": float(y.iloc[-1]),
@@ -122,14 +123,14 @@ def apply_holm(results: dict) -> None:
     rule with the adjusted values (METHODOLOGY.md, U2). The raw-p verdict is kept as `verdict_raw`."""
     keys = [(c, k) for c in results for k in TERMS]
     adjusted = st.holm([results[c]["pvalues"][k] for c, k in keys])
-    for (c, k), p in zip(keys, adjusted):
+    for (c, k), p in zip(keys, adjusted, strict=False):
         results[c].setdefault("pvalues_holm", {})[k] = float(p)
-    for c, r in results.items():
+    for r in results.values():
         r["verdict_raw"] = r["verdict"]
         r["verdict"] = decide(r["std_effect"], r["pvalues_holm"])
     sub_keys = [(c, s, k) for c in results for s in results[c]["sub_periods"] for k in TERMS]
     adjusted = st.holm([results[c]["sub_periods"][s]["pvalues"][k] for c, s, k in sub_keys])
-    for (c, s, k), p in zip(sub_keys, adjusted):
+    for (c, s, k), p in zip(sub_keys, adjusted, strict=False):
         results[c]["sub_periods"][s].setdefault("pvalues_holm", {})[k] = float(p)
     for c in results:
         for part in results[c]["sub_periods"].values():
@@ -138,6 +139,7 @@ def apply_holm(results: dict) -> None:
 
 
 def run(long: pd.DataFrame | None = None, out_dir: Path = OUT_DIR) -> dict:
+    """Write results/collateral/ (panel, spreads, rolling coefficients, summary with Holm-adjusted verdicts)."""
     out_dir.mkdir(parents=True, exist_ok=True)
     panel = period_panel(long)
     panel.to_csv(out_dir / "period_panel.csv", float_format="%.4f")
@@ -155,5 +157,6 @@ def run(long: pd.DataFrame | None = None, out_dir: Path = OUT_DIR) -> dict:
 
 
 def load_summary(out_dir: Path = OUT_DIR) -> dict | None:
+    """The saved chapter III summary, or None if it has not been written."""
     path = out_dir / "summary.json"
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None

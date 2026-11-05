@@ -49,7 +49,8 @@ for cur in ("USD", "EUR"):
     fig.add_scatter(x=days, y=q["q05"], fill="tonexty", fillcolor=ui.hex_to_rgba(color, 0.2), line=dict(width=0),
                     name="5-95% range")
     fig.add_scatter(x=days, y=q["q50"], mode="lines+markers", line=dict(color=color, width=2), name="median")
-    fig.add_hline(y=note["forecasts"][cur]["latest_level"], line=ui.ref_line(dash="dot"), annotation_text="latest level")
+    fig.add_hline(y=note["forecasts"][cur]["latest_level"], line=ui.ref_line(dash="dot"),
+                  annotation_text="latest level")
     fig.update_yaxes(title=f"{note['forecasts'][cur]['target']} (bp)")
     ui.show_chart(fig, f"{cur}: frozen forecast over the turn", height=300,
                   sources="New York Fed, ECB Data Portal, FRED, OFR, US Treasury")
@@ -82,7 +83,8 @@ if turns is not None:
         if v2.get("frozen"):
             f2 = v2["frozen"]["currencies"][cur]
             fig.add_scatter(x=[2026.15, 2026.15], y=[f2["q05"], f2["q95"]], mode="lines",
-                            name=f"{cur} v2 5-95% for 2026", line=dict(color=ui.CURRENCY_COLORS[cur], width=6, dash="dot"))
+                            name=f"{cur} v2 5-95% for 2026", line=dict(color=ui.CURRENCY_COLORS[cur], width=6,
+                                                                       dash="dot"))
     fig.update_xaxes(title="year-end", dtick=1)
     fig.update_yaxes(title="spread to the policy rate on the year-end day (bp)")
     ui.show_chart(fig, "Every past year-end turn, and the 2026 ranges they support", height=360,

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable, Sequence
+
 import numpy as np
 import pandas as pd
 from scipy import stats
@@ -53,7 +55,7 @@ def chow_test(y: np.ndarray, X: np.ndarray, split: int) -> dict:
     y, X = np.asarray(y, float), np.asarray(X, float)
     k = X.shape[1]
 
-    def ssr(yy, XX):
+    def ssr(yy: np.ndarray, XX: np.ndarray) -> float:
         beta, *_ = np.linalg.lstsq(XX, yy, rcond=None)
         r = yy - XX @ beta
         return float(r @ r)
@@ -87,7 +89,7 @@ def night_weights(days: pd.DatetimeIndex, end: pd.Timestamp) -> np.ndarray:
     if len(days) == 0:
         return np.array([])
     stops = list(days[1:]) + [pd.Timestamp(end)]
-    return np.array([max((b - a).days, 0) for a, b in zip(days, stops)], dtype=float)
+    return np.array([max((b - a).days, 0) for a, b in zip(days, stops, strict=False)], dtype=float)
 
 
 def weighted_mean(values: np.ndarray, weights: np.ndarray) -> float:
@@ -97,13 +99,14 @@ def weighted_mean(values: np.ndarray, weights: np.ndarray) -> float:
     return float((values * weights).sum() / total) if total > 0 else float("nan")
 
 
-def summary_quantiles(x: pd.Series | np.ndarray, qs=(0.05, 0.5, 0.95)) -> dict:
+def summary_quantiles(x: pd.Series | np.ndarray, qs: tuple[float, ...] = (0.05, 0.5, 0.95)) -> dict:
+    """Selected quantiles of x (NaN dropped), keyed 'q05', 'q50', ..."""
     x = np.asarray(x, dtype=float)
     x = x[~np.isnan(x)]
     return {f"q{int(q * 100):02d}": float(np.quantile(x, q)) for q in qs} if len(x) else {}
 
 
-def holm(p_values) -> np.ndarray:
+def holm(p_values: Sequence[float] | np.ndarray) -> np.ndarray:
     """Holm step-down adjusted p-values (same order as the input; NaN stays NaN).
 
     Sort the m valid p-values ascending; adjusted p_(i) = max over j <= i of min(1, (m - j + 1) p_(j)).
@@ -122,7 +125,7 @@ def holm(p_values) -> np.ndarray:
     return out
 
 
-def block_bootstrap_ci(statistic, n: int, block: int, n_boot: int = 1000, seed: int = 42,
+def block_bootstrap_ci(statistic: Callable[[np.ndarray], float], n: int, block: int, n_boot: int = 1000, seed: int = 42,
                        level: float = 0.95) -> dict:
     """Percentile interval of `statistic(idx)` over moving-block resamples of 0..n-1.
 

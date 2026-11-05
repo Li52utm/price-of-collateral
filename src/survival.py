@@ -7,12 +7,15 @@ band on the log(-log) scale (which stays inside [0, 1]). Tests: tests/test_franc
 
 from __future__ import annotations
 
+from collections.abc import Sequence
+
 import numpy as np
 import pandas as pd
 from scipy import stats
 
 
-def kaplan_meier(durations, observed, alpha: float = 0.05) -> pd.DataFrame:
+def kaplan_meier(durations: Sequence[float] | np.ndarray | pd.Series,
+                 observed: Sequence[bool] | np.ndarray | pd.Series, alpha: float = 0.05) -> pd.DataFrame:
     """Columns: time, at_risk, events, censored, survival, se, lower, upper (time 0 row first)."""
     t = np.asarray(durations, dtype=float)
     e = np.asarray(observed, dtype=bool)

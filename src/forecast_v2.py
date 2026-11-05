@@ -76,6 +76,7 @@ def fit_cqr(currency: str, X: pd.DataFrame, y: pd.Series, fit_end: pd.Timestamp,
 
 
 def predict_cqr(model: dict, X: pd.DataFrame) -> pd.DataFrame:
+    """CQR quantiles: base forecasts plus the per-class conformal offsets (sorted per day)."""
     raw = fc.predict(model["base"], X)
     classes = day_class(X)
     adj = pd.DataFrame({tau: [model["offsets"][c][tau] for c in classes] for tau in fc.QUANTILES}, index=X.index)
@@ -109,8 +110,10 @@ def evaluate(currency: str, long: pd.DataFrame | None = None) -> dict:
     test = (X.index >= TEST_START) & X["baseline"].notna()
     Xt, yt = X[test], y[test]
     preds = {"cqr": predict_cqr(cqr, Xt),
-             "v1_state": fc.predict(fc.fit("state", currency, X[X.index <= fc.TRAIN_END], y[y.index <= fc.TRAIN_END]), Xt),
-             "baseline": fc.predict(fc.fit("baseline", currency, X[X.index <= fc.TRAIN_END], y[y.index <= fc.TRAIN_END]), Xt)}
+             "v1_state": fc.predict(fc.fit("state", currency, X[X.index <= fc.TRAIN_END], y[y.index <= fc.TRAIN_END]),
+                                    Xt),
+             "baseline": fc.predict(fc.fit("baseline", currency, X[X.index <= fc.TRAIN_END],
+                                           y[y.index <= fc.TRAIN_END]), Xt)}
     turn = (Xt["me"] == 1).to_numpy()
     rows = {}
     for name, p in preds.items():
@@ -144,6 +147,7 @@ def evaluate(currency: str, long: pd.DataFrame | None = None) -> dict:
 # The 2026 forecast
 # --------------------------------------------------------------------------- #
 def yearend_forecast_v2(currency: str, long: pd.DataFrame | None = None) -> dict:
+    """v2 path for the year-end window: CQR, with the analogue quantiles on 31 December."""
     X, y = fc.dataset(currency, long)
     as_of = data.as_of(long)
     cqr = fit_cqr(currency, X, y, PRODUCTION_FIT_END, (PRODUCTION_FIT_END + pd.Timedelta(days=1), as_of))
@@ -167,6 +171,7 @@ def yearend_forecast_v2(currency: str, long: pd.DataFrame | None = None) -> dict
 
 
 def code_hash() -> str:
+    """SHA-256 of the files the v2 forecast depends on."""
     h = hashlib.sha256()
     for name in CODE_FILES:
         h.update((ROOT / name).read_bytes())
@@ -174,6 +179,7 @@ def code_hash() -> str:
 
 
 def build_frozen_v2(long: pd.DataFrame | None = None) -> dict:
+    """The frozen v2 forecast dictionary (metadata, caveat and each currency's path)."""
     return {"title": "Year-End 2026 funding forecast (challenger v2)", "model_version": MODEL_VERSION,
             "data_as_of": str(data.as_of(long).date()), "created_at": str(pd.Timestamp.now(tz="UTC").floor("s")),
             "git_commit": fc.git_commit(), "code_sha256": code_hash(), "code_files": list(CODE_FILES),
@@ -194,6 +200,7 @@ def create_frozen_v2(path: Path = FROZEN_V2_PATH, long: pd.DataFrame | None = No
 
 
 def load_frozen_v2(path: Path = FROZEN_V2_PATH) -> dict | None:
+    """The frozen v2 forecast, or None if it does not exist."""
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
 
 
@@ -215,4 +222,5 @@ def run(long: pd.DataFrame | None = None) -> dict:
 
 
 def load_summary(path: Path = SUMMARY_PATH) -> dict | None:
+    """The saved v2 test-period summary, or None."""
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None

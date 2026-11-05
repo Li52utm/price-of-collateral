@@ -16,7 +16,7 @@ import wording as w
 def test_kaplan_meier_matches_a_hand_computation() -> None:
     # Durations 2, 3, 3, 5 (censored), 7: S(2)=4/5, S(3)=4/5*1/3... computed step by step:
     km = survival.kaplan_meier([2, 3, 3, 5, 7], [True, True, True, False, True])
-    s = dict(zip(km["time"], km["survival"]))
+    s = dict(zip(km["time"], km["survival"], strict=False))
     assert s[2.0] == pytest.approx(0.8)
     assert s[3.0] == pytest.approx(0.8 * (1 - 2 / 4))
     assert s[5.0] == pytest.approx(0.4)          # censoring does not move the curve
@@ -49,9 +49,12 @@ def test_a_steady_grind_is_not_a_blowout() -> None:
 
 
 def test_collateral_decision_rule() -> None:
-    assert C.decide({"credit": 5, "liquidity": 1, "de_holdings": 1}, {"credit": 0.01, "liquidity": 0.5, "de_holdings": 0.5}) == "credit"
-    assert C.decide({"credit": 1, "liquidity": 4, "de_holdings": 1}, {"credit": 0.01, "liquidity": 0.01, "de_holdings": 0.5}) == "scarcity"
-    assert C.decide({"credit": 5, "liquidity": 1, "de_holdings": 1}, {"credit": 0.2, "liquidity": 0.5, "de_holdings": 0.5}) == "both / unclear"
+    assert C.decide({"credit": 5, "liquidity": 1, "de_holdings": 1}, {"credit": 0.01, "liquidity": 0.5,
+                                                                      "de_holdings": 0.5}) == "credit"
+    assert C.decide({"credit": 1, "liquidity": 4, "de_holdings": 1}, {"credit": 0.01, "liquidity": 0.01,
+                                                                      "de_holdings": 0.5}) == "scarcity"
+    assert C.decide({"credit": 5, "liquidity": 1, "de_holdings": 1}, {"credit": 0.2, "liquidity": 0.5,
+                                                                      "de_holdings": 0.5}) == "both / unclear"
 
 
 def test_events_have_official_sources_and_exclusions_are_recorded() -> None:
@@ -88,6 +91,7 @@ def test_france_wording_flips() -> None:
     yes = w.oat_answer(False, 9, 0.6, 0.5, 0.6, 0.8, True, True, True, 0.9)[0]
     no = w.oat_answer(False, 9, 0.6, 0.5, 0.6, 0.8, False, False, False, 0.9)[0]
     assert yes.startswith("Possibly") and no.startswith("Not yet: none")
-    assert w.collateral_answer("scarcity", "both / unclear", 0.03, 0.001)[0] == "Scarcity for Italy; no clear driver for France"
+    assert w.collateral_answer("scarcity", "both / unclear", 0.03,
+                               0.001)[0] == "Scarcity for Italy; no clear driver for France"
     assert w.collateral_answer("credit", "credit", 0.3, 0.3)[0] == "Mostly credit risk"
     assert "neither country" in w.collateral_answer("credit", "credit", 0.3, 0.3)[1]

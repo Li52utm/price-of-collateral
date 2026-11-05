@@ -33,7 +33,8 @@ d = daily.loc["2015-06-01":]
 fig = go.Figure()
 fig.add_scatter(x=d.index, y=d["policy"], name="BoJ policy rate", line=dict(color=ui.COLORS["ink"], shape="hv"))
 fig.add_scatter(x=d.index, y=d["tona"], name="TONA", line=dict(color=ui.CURRENCY_COLORS["JPY"], width=1.2))
-fig.add_scatter(x=d.index, y=d["collat"], name="collateralized overnight call", line=dict(color=ui.COLORS["slate"], width=1))
+fig.add_scatter(x=d.index, y=d["collat"], name="collateralized overnight call", line=dict(color=ui.COLORS["slate"],
+                                                                                          width=1))
 fig.update_yaxes(title="percent")
 ui.show_chart(fig, "BoJ policy rate and overnight rates", sources=SRC)
 
@@ -45,7 +46,8 @@ for c in j["changes"]:
 rows = [{"Change": c["date"], "Size (bp)": round(c["change_bp"]), "New rate (%)": c["new_rate"],
          "TONA: days to half the gap": c["tona"].get("half_gap_days"),
          "TONA: pass-through over 20 days": f"{c['tona'].get('pass_through_20d', float('nan')):.0%}",
-         "Collateralized call: days to half the gap": c["collat"].get("half_gap_days") if c["collat"].get("available") else "no data"}
+         "Collateralized call: days to half the gap": (c["collat"].get("half_gap_days")
+                                                       if c["collat"].get("available") else "no data")}
         for c in j["changes"]]
 ui.table(pd.DataFrame(rows))
 

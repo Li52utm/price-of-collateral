@@ -59,7 +59,8 @@ def test_calendar_turn_days() -> None:
 
 def test_origins_are_forty_business_days_back_and_capped() -> None:
     o = F.origins(pd.DatetimeIndex(["2026-12-31"]), "USD")
-    assert len(pd.bdate_range(o[0], "2026-12-31", freq="C", holidays=["2026-11-11", "2026-11-26", "2026-12-25"])) - 1 == 40
+    assert len(pd.bdate_range(o[0], "2026-12-31", freq="C", holidays=["2026-11-11", "2026-11-26",
+                                                                      "2026-12-25"])) - 1 == 40
     capped = F.origins(pd.DatetimeIndex(["2027-03-31"]), "USD", cap=pd.Timestamp("2026-11-03"))
     assert capped[0] == pd.Timestamp("2026-11-03")
 

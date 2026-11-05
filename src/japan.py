@@ -24,6 +24,7 @@ HAC_LAGS = 10
 
 
 def frame(long: pd.DataFrame | None = None) -> pd.DataFrame:
+    """Daily TONA, the policy rate carried forward and the collateralized call rate, from 2008."""
     tona = data.get("tona", long)
     policy = data.get("boj_policy", long)
     collat = data.get("call_collat_on", long)
@@ -34,6 +35,7 @@ def frame(long: pd.DataFrame | None = None) -> pd.DataFrame:
 
 
 def policy_changes(long: pd.DataFrame | None = None) -> list[dict]:
+    """Every BoJ policy-rate change since 16 February 2016, from the data."""
     p = data.get("boj_policy", long)
     d = p.diff()
     out = []
@@ -58,6 +60,7 @@ def half_gap_days(series: pd.Series, day: pd.Timestamp, change: float) -> dict:
 
 
 def ecm(df: pd.DataFrame, start: pd.Timestamp, end: pd.Timestamp | None = None) -> dict:
+    """Error-correction regression of TONA on its gap to policy (Newey-West), with the half-life."""
     sub = df.loc[start:end].dropna(subset=["tona", "policy"])
     y = sub["tona"].diff()
     X = pd.DataFrame({"gap_lag": (sub["tona"] - sub["policy"]).shift(1), "d_policy": sub["policy"].diff()})
@@ -77,6 +80,7 @@ def ecm(df: pd.DataFrame, start: pd.Timestamp, end: pd.Timestamp | None = None) 
 
 
 def run(long: pd.DataFrame | None = None, out_dir: Path = OUT_DIR) -> dict:
+    """Write results/japan/ (daily frame and summary)."""
     out_dir.mkdir(parents=True, exist_ok=True)
     df = frame(long)
     df.to_csv(out_dir / "japan_daily.csv", float_format="%.4f")
@@ -96,5 +100,6 @@ def run(long: pd.DataFrame | None = None, out_dir: Path = OUT_DIR) -> dict:
 
 
 def load_summary(out_dir: Path = OUT_DIR) -> dict | None:
+    """The saved chapter VI summary, or None."""
     path = out_dir / "summary.json"
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None

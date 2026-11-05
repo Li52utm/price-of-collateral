@@ -47,12 +47,14 @@ SPOT_CHECKS = [  # (series, date, value, tolerance): published values checked by
 
 
 def result(name: str, status: str, detail: str) -> dict:
+    """One check result {name, status, detail}; the status must be PASS, WARN or FAIL."""
     if status not in STATUS_ORDER:
         raise ValueError(f"status must be one of {list(STATUS_ORDER)}, got {status!r}")
     return {"name": name, "status": status, "detail": detail}
 
 
 def worst(statuses: list[str]) -> str:
+    """The most severe status in a list (FAIL over WARN over PASS)."""
     return max(statuses, key=STATUS_ORDER.get) if statuses else PASS
 
 
@@ -76,6 +78,7 @@ def coverage_share(s: pd.Series, currency: str) -> tuple[float, int]:
 
 def check_calendar(long: pd.DataFrame,
                    names: tuple[str, ...] = ("estr", "sofr", "tona", "dfr", "bund10_daily", "oat10_daily")) -> dict:
+    """Share of business days present and the longest gap, per key daily series."""
     lines, statuses = [], []
     for name in names:
         share, gap = coverage_share(_s(long, name), data.currency_of(name))
@@ -88,6 +91,7 @@ def check_calendar(long: pd.DataFrame,
 
 
 def check_ranges(long: pd.DataFrame) -> dict:
+    """Every rate and yield inside its plausible range; no negative volumes."""
     rate_names = [s.name for s in sources.ALL_SERIES if s.unit == "%"]
     bad = []
     for name in rate_names:
@@ -112,6 +116,7 @@ def check_ranges(long: pd.DataFrame) -> dict:
 
 
 def check_negative_rates(long: pd.DataFrame) -> dict:
+    """DFR and BoJ policy rate negative exactly in their known negative-rate periods."""
     dfr = _s(long, "dfr")
     inside = dfr.loc[NEGATIVE_DFR[0]:NEGATIVE_DFR[1]]
     outside = dfr[(dfr.index < "2014-06-11") | (dfr.index > NEGATIVE_DFR[1])]
@@ -127,7 +132,8 @@ def check_negative_rates(long: pd.DataFrame) -> dict:
     return result("Negative-rate periods", PASS if all(ok) else FAIL, detail)
 
 
-def check_spot_values(long: pd.DataFrame, checks=SPOT_CHECKS) -> dict:
+def check_spot_values(long: pd.DataFrame, checks: list[tuple[str, str, float, float]] = SPOT_CHECKS) -> dict:
+    """Published values checked by hand (e.g. SOFR 5.25% on 17 Sep 2019)."""
     bad, n = [], 0
     for name, day, value, tol in checks:
         s = _s(long, name)
@@ -143,6 +149,7 @@ def check_spot_values(long: pd.DataFrame, checks=SPOT_CHECKS) -> dict:
 
 
 def check_eonia_estr(long: pd.DataFrame) -> dict:
+    """EONIA equals €STR + 8.5 bp after 2 October 2019."""
     e, s = _s(long, "eonia"), _s(long, "estr")
     both = pd.concat([e, s], axis=1, keys=["eonia", "estr"]).dropna().loc["2019-10-02":]
     diff = (both["eonia"] - both["estr"] - EONIA_SPREAD).abs()
@@ -152,6 +159,7 @@ def check_eonia_estr(long: pd.DataFrame) -> dict:
 
 
 def check_bund(long: pd.DataFrame) -> dict:
+    """Monthly mean of the Bundesbank daily Bund against the ECB monthly German yield."""
     daily = _s(long, "bund10_daily").resample("MS").mean()
     monthly = _s(long, "y10_DE")
     both = pd.concat([daily, monthly], axis=1).dropna()
@@ -182,6 +190,7 @@ def check_oat(long: pd.DataFrame) -> dict:
 
 
 def check_liquidity(long: pd.DataFrame) -> dict:
+    """The weekly liquidity proxy against excess liquidity plus reserve requirements."""
     proxy = _s(long, "eur_liquidity")
     exliq = _s(long, "excess_liquidity") / 1e3
     mrr = _s(long, "min_reserves") / 1e3
@@ -191,10 +200,12 @@ def check_liquidity(long: pd.DataFrame) -> dict:
     gap = (both["p"] - both["x"] - both["m"]).abs()
     status = PASS if gap.median() < LIQUIDITY_GAP else WARN if gap.median() < 3 * LIQUIDITY_GAP else FAIL
     return result("Euro liquidity proxy", status,
-                  f"{len(both)} weeks; median |proxy - excess liquidity - reserve requirements| EUR {gap.median():.0f} bn.")
+                  f"{len(both)} weeks; median |proxy - excess liquidity - reserve requirements| EUR {gap.median():.0f} "
+                  "bn.")
 
 
 def check_corridors(long: pd.DataFrame) -> dict:
+    """EFFR inside the Fed range, TONA near the BoJ policy rate, MMSR repo near the DFR."""
     effr = _s(long, "effr")
     lo, hi = _s(long, "fed_lower"), _s(long, "fed_upper")
     f = pd.concat([effr, lo, hi], axis=1, keys=["e", "l", "h"]).dropna()
@@ -212,6 +223,7 @@ def check_corridors(long: pd.DataFrame) -> dict:
 
 
 def check_publication_lags(long: pd.DataFrame, fetched: pd.Timestamp) -> dict:
+    """Nothing dated after the fetch; daily series within their lag (plus tolerance)."""
     stale, future = [], []
     for spec in sources.ALL_SERIES:
         s = _s(long, spec.name)
@@ -229,10 +241,12 @@ def check_publication_lags(long: pd.DataFrame, fetched: pd.Timestamp) -> dict:
     if stale:
         return result("Publication lags", WARN, "older than the publication lag allows: " + "; ".join(stale))
     return result("Publication lags", PASS, "every daily series is within its publication lag (plus "
-                                            f"{STALE_EXTRA_BD} business days) of the fetch date; nothing is dated in the future.")
+                                            f"{STALE_EXTRA_BD} business days) of the fetch date; nothing is dated in "
+                                            "the future.")
 
 
 def run_all(long: pd.DataFrame, fetched: pd.Timestamp) -> dict:
+    """Every check on a long frame, with counts per status."""
     checks = [check_calendar(long), check_ranges(long), check_negative_rates(long), check_spot_values(long),
               check_eonia_estr(long), check_bund(long), check_oat(long), check_liquidity(long), check_corridors(long),
               check_publication_lags(long, fetched)]
@@ -245,12 +259,15 @@ class ValidationFailed(RuntimeError):
 
 
 def write_reports(rep: dict, json_path: Path, md_path: Path) -> None:
+    """Write the validation report as JSON and as the Markdown table in docs/."""
     json_path.write_text(json.dumps(rep, indent=1), encoding="utf-8")
     lines = ["# Data validation", "",
-             f"Generated by `scripts/refresh_snapshots.py` for data as of {rep['as_of']} (fetched {rep['fetched_at']}). "
+             f"Generated by `scripts/refresh_snapshots.py` for data as of {rep['as_of']} (fetched "
+             f"{rep['fetched_at']}). "
              "PASS: the data agrees with the reference; WARN: a documented difference with no material effect; "
              "FAIL: the refresh stops before writing.", "",
-             f"Summary: {rep['counts'][PASS]} passed, {rep['counts'][WARN]} warnings, {rep['counts'][FAIL]} failed.", "",
+             f"Summary: {rep['counts'][PASS]} passed, {rep['counts'][WARN]} warnings, {rep['counts'][FAIL]} "
+             "failed.", "",
              "| Check | Status | Detail |", "|---|---|---|"]
     lines += [f"| {c['name']} | {c['status']} | {c['detail']} |" for c in rep["checks"]]
     md_path.write_text("\n".join(lines) + "\n", encoding="utf-8")

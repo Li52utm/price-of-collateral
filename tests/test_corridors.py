@@ -22,7 +22,8 @@ def test_runs_and_phases() -> None:
 def test_regimes_are_generated_from_the_data() -> None:
     eur = C.regimes("EUR")
     negative = [r for r in eur if r["kind"] == "negative rates"]
-    assert negative and negative[0]["start"] == pd.Timestamp("2014-06-11") and negative[0]["end"] == pd.Timestamp("2022-07-26")
+    assert negative and negative[0]["start"] == pd.Timestamp("2014-06-11")
+    assert negative[0]["end"] == pd.Timestamp("2022-07-26")
     jpy_negative = [r for r in C.regimes("JPY") if r["kind"] == "negative rates"]
     assert jpy_negative[0]["start"] == pd.Timestamp("2016-02-16")
 
@@ -70,7 +71,8 @@ def test_corridor_wording_flips() -> None:
     assert "rises by about 6.4 bp" in r and "a reference only" in r and "inside that band" in r
     r2 = w.reserves_sentence("USD", "piecewise", 3.0, 1.57, [1.52, 2.0], 2.89, "reserves")
     assert "falls" in r2 and "reference only" not in r2 and "above that band" in r2
-    stats = {"EUR": {"recent_iqr_bp": 0.4, "recent_median_bp": -6.8}, "USD": {"recent_iqr_bp": 3.0, "recent_median_bp": 0}}
+    stats = {"EUR": {"recent_iqr_bp": 0.4, "recent_median_bp": -6.8}, "USD": {"recent_iqr_bp": 3.0,
+                                                                              "recent_median_bp": 0}}
     assert w.corridors_answer(stats, {"USD": {"slope_per_unit": -6.4}})[0] == "Yes, within a few basis points"
     stats["USD"]["recent_iqr_bp"] = 9
     ans = w.corridors_answer(stats, {"USD": {"slope_per_unit": 2.0}})

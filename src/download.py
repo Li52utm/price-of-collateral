@@ -15,6 +15,7 @@ import io
 import json
 import os
 import time
+from collections.abc import Callable
 from pathlib import Path
 
 import pandas as pd
@@ -61,6 +62,7 @@ def ecb_frame(key: str, start: str = START) -> pd.DataFrame:
 
 
 def ecb_series(key: str, start: str = START) -> pd.Series:
+    """One ECB Data Portal series indexed by date (daily, weekly on Fridays, or monthly)."""
     df = ecb_frame(key, start)
     periods = df["TIME_PERIOD"].astype(str)
     if periods.str.contains("-W").any():
@@ -118,6 +120,7 @@ def ecb_pspp() -> pd.DataFrame:
 # FRED, New York Fed, OFR, Treasury
 # --------------------------------------------------------------------------- #
 def fred_series(series_id: str) -> pd.Series:
+    """One FRED series from fredgraph.csv, from START."""
     r = _get("https://fred.stlouisfed.org/graph/fredgraph.csv", params={"id": series_id})
     df = pd.read_csv(io.StringIO(r.text), index_col=0, parse_dates=True, na_values=".")
     return df.iloc[:, 0].astype(float).dropna().loc[START:]
@@ -148,9 +151,13 @@ def nyfed_repo_operations(start: str = "2019-09-17") -> pd.Series:
     r = _get("https://markets.newyorkfed.org/api/rp/repo/all/results/search.json",
              params={"startDate": start, "endDate": end})
     ops = r.json().get("repo", {}).get("operations", [])
-    rows = [(pd.Timestamp(op["operationDate"]), float(op.get("totalAmtAccepted", 0) or 0) / 1e9) for op in ops]
-    s = pd.Series(dict(rows)) if rows else pd.Series(dtype=float)
-    return s.groupby(level=0).sum().sort_index() if rows else s
+    if not ops:
+        return pd.Series(dtype=float)
+    # Several operations can share a date (morning and afternoon standing repo operations): sum them.
+    # (Corrected 2026-11-05: a dict keyed by date kept only the last operation of each day.)
+    s = pd.Series([float(op.get("totalAmtAccepted", 0) or 0) / 1e9 for op in ops],
+                  index=pd.DatetimeIndex([pd.Timestamp(op["operationDate"]) for op in ops]))
+    return s.groupby(level=0).sum().sort_index()
 
 
 def ofr_series(mnemonic: str) -> pd.Series:
@@ -218,6 +225,7 @@ def treasury_tga_daily(start: str = "2018-01-01") -> pd.Series:
 # Bank of Japan, Bundesbank
 # --------------------------------------------------------------------------- #
 def boj_series(db_code: str, start: str = "200801") -> pd.Series:
+    """One Bank of Japan series ('DB/CODE') from the BoJ statistics API."""
     db, code = db_code.split("/")
     j = _get("https://www.stat-search.boj.or.jp/api/v1/getDataCode",
              params={"format": "json", "lang": "en", "db": db, "code": code, "startDate": start}).json()
@@ -231,6 +239,7 @@ def boj_series(db_code: str, start: str = "200801") -> pd.Series:
 
 
 def bbk_series(key: str) -> pd.Series:
+    """One Bundesbank series from its SDMX CSV, from START."""
     flow, rest = key.split("/", 1)
     r = _get(f"https://api.statistiken.bundesbank.de/rest/data/{flow}/{rest}", params={"format": "csv", "lang": "en"})
     text = r.content.decode("utf-8-sig")
@@ -333,7 +342,7 @@ def webstat_clean(raw: pd.DataFrame) -> tuple[pd.Series, int]:
     return s.dropna().sort_index(), n_unreliable
 
 
-def webstat_daily_yields(client: Webstat | None = None, log=print) -> pd.DataFrame:
+def webstat_daily_yields(client: Webstat | None = None, log: Callable[..., None] = print) -> pd.DataFrame:
     """Every registered Webstat daily yield (sources.WEBSTAT_YIELDS), one request per series."""
     client = client or Webstat()
     frames = []
@@ -352,7 +361,7 @@ def _long(name: str, s: pd.Series) -> pd.DataFrame:
     return pd.DataFrame({"date": s.index, "series": name, "value": s.to_numpy(dtype=float)})
 
 
-def download_new(names: list[str], log=print) -> pd.DataFrame:
+def download_new(names: list[str], log: Callable[..., None] = print) -> pd.DataFrame:
     """Only the named registered series (used to add a new source to the snapshot without a full refresh)."""
     frames = []
     webstat = [s for s in sources.WEBSTAT_YIELDS if s.name in names]
@@ -368,7 +377,7 @@ def download_new(names: list[str], log=print) -> pd.DataFrame:
     return pd.concat(frames, ignore_index=True)
 
 
-def download_all(log=print) -> dict[str, pd.DataFrame]:
+def download_all(log: Callable[..., None] = print) -> dict[str, pd.DataFrame]:
     """Every series, as {"series": long frame (date, series, value), "settlements": Treasury issues}."""
     frames = []
     for spec in sources.ALL_SERIES:

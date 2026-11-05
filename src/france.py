@@ -38,11 +38,13 @@ HORIZONS = (6, 12, 24)
 # (a) Decomposition and France-specific stress
 # --------------------------------------------------------------------------- #
 def yields(long: pd.DataFrame | None = None) -> pd.DataFrame:
+    """Monthly 10-year yields (ECB IRS) for every registered country, in percent."""
     import sources
     return pd.DataFrame({c: data.get(f"y10_{c}", long) for c in sources.YIELD_COUNTRIES})
 
 
 def decomposition(long: pd.DataFrame | None = None) -> dict:
+    """OAT leg and Bund leg of the change in the monthly spread since May 2024."""
     y = yields(long)[["FR", "DE"]].dropna()
     spread = (y["FR"] - y["DE"]) * 100
     base = y.loc[DECOMP_BASE_MONTH]
@@ -56,6 +58,7 @@ def decomposition(long: pd.DataFrame | None = None) -> dict:
 
 
 def euro_wide_split(long: pd.DataFrame | None = None) -> dict:
+    """Euro-wide (implied by Italy and Spain) and France-specific parts of the spread changes."""
     s = collateral.monthly_spreads(long, ["FR", "IT", "ES"]).dropna()
     d = s.diff().dropna()
     fit = d.loc[EURO_WIDE_FIT[0]:EURO_WIDE_FIT[1]]
@@ -65,7 +68,8 @@ def euro_wide_split(long: pd.DataFrame | None = None) -> dict:
     residual = d["FR"] - fitted
     out = pd.DataFrame({"fr_change": d["FR"], "euro_wide": fitted, "france_specific": residual})
     since = out.loc[POLITICAL_START.to_period("M").to_timestamp():]
-    return {"params": {k: float(v) for k, v in res.params.items()}, "pvalues": {k: float(v) for k, v in res.pvalues.items()},
+    return {"params": {k: float(v) for k, v in res.params.items()}, "pvalues": {k: float(v) for k,
+                                                                                v in res.pvalues.items()},
             "r2": float(res.rsquared), "n_fit": int(len(fit)),
             "since": str(since.index[0].date())[:7] if len(since) else None,
             "cum_change": float(since["fr_change"].sum()), "cum_euro_wide": float(since["euro_wide"].sum()),
@@ -107,6 +111,7 @@ def episodes(spread: pd.Series, country: str, threshold: float = THRESHOLD_BP) -
 
 
 def all_episodes(long: pd.DataFrame | None = None, threshold: float = THRESHOLD_BP) -> pd.DataFrame:
+    """Blowout episodes of every panel country at the given threshold."""
     spreads = collateral.monthly_spreads(long, list(EPISODE_COUNTRIES))
     rows = []
     for c in EPISODE_COUNTRIES:
@@ -115,6 +120,7 @@ def all_episodes(long: pd.DataFrame | None = None, threshold: float = THRESHOLD_
 
 
 def survival_summary(eps: pd.DataFrame) -> dict:
+    """Kaplan-Meier curve and base rates (median, survival at 6, 12, 24 months) of episodes."""
     km = survival.kaplan_meier(eps["duration"], eps["observed"])
     return {"n_episodes": int(len(eps)), "n_recovered": int(eps["observed"].sum()),
             "n_countries": int(eps["country"].nunique()), "median_months": survival.median_time(km),
@@ -134,6 +140,7 @@ def recovery_conditions(eps: pd.DataFrame, long: pd.DataFrame | None = None) -> 
 
 def conditions_at(country: str, start: pd.Timestamp, at: pd.Timestamp, spreads: pd.DataFrame, dfr: pd.Series,
                   long: pd.DataFrame | None = None) -> dict:
+    """The three recovery conditions (ECB cut, peers tightening, Eurosystem buying) at a date."""
     before = at - pd.DateOffset(months=CONDITION_MONTHS)
     dfr_start = dfr[dfr.index <= start].iloc[-1]
     dfr_at = dfr[dfr.index <= at + pd.offsets.MonthEnd(0)].iloc[-1]
@@ -145,7 +152,9 @@ def conditions_at(country: str, start: pd.Timestamp, at: pd.Timestamp, spreads: 
         held = pd.Series(dtype=float)
     buying = np.nan
     if len(held) and held.index[0] <= before:
-        buying = float(held[held.index <= at + pd.offsets.MonthEnd(0)].iloc[-1] - held[held.index <= before + pd.offsets.MonthEnd(0)].iloc[-1])
+        held_at = held[held.index <= at + pd.offsets.MonthEnd(0)].iloc[-1]
+        held_before = held[held.index <= before + pd.offsets.MonthEnd(0)].iloc[-1]
+        buying = float(held_at - held_before)
     return {"ecb_cut": bool(dfr_at < dfr_start - 1e-9), "dfr_change": float(dfr_at - dfr_start),
             "peers_tightening": bool(peer_change < 0), "peer_change_bp": peer_change,
             "eurosystem_buying": (bool(buying > 0) if buying == buying else None), "net_purchases_bn": buying / 1e3
@@ -156,6 +165,7 @@ def conditions_at(country: str, start: pd.Timestamp, at: pd.Timestamp, spreads: 
 # (c) Repo treatment of French collateral
 # --------------------------------------------------------------------------- #
 def repo_treatment(long: pd.DataFrame | None = None) -> dict:
+    """French collateral against German and Italian in MMSR repo, with the June 2024 breaks."""
     panel = collateral.period_panel(long)
     p = panel[["repo_FR", "repo_IT"]].dropna()
     pos = (p["repo_FR"] / p["repo_IT"]).where(p["repo_IT"].abs() >= 1)
@@ -178,6 +188,7 @@ def repo_treatment(long: pd.DataFrame | None = None) -> dict:
 # (d) Event study
 # --------------------------------------------------------------------------- #
 def event_study(long: pd.DataFrame | None = None) -> list[dict]:
+    """Monthly change in the OAT-Bund spread in each event month against every month since 2010."""
     s = collateral.monthly_spreads(long, ["FR"])["FR"].dropna()
     d = s.diff().loc[EVENT_STUDY_FROM:].dropna()
     out = []
@@ -207,12 +218,14 @@ def france_now(eps: pd.DataFrame, long: pd.DataFrame | None = None) -> dict:
            "spread_now": float(spreads["FR"].iloc[-1]), "conditions": cond}
     if len(ongoing):
         e = ongoing.iloc[0]
-        out.update({"start": str(e["start"].date())[:7], "age_months": int(e["duration"]), "baseline": float(e["baseline"]),
+        out.update({"start": str(e["start"].date())[:7], "age_months": int(e["duration"]),
+                    "baseline": float(e["baseline"]),
                     "peak": float(e["peak"]), "peak_date": str(e["peak_date"].date())[:7],
                     "half_retrace_level": float(e["peak"] - RETRACE * e["widening"])})
     else:
         baseline = spreads["FR"].rolling(BASELINE_MONTHS).mean().shift(1).iloc[-1]
-        out.update({"trailing_baseline": float(baseline), "gap_to_threshold": float(baseline + THRESHOLD_BP - spreads["FR"].iloc[-1])})
+        out.update({"trailing_baseline": float(baseline),
+                    "gap_to_threshold": float(baseline + THRESHOLD_BP - spreads["FR"].iloc[-1])})
     return out
 
 
@@ -224,6 +237,7 @@ def conditional_recovery(km: pd.DataFrame, age: float, ahead: float = 12) -> flo
 
 
 def ongoing_france(eps: pd.DataFrame, km: pd.DataFrame) -> dict:
+    """France's ongoing episode and its conditional chance of recovery within 12 months."""
     e = eps[(eps["country"] == "FR") & ~eps["observed"]].iloc[0]
     return {"start": str(e["start"].date())[:7], "age_months": int(e["duration"]), "baseline": float(e["baseline"]),
             "peak": float(e["peak"]), "peak_date": str(e["peak_date"].date())[:7],
@@ -232,7 +246,7 @@ def ongoing_france(eps: pd.DataFrame, km: pd.DataFrame) -> dict:
             "survival_at_age": survival.survival_at(km, e["duration"])["survival"]}
 
 
-def _json(obj):
+def _json(obj: object) -> object:
     if isinstance(obj, dict):
         return {str(k): _json(v) for k, v in obj.items() if not isinstance(v, (pd.DataFrame, pd.Series))}
     if isinstance(obj, list):
@@ -249,6 +263,7 @@ def _json(obj):
 
 
 def run(long: pd.DataFrame | None = None, out_dir: Path = OUT_DIR) -> dict:
+    """Write results/france/ (monthly decomposition, episodes, survival, repo, events, summary)."""
     out_dir.mkdir(parents=True, exist_ok=True)
     dec = decomposition(long)
     dec["monthly"].to_csv(out_dir / "decomposition_monthly.csv", float_format="%.3f")
@@ -276,7 +291,8 @@ def run(long: pd.DataFrame | None = None, out_dir: Path = OUT_DIR) -> dict:
         "decomposition": dec, "euro_wide": split,
         "survival": {k: v for k, v in surv.items() if k != "km"}, "sensitivity": sens,
         "conditions_share": {k: (float(cond[k].dropna().astype(bool).mean()) if cond[k].notna().any() else None,
-                                 int(cond[k].notna().sum())) for k in ("ecb_cut", "peers_tightening", "eurosystem_buying")}
+                                 int(cond[k].notna().sum())) for k in ("ecb_cut", "peers_tightening",
+                                                                       "eurosystem_buying")}
         if len(cond) else {},
         "france_now": france_now(eps, long), "repo": repo, "events": event_study(long),
         "excluded_events": events.EXCLUDED, "events_checked_on": events.CHECKED_ON,
@@ -286,5 +302,6 @@ def run(long: pd.DataFrame | None = None, out_dir: Path = OUT_DIR) -> dict:
 
 
 def load_summary(out_dir: Path = OUT_DIR) -> dict | None:
+    """The saved monthly chapter IV summary, or None."""
     path = out_dir / "summary.json"
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None

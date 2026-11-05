@@ -5,7 +5,6 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
-import pandas as pd  # noqa: E402
 import plotly.graph_objects as go  # noqa: E402
 import streamlit as st  # noqa: E402
 
@@ -88,7 +87,8 @@ if spreads is not None and fr:
     s = spreads.loc["2015-01-01":]
     fig = go.Figure()
     for cty in ("IT", "FR"):
-        fig.add_scatter(x=s.index, y=s[cty], name=w.COUNTRY_NAMES[cty], line=dict(color=ui.COUNTRY_COLORS[cty], width=2))
+        fig.add_scatter(x=s.index, y=s[cty], name=w.COUNTRY_NAMES[cty], line=dict(color=ui.COUNTRY_COLORS[cty],
+                                                                                  width=2))
     fig.update_yaxes(title="extra 10-year borrowing cost over Germany (bp)")
     ui.show_chart(fig, "French and Italian borrowing costs above Germany's", height=300, sources="ECB Data Portal")
 

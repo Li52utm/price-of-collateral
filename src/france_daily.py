@@ -130,7 +130,8 @@ def daily_rules(frame: pd.DataFrame) -> dict:
         out["gradual"][f"{int(x)}bp_{months}m"] = {"n_episodes": len(eps), "status": status(eps, last, BD_PER_MONTH),
                                                     "episodes": [_episode_json(e, BD_PER_MONTH) for e in eps]}
     now = frame.dropna().iloc[-1]
-    out["now"] = {"date": str(last.date()), "spread": float(frame["spread"].iloc[-1]), "smoothed": float(now["smoothed"]),
+    out["now"] = {"date": str(last.date()), "spread": float(frame["spread"].iloc[-1]),
+                  "smoothed": float(now["smoothed"]),
                   "baseline": float(now["baseline"]), "excess": float(now["smoothed"] - now["baseline"]),
                   "gap_to_blowout": float(now["baseline"] + BLOWOUT_BP - now["smoothed"])}
     return out
@@ -188,7 +189,8 @@ def daily_decomposition(long: pd.DataFrame | None = None) -> dict:
     base, last = both.loc[base_day], both.iloc[-1]
     oat_leg, bund_move = (last["oat"] - base["oat"]) * 100, (last["bund"] - base["bund"]) * 100
     return {"base_day": str(base_day.date()), "last_day": str(both.index[-1].date()),
-            "spread_base": float((base["oat"] - base["bund"]) * 100), "spread_last": float((last["oat"] - last["bund"]) * 100),
+            "spread_base": float((base["oat"] - base["bund"]) * 100),
+            "spread_last": float((last["oat"] - last["bund"]) * 100),
             "oat_leg": float(oat_leg), "bund_contribution": float(-bund_move),
             "spread_change": float(oat_leg - bund_move)}
 
@@ -223,7 +225,7 @@ def events_summary(rows: list[dict]) -> dict:
 # --------------------------------------------------------------------------- #
 # Everything
 # --------------------------------------------------------------------------- #
-def _json(obj):
+def _json(obj: object) -> object:
     return france._json(obj)
 
 

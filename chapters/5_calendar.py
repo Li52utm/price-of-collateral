@@ -27,7 +27,8 @@ if fc is None:
 
 ui.section_heading("i", "Dollar and euro year-ends go opposite ways")
 usd_t, eur_t = fc["currencies"]["USD"]["turns"]["ye"], fc["currencies"]["EUR"]["turns"]["ye"]
-ui.md(w.yearend_contrast_sentence(usd_t["mean"], usd_t["share_up"], usd_t["n"], eur_t["mean"], eur_t["share_up"], eur_t["n"]))
+ui.md(w.yearend_contrast_sentence(usd_t["mean"], usd_t["share_up"], usd_t["n"], eur_t["mean"], eur_t["share_up"],
+                                  eur_t["n"]))
 ui.md(w.yearend_mechanism_sentence(usd_t["mean"], eur_t["mean"]))
 fig = go.Figure()
 for cur in ("USD", "EUR"):
@@ -65,8 +66,8 @@ for cur in ("USD", "EUR", "JPY"):
         "Pinball loss, turn days": round(m["pinball_turn"], 3),
         "Below 90th pct": f"{m['below_q90']:.0%}", "Below 95th pct": f"{m['below_q95']:.0%}",
         "Inside 5-95%": f"{m['interval_coverage']:.0%}",
-        "DM p vs baseline (all / turns)": (f"{m['dm_all_p']:.3f} / {m['dm_turn_p']:.3f}" if m.get("dm_all_p") is not None
-                                            else "n/a"),
+        "DM p vs baseline (all / turns)": (f"{m['dm_all_p']:.3f} / {m['dm_turn_p']:.3f}"
+                                            if m.get("dm_all_p") is not None else "n/a"),
         "Holm-adjusted (all / turns)": (f"{m['dm_all_p_holm']:.3f} / {m['dm_turn_p_holm']:.3f}"
                                         if m.get("dm_all_p_holm") is not None else "n/a")} for m in cur_s["models"]])
     with st.expander(f"{cur}: test period {cur_s['test_start']} to {cur_s['test_end']}, {cur_s['n_test']} days, "
@@ -79,7 +80,8 @@ if pred is not None:
     fig = go.Figure()
     fig.add_scatter(x=pred.index, y=pred[f"{winner}_q95"], line=dict(width=0), showlegend=False, hoverinfo="skip")
     fig.add_scatter(x=pred.index, y=pred[f"{winner}_q05"], fill="tonexty",
-                    fillcolor=ui.hex_to_rgba(ui.CURRENCY_COLORS["USD"], 0.18), line=dict(width=0), name="5-95% forecast")
+                    fillcolor=ui.hex_to_rgba(ui.CURRENCY_COLORS["USD"],
+                                             0.18), line=dict(width=0), name="5-95% forecast")
     fig.add_scatter(x=pred.index, y=pred[f"{winner}_q50"], line=dict(color=ui.CURRENCY_COLORS["USD"], width=1),
                     name="median forecast")
     fig.add_scatter(x=pred.index, y=pred["actual"], line=dict(color=ui.COLORS["ink"], width=1), name="actual")

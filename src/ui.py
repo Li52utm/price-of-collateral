@@ -158,7 +158,7 @@ def source_line(sources: str = DEFAULT_SOURCES) -> str:
 
 
 def show_chart(fig: go.Figure, title: str | None = None, height: int = 380, sources: str = DEFAULT_SOURCES,
-               container=None) -> None:
+               container: object | None = None) -> None:
     """Title as HTML (wraps on phones), the styled figure, then the source line."""
     target = container if container is not None else st
     if title:
@@ -173,7 +173,7 @@ def show_chart(fig: go.Figure, title: str | None = None, height: int = 380, sour
 NA = "n/a"
 
 
-def _missing(x) -> bool:
+def _missing(x: object) -> bool:
     return x is None or (isinstance(x, float) and math.isnan(x))
 
 
@@ -185,6 +185,7 @@ def fmt_bp(x: float, decimals: int = 1, sign: bool = False) -> str:
 
 
 def fmt_pct(x: float, decimals: int = 1, sign: bool = False) -> str:
+    """A share as a percentage string, e.g. 0.123 -> '12.3%'."""
     if _missing(x):
         return NA
     return f"{x:+.{decimals}%}" if sign else f"{x:.{decimals}%}"
@@ -198,6 +199,7 @@ def fmt_rate(x: float, decimals: int = 2) -> str:
 
 
 def fmt_num(x: float, decimals: int = 2) -> str:
+    """A number with thousands separators and fixed decimals."""
     if _missing(x):
         return NA
     return f"{x:.{decimals}f}"
@@ -209,6 +211,7 @@ def escape_dollars(text: str) -> str:
 
 
 def md(text: str) -> None:
+    """Markdown with dollar signs escaped (Streamlit would read them as LaTeX)."""
     st.markdown(escape_dollars(text))
 
 
@@ -278,7 +281,8 @@ footer, [data-testid="stDecoration"], [data-testid="stStatusWidget"] {{ display:
 .chapter {{ display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 1.25rem; }}
 .chapter-numeral {{ font-family: {HEADING_FONT}; color: var(--slate); font-size: 4.5rem; line-height: 1; }}
 .chapter-title {{ font-family: {HEADING_FONT}; color: var(--ink); font-size: 2.6rem; line-height: 1.1; }}
-.chapter-subtitle {{ font-family: {BODY_FONT}; color: var(--slate); font-size: 1.05rem; margin: 0.6rem 0 0 0; max-width: 72ch; }}
+.chapter-subtitle {{ font-family: {BODY_FONT}; color: var(--slate); font-size: 1.05rem; margin: 0.6rem 0 0 0;
+  max-width: 72ch; }}
 .chapter-rule {{ border: none; border-top: 1px solid var(--rule); margin: 1.5rem 0 1rem 0; }}
 @media (max-width: 640px) {{
   .chapter-numeral {{ font-size: 3.25rem; }}
@@ -287,7 +291,8 @@ footer, [data-testid="stDecoration"], [data-testid="stStatusWidget"] {{ display:
   [data-testid="stMetricValue"] {{ font-size: 1.45rem !important; }}
 }}
 [class*="st-key-note-"] {{ margin: 0.5rem 0 1rem 0; }}
-[class*="st-key-note-"] [data-testid="stMarkdownContainer"] {{ border-left: 2px solid var(--slate); padding: 0.15rem 0 0.15rem 1rem; }}
+[class*="st-key-note-"] [data-testid="stMarkdownContainer"] {{ border-left: 2px solid var(--slate);
+  padding: 0.15rem 0 0.15rem 1rem; }}
 [class*="st-key-note-warning"] [data-testid="stMarkdownContainer"] {{ border-left-color: var(--amber); }}
 [class*="st-key-note-error"] [data-testid="stMarkdownContainer"] {{ border-left-color: var(--loss); }}
 [class*="st-key-note-"] p {{ color: var(--ink); margin-bottom: 0; }}
@@ -303,7 +308,8 @@ footer, [data-testid="stDecoration"], [data-testid="stStatusWidget"] {{ display:
 .section-numeral {{ color: var(--slate); margin-right: 0.35rem; }}
 .desk-title {{ font-family: {HEADING_FONT}; font-size: 1.65rem; color: var(--ink); margin: 0; }}
 .desk-meta {{ font-family: {BODY_FONT}; color: var(--slate); font-size: 0.9rem; margin: 0.2rem 0 0 0; }}
-.chart-title {{ font-family: {BODY_FONT}; font-weight: 500; font-size: 0.95rem; color: var(--ink); margin: 0.75rem 0 -0.25rem 0; }}
+.chart-title {{ font-family: {BODY_FONT}; font-weight: 500; font-size: 0.95rem; color: var(--ink);
+  margin: 0.75rem 0 -0.25rem 0; }}
 </style>
 """
 
@@ -347,7 +353,7 @@ def _key(prefix: str, *parts: object) -> str:
     return f"{prefix}-{digest}"
 
 
-def note(text: str, kind: str = "info", container=None) -> None:
+def note(text: str, kind: str = "info", container: object | None = None) -> None:
     """A quiet note: markdown beside a thin left rule (slate, amber or loss red)."""
     if kind not in NOTE_KINDS:
         raise ValueError(f"kind must be one of {NOTE_KINDS}, got {kind!r}")
@@ -372,7 +378,8 @@ def robustness_badge(chapter: str) -> None:
         return
     for key, s in rob["summary"].items():
         if s["chapter"] == chapter and s["n"]:
-            st.page_link(APPENDIX_PAGE, label=f"{key}: {w.robustness_badge_text(s['holds'], s['n'], s['not_computable'])}"
+            st.page_link(APPENDIX_PAGE,
+                         label=f"{key}: {w.robustness_badge_text(s['holds'], s['n'], s['not_computable'])}"
                          f" ({s['finding'][0].lower() + s['finding'][1:]})", icon=":material/verified:")
 
 
@@ -386,7 +393,7 @@ def verdict_box(label: str, verdict: str, sentence: str) -> None:
 def kpi_row(items: list[tuple]) -> None:
     """A row of metric cards. Each item is (label, value, delta or None[, sentence])."""
     with st.container(key=_key("kpis", items)):
-        for column, item in zip(st.columns(len(items)), items):
+        for column, item in zip(st.columns(len(items)), items, strict=False):
             label, value, delta = item[:3]
             column.metric(label, value, delta)
             if len(item) > 3:
@@ -414,10 +421,12 @@ def validation_summary_line(rep: dict | None) -> str:
     c = rep["counts"]
     failed = f", {c['FAIL']} failed" if c.get("FAIL") else ""
     plural = "warning" if c.get("WARN", 0) == 1 else "warnings"
-    return f"Data checks: {c.get('PASS', 0)} passed, {c.get('WARN', 0)} {plural}{failed}, as of {day(pd.Timestamp(rep['as_of']))}."
+    as_of = day(pd.Timestamp(rep["as_of"]))
+    return f"Data checks: {c.get('PASS', 0)} passed, {c.get('WARN', 0)} {plural}{failed}, as of {as_of}."
 
 
 def footer(lead: str = "Educational project. Not investment advice.") -> None:
+    """The page footer: disclaimer, sources and the data-check status."""
     st.divider()
     st.caption(f"{lead} Data: ECB Data Portal, Federal Reserve Bank of New York, FRED (St. Louis Fed), "
                f"Bank of Japan. Source code: [GitHub]({REPO_URL}).")
@@ -483,7 +492,7 @@ def csv(rel: str, index_col: int | None = 0, parse_dates: bool = True) -> pd.Dat
 
 
 @st.cache_data(show_spinner=False)
-def _read_any_csv(path: str, stamp: float, index_col, parse_dates) -> pd.DataFrame:
+def _read_any_csv(path: str, stamp: float, index_col: int | None, parse_dates: bool) -> pd.DataFrame:
     df = pd.read_csv(path, index_col=index_col)
     if parse_dates and index_col is not None:
         df.index = pd.to_datetime(df.index)
@@ -491,6 +500,7 @@ def _read_any_csv(path: str, stamp: float, index_col, parse_dates) -> pd.DataFra
 
 
 def missing_results(name: str) -> None:
+    """A note saying a results file is not available yet."""
     note(f"The {name} results are not available yet. They are written by `scripts/run_all.py` "
          "(run by the scheduled data refresh).", "warning")
 
@@ -505,5 +515,6 @@ def shade_periods(fig: go.Figure, periods: list[dict], kinds: tuple[str, ...], c
                           annotation_font=dict(size=10, color=COLORS["slate"]))
 
 
-def table(df: pd.DataFrame, **kwargs) -> None:
+def table(df: pd.DataFrame, **kwargs: object) -> None:
+    """A full-width table without the index."""
     st.dataframe(df, hide_index=True, width="stretch", **kwargs)

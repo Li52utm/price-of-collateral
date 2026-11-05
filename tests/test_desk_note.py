@@ -13,7 +13,8 @@ import wording as w
 
 def test_term_out_and_client_verdict_flip() -> None:
     lock, line = w.term_out_line("USD", 8.0, 3.0, 1.0)
-    assert lock and line.startswith("USD: Term out") and "above the term premium (+3.0 bp: term funding costs 3.0 bp more" in line
+    assert lock and line.startswith("USD: Term out")
+    assert "above the term premium (+3.0 bp: term funding costs 3.0 bp more" in line
     lock, line = w.term_out_line("EUR", 0.1, None, 1.0)
     assert not lock and "Stay overnight" in line and "no usable term rate" in line
     assert w.client_verdict(True, True)[0] == "Yes"

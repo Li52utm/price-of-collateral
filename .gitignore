@@ -29,3 +29,4 @@ Thumbs.db
 
 # Local secrets (WEBSTAT_API_KEY); never commit
 .env
+.coverage

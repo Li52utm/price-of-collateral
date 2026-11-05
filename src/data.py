@@ -14,7 +14,7 @@ published.
 from __future__ import annotations
 
 import json
-from functools import lru_cache
+from functools import cache, lru_cache
 from pathlib import Path
 
 import numpy as np
@@ -67,13 +67,14 @@ CURRENCY_OF_SOURCE = {"ecb": "EUR", "bbk": "EUR", "fred": "USD", "nyfed": "USD",
                       "fiscal": "USD", "boj": "JPY", "webstat": "EUR"}
 
 
-@lru_cache(maxsize=None)
+@cache
 def bday(currency: str) -> CustomBusinessDay:
     """Business-day offset for a currency's calendar."""
     return CustomBusinessDay(calendar=CALENDARS[currency])
 
 
-def business_days(currency: str, start, end) -> pd.DatetimeIndex:
+def business_days(currency: str, start: str | pd.Timestamp, end: str | pd.Timestamp) -> pd.DatetimeIndex:
+    """Every business day of the currency's calendar from start to end (inclusive)."""
     return pd.date_range(start, end, freq=bday(currency))
 
 
@@ -102,6 +103,7 @@ def _read_long(path: str, stamp: float) -> pd.DataFrame:
 
 
 def load_long(path: Path = SERIES_PATH) -> pd.DataFrame:
+    """The committed snapshot as a long frame (date, series, value), cached on the file time."""
     if not Path(path).exists():
         raise SnapshotMissing(f"{path} not found: run scripts/refresh_snapshots.py")
     return _read_long(str(path), Path(path).stat().st_mtime)
@@ -123,12 +125,14 @@ def get(name: str, long: pd.DataFrame | None = None) -> pd.Series:
 
 
 def load_settlements(path: Path = SETTLEMENTS_PATH) -> pd.DataFrame:
+    """Treasury coupon settlement dates from the committed snapshot."""
     if not Path(path).exists():
         raise SnapshotMissing(f"{path} not found")
     return pd.read_csv(path, parse_dates=["date"])
 
 
 def load_manifest(path: Path = MANIFEST_PATH) -> dict:
+    """The snapshot manifest (as-of date, fetch time, coverage and lag per series)."""
     if not Path(path).exists():
         raise SnapshotMissing(f"{path} not found")
     return json.loads(Path(path).read_text(encoding="utf-8"))
@@ -251,7 +255,8 @@ def write_snapshot(long: pd.DataFrame, settlements: pd.DataFrame, fetched_at: st
     directory.mkdir(parents=True, exist_ok=True)
     long = long.sort_values(["series", "date"]).reset_index(drop=True)
     long.to_csv(directory / "series.csv", index=False, float_format="%.6g", date_format="%Y-%m-%d")
-    settlements.sort_values("date", kind="mergesort").to_csv(directory / "settlements.csv", index=False, date_format="%Y-%m-%d")
+    settlements.sort_values("date", kind="mergesort").to_csv(directory / "settlements.csv", index=False,
+                                                             date_format="%Y-%m-%d")
     coverage = long.groupby("series")["date"].agg(["min", "max", "size"])
     manifest = {
         "as_of": str(as_of(long).date()),

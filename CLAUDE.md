@@ -51,8 +51,11 @@ to walk through in an interview.
 ## Layout
 
 - `src/` – library code (`sources`, `download`, `data`, `validation`, `pipeline`, `features`,
-  `forecast`, `corridors`, `collateral`, `france`, `survival`, `japan`, `desk_note`, `wording`,
-  `readme_block`, `ui`)
+  `forecast`, `forecast_v2`, `tails`, `corridors`, `collateral`, `france`, `france_daily`, `survival`, `japan`,
+  `events`, `inference` (bootstrap, Holm, calibration), `robustness`, `desk_note`, `wording`, `readme_block`, `ui`)
+- Quality gates: `ruff check` (ruff.toml, line length 120), coverage of src/ excluding ui.py >= 85% (.coveragerc),
+  `scripts/reproduce.py` rebuilds every results file and checks it against git (tests/test_determinism.py),
+  hypothesis no-look-ahead properties (tests/test_point_in_time.py).
 - `app.py` + `chapters/` – Streamlit dashboard (router + one file per chapter; the folder is NOT
   called `pages/`, which would switch on Streamlit's automatic page list)
 - `scripts/` – `refresh_snapshots.py` (the only code that downloads), `update_readme.py`,

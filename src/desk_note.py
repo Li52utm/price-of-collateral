@@ -52,6 +52,7 @@ def usd_hurdle(tvo: dict) -> tuple[float | None, bool]:
 
 
 def build(r: dict) -> dict | None:
+    """Every line of the Year-End 2026 desk note from the results (None without the frozen forecast)."""
     frozen, fcs = r.get("frozen"), r.get("forecast")
     if not frozen or not fcs:
         return None
@@ -69,7 +70,8 @@ def build(r: dict) -> dict | None:
     turns = {c: fcs["currencies"][c]["turns"]["ye"] for c in ("USD", "EUR")}
     key_points = [
         (f"Dollar: the frozen forecast for SOFR minus interest on reserves on 31 December 2026 is "
-         f"{w.signed_bp(usd['q50'])} (median), with a 5-95% range of {w.signed_bp(usd['q05'])} to {w.signed_bp(usd['q95'])}; "
+         f"{w.signed_bp(usd['q50'])} (median), with a 5-95% range of {w.signed_bp(usd['q05'])} to "
+         f"{w.signed_bp(usd['q95'])}; "
          f"the latest level is {w.signed_bp(usd['latest_level'])}."),
         (f"Euro: the frozen forecast for €STR minus the deposit facility rate on 31 December 2026 is "
          f"{w.signed_bp(eur['q50'])}, with a 5-95% range of {w.signed_bp(eur['q05'])} to {w.signed_bp(eur['q95'])}."),
@@ -93,7 +95,8 @@ def build(r: dict) -> dict | None:
     if fr:
         repo = fr["repo"]
         france_lines.append(w.repo_treatment_sentence(repo["fr_de_before"], repo["fr_de_after"], repo["it_de_before"],
-                                                      repo["it_de_after"], repo["position_before"], repo["position_after"],
+                                                      repo["it_de_after"], repo["position_before"],
+                                                      repo["position_after"],
                                                       findings.adjusted_p(r, "chow_june2024_it_fr",
                                                                           repo["chow_it_fr"]["p_value"])[0],
                                                       repo["latest"]["fr_de"], repo["latest"]["it_de"],
@@ -189,11 +192,13 @@ def markdown(note: dict) -> str:
             x = v2f["currencies"][c]
             lines.append(f"| {c} | {x['target']} | v2 challenger: CQR + year-end analogue | {x['q05']:+.1f} | "
                          f"{x['q50']:+.1f} | {x['q90']:+.1f} | {x['q95']:+.1f} |")
-        lines += ["", "v1 is the pre-registered headline; v2 was designed after seeing v1's test-period calibration.", "",
+        lines += ["", "v1 is the pre-registered headline; v2 was designed after seeing v1's test-period "
+                      "calibration.", "",
                   *[f"- {x}" for x in note["v2"]["lines"]]]
     lines += ["", *note["models"], "", "## What the turn means for funding", "", *[f"- {x}" for x in note["funding"]],
               "", "## France", "", *note["france"], "", "## Risks", "", *[f"- {x}" for x in note["risks"]], "",
               "## Why the 90th and 95th percentiles coincide", "", *[f"- {x}" for x in note.get("tails", [])], "",
-              "## Scoring", "", *note["scoring"], "", "## Disclosures", "", *[f"- {x}" for x in note["disclosures"]], "",
+              "## Scoring", "", *note["scoring"], "",
+              "## Disclosures", "", *[f"- {x}" for x in note["disclosures"]], "",
               f"**{note['client']['question']} {note['client']['verdict']}.** {note['client']['sentence']}", ""]
     return "\n".join(lines)

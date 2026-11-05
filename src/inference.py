@@ -41,7 +41,7 @@ def _read_json(rel: str) -> dict | None:
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
 
 
-def _csv(rel: str, **kwargs) -> pd.DataFrame | None:
+def _csv(rel: str, **kwargs: object) -> pd.DataFrame | None:
     path = RESULTS / rel
     return pd.read_csv(path, **kwargs) if path.exists() else None
 
@@ -66,7 +66,7 @@ def forecast_intervals(pred: pd.DataFrame, models: list[str]) -> dict:
         diff = loss - base
         inside = ((y >= pred[f"{m}_q05"].to_numpy()) & (y <= pred[f"{m}_q95"].to_numpy())).astype(float)
 
-        def turn_mean(idx, d=diff):
+        def turn_mean(idx: np.ndarray, d: np.ndarray = diff) -> float:
             sel = idx[turn[idx]]
             return float(d[sel].mean()) if len(sel) else float("nan")
 
@@ -111,9 +111,10 @@ def calibration(pred: pd.DataFrame, model: str) -> dict:
 # Reserves slope
 # --------------------------------------------------------------------------- #
 def slope_interval(pairs: pd.DataFrame, block: int = BLOCK_WEEKS) -> dict:
+    """OLS slope of the spread on liquidity with its moving-block bootstrap interval."""
     x, y = pairs["liq"].to_numpy(), pairs["spread"].to_numpy()
 
-    def slope(idx):
+    def slope(idx: np.ndarray) -> float:
         return float(np.polyfit(x[idx], y[idx], 1)[0])
 
     return {"slope": slope(np.arange(len(x))), **st.block_bootstrap_ci(slope, len(x), block, N_BOOT, SEED)}
@@ -128,12 +129,13 @@ def std_effects(df: pd.DataFrame, country: str) -> dict:
     X = np.column_stack([np.ones(len(df)), df[cols].to_numpy()])
     beta, *_ = np.linalg.lstsq(X, df[f"repo_{country}"].to_numpy(), rcond=None)
     sd = df[cols].std(ddof=1).to_numpy()
-    eff = dict(zip(("credit", "liquidity", "de_holdings"), beta[1:] * sd))
+    eff = dict(zip(("credit", "liquidity", "de_holdings"), beta[1:] * sd, strict=False))
     eff["difference"] = abs(eff["credit"]) - (abs(eff["liquidity"]) + abs(eff["de_holdings"]))
     return {k: float(v) for k, v in eff.items()}
 
 
 def credit_scarcity_intervals(panel: pd.DataFrame, country: str, block: int = BLOCK_PERIODS) -> dict:
+    """Standardised credit and scarcity effects, their difference, and intervals."""
     df = panel[[f"repo_{country}", f"credit_{country}", "liquidity", "de_holdings"]].dropna()
     point = std_effects(df, country)
     out = {"point": point}
@@ -156,7 +158,7 @@ def france_split_intervals(spreads: pd.DataFrame, fit_window: tuple[str, str] = 
     fit = d.loc[fit_window[0]:fit_window[1]]
     post = d.loc[since:]
 
-    def split(idx):
+    def split(idx: np.ndarray) -> tuple[float, float, float]:
         f = fit.iloc[idx]
         X = np.column_stack([np.ones(len(f)), f[list(regressors)].to_numpy()])
         b, *_ = np.linalg.lstsq(X, f["FR"].to_numpy(), rcond=None)
@@ -178,6 +180,7 @@ def france_split_intervals(spreads: pd.DataFrame, fit_window: tuple[str, str] = 
 # Japan half-lives
 # --------------------------------------------------------------------------- #
 def ecm_rows(daily: pd.DataFrame, start: str, end: str | None) -> pd.DataFrame:
+    """Rows of the Japan error-correction regression (d TONA, lagged gap, d policy) for a sample."""
     sub = daily.loc[start:end].dropna(subset=["tona", "policy"])
     return pd.DataFrame({"d_tona": sub["tona"].diff(), "gap_lag": (sub["tona"] - sub["policy"]).shift(1),
                          "d_policy": sub["policy"].diff()}).dropna()
@@ -250,7 +253,7 @@ def test_registry(r: dict, calib: dict) -> list[dict]:
     for fam in sorted({t["family"] for t in tests}):
         members = [t for t in tests if t["family"] == fam]
         adj = st.holm([np.nan if t["p"] is None else t["p"] for t in members])
-        for t, a in zip(members, adj):
+        for t, a in zip(members, adj, strict=False):
             t["p_holm"] = None if a != a else float(a)
             t["m"] = len(members)
     return tests

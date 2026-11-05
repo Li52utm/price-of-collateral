@@ -51,7 +51,7 @@ def _design(X: pd.DataFrame, columns: list[str]) -> pd.DataFrame:
     return pd.concat([pd.Series(1.0, index=X.index, name="const"), X[columns].astype(float)], axis=1)
 
 
-def fit_qr(X: pd.DataFrame, y: pd.Series, columns: list[str], taus=QUANTILES) -> dict:
+def fit_qr(X: pd.DataFrame, y: pd.Series, columns: list[str], taus: tuple[float, ...] = QUANTILES) -> dict:
     """Quantile regression per tau. Columns constant on the fitting sample are dropped (not estimable)."""
     usable = [c for c in columns if X[c].nunique() > 1]
     D = _design(X, usable)
@@ -63,18 +63,21 @@ def fit_qr(X: pd.DataFrame, y: pd.Series, columns: list[str], taus=QUANTILES) ->
 
 
 def predict_qr(model: dict, X: pd.DataFrame) -> pd.DataFrame:
+    """Quantile forecasts of a fitted quantile regression (sorted per day)."""
     D = _design(X, model["columns"])
     out = pd.DataFrame({tau: D.to_numpy() @ model["params"][tau].to_numpy() for tau in model["params"]},
                        index=X.index)
     return _sort_quantiles(out)
 
 
-def fit_baseline(X: pd.DataFrame, y: pd.Series, taus=QUANTILES) -> dict:
+def fit_baseline(X: pd.DataFrame, y: pd.Series, taus: tuple[float, ...] = QUANTILES) -> dict:
+    """Baseline offsets: the empirical quantiles of the last-comparable-turn errors."""
     errors = (y - X["baseline"]).dropna()  # days without an earlier comparable day are skipped
     return {"offsets": {tau: float(np.quantile(errors, tau)) for tau in taus}}
 
 
 def predict_baseline(model: dict, X: pd.DataFrame) -> pd.DataFrame:
+    """Baseline quantile forecasts: last comparable value plus the fitted offsets."""
     return _sort_quantiles(pd.DataFrame({tau: X["baseline"] + off for tau, off in model["offsets"].items()},
                                         index=X.index))
 
@@ -86,12 +89,14 @@ def _sort_quantiles(pred: pd.DataFrame) -> pd.DataFrame:
 
 
 def fit(model_name: str, currency: str, X: pd.DataFrame, y: pd.Series) -> dict:
+    """Fit one of the three models (baseline, calendar, state) for a currency."""
     if model_name == "baseline":
         return {"kind": "baseline", **fit_baseline(X, y)}
     return {"kind": "qr", **fit_qr(X, y, F.feature_columns(currency, model_name))}
 
 
 def predict(model: dict, X: pd.DataFrame) -> pd.DataFrame:
+    """Quantile forecasts from any fitted model."""
     return predict_baseline(model, X) if model["kind"] == "baseline" else predict_qr(model, X)
 
 
@@ -112,6 +117,7 @@ def dataset(currency: str, long: pd.DataFrame | None = None,
 # Evaluation
 # --------------------------------------------------------------------------- #
 def is_turn(X: pd.DataFrame) -> pd.Series:
+    """True on month-, quarter- and year-end days."""
     return X["me"] == 1
 
 
@@ -188,6 +194,7 @@ def turn_effects(currency: str, long: pd.DataFrame | None = None, lookback: int 
 
 
 def turn_summary(effects: pd.DataFrame) -> dict:
+    """Mean, median and share of rises of the turn effect for year-, quarter- and month-ends."""
     out = {}
     for kind in ("ye", "qe", "me"):
         sub = effects[effects["type"] == kind]["effect"]
@@ -207,6 +214,7 @@ def accrual(rate_pct: float, days: float) -> float:
 
 
 def term_vs_overnight(evaluation: dict, long: pd.DataFrame | None = None) -> dict:
+    """Backtest of the term-vs-overnight rule on test-period month-ends (USD 100m)."""
     on = data.get("repo_dvp_on", long)
     term = data.get("repo_dvp_term", long)
     lag = 1
@@ -225,7 +233,7 @@ def term_vs_overnight(evaluation: dict, long: pd.DataFrame | None = None) -> dic
             continue
         # Overnight cost: each night's rate applies until the next business day (weekends accrue).
         stops = list(nights.index[1:]) + [M]
-        cost_on = sum(accrual(r, (b - a).days) for (a, r), b in zip(nights.items(), stops))
+        cost_on = sum(accrual(r, (b - a).days) for (a, r), b in zip(nights.items(), stops, strict=False))
         cost_term = accrual(float(term[S]), TERM_DAYS)
         # Decision on S with data published by S.
         known_term = data.point_in_time(term, lag, pd.DatetimeIndex([S]), "USD").iloc[0]
@@ -287,6 +295,7 @@ CODE_FILES = ("src/data.py", "src/features.py", "src/forecast.py", "src/stats_to
 
 
 def code_hash() -> str:
+    """SHA-256 of the forecasting code files recorded in the frozen forecast."""
     h = hashlib.sha256()
     for name in CODE_FILES:
         h.update((ROOT / name).read_bytes())
@@ -294,6 +303,7 @@ def code_hash() -> str:
 
 
 def git_commit() -> str:
+    """The current commit hash (with '-dirty' if src/ has uncommitted changes)."""
     try:
         commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True,
                                 check=True).stdout.strip()
@@ -305,6 +315,7 @@ def git_commit() -> str:
 
 
 def build_frozen(evaluations: dict, long: pd.DataFrame | None = None) -> dict:
+    """The frozen v1 forecast dictionary (metadata plus each currency's path)."""
     created = pd.Timestamp.now(tz="UTC").floor("s")
     return {
         "title": "Year-End 2026 funding forecast",
@@ -333,6 +344,7 @@ def create_frozen_forecast(path: Path = FROZEN_PATH, long: pd.DataFrame | None =
 
 
 def load_frozen(path: Path = FROZEN_PATH) -> dict | None:
+    """The frozen v1 forecast, or None if it does not exist."""
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
 
 
@@ -360,7 +372,7 @@ def score_yearend(frozen: dict, long: pd.DataFrame | None = None) -> dict | None
 # --------------------------------------------------------------------------- #
 # Run everything
 # --------------------------------------------------------------------------- #
-def _json_ready(obj):
+def _json_ready(obj: object) -> object:
     if isinstance(obj, dict):
         return {str(k): _json_ready(v) for k, v in obj.items()}
     if isinstance(obj, list):
@@ -381,7 +393,7 @@ def adjust_dm(currencies: dict) -> None:
     for kind in ("turn", "all"):
         rows = [m for c in EVAL_CURRENCIES for m in currencies[c]["models"] if m["model"] != "baseline"]
         adjusted = st.holm([m[f"dm_{kind}_p"] for m in rows])
-        for m, p in zip(rows, adjusted):
+        for m, p in zip(rows, adjusted, strict=False):
             m[f"dm_{kind}_p_holm"] = float(p)
 
 
@@ -412,7 +424,8 @@ def run(long: pd.DataFrame | None = None, out_dir: Path = OUT_DIR) -> dict:
     tvo.update(term_staleness(data.get("repo_dvp_term", long), as_of))
     summary["term_vs_overnight"] = {"USD": {k: v for k, v in tvo.items() if k != "windows"},
                                     "EUR": {"skipped": True,
-                                            "reason": "no free daily euro term repo rate (see CLAUDE.md, Plan adjustments)"}}
+                                            "reason": "no free daily euro term repo rate (see CLAUDE.md, Plan "
+                                                      "adjustments)"}}
     (out_dir / "summary.json").write_text(json.dumps(_json_ready(summary), indent=1), encoding="utf-8")
     frozen = load_frozen()
     if frozen is not None:
@@ -423,5 +436,6 @@ def run(long: pd.DataFrame | None = None, out_dir: Path = OUT_DIR) -> dict:
 
 
 def load_summary(out_dir: Path = OUT_DIR) -> dict | None:
+    """The saved chapter V summary, or None if it has not been written."""
     path = out_dir / "summary.json"
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None

@@ -603,3 +603,11 @@ the challenger shown beside it.
   resignation (+4, 93rd) and Fitch's negative outlook (+6.5, 96th); Moody's no-downgrade review narrowed the
   spread by 18 bp (lowest percentile). The monthly study keeps its method, so events in the same month share
   that month's change (Oct 2026 is beyond the monthly data).
+- **2026-11-05, U6: engineering checks; one latent bug fixed.** `download.nyfed_repo_operations` summed
+  same-day operations through a dict keyed by date, so only the last operation of each day was kept. The
+  function feeds no result (Fed repo operations come from FRED `RPONTSYD`), so no number changed; it now
+  sums them. Determinism: all 43 results files rebuild byte-identical from the committed snapshot.
+  Hypothesis: perturbing or deleting any data after a random date t leaves every forecast input and every
+  daily France input at or before t unchanged (the ECB maintenance calendar is treated as known in advance).
+  Coverage of src/ excluding ui.py: 92%. Ruff clean; every public function in src/ has type hints and a
+  docstring.

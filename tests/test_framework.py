@@ -5,11 +5,11 @@ from __future__ import annotations
 import pandas as pd
 import pytest
 import requests
+from conftest import NetworkBlocked
 
 import pipeline
 import ui
 import wording
-from conftest import NetworkBlocked
 from readme_block import END, START, current_block, render_block, replace_auto_block
 
 
