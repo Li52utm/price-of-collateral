@@ -223,7 +223,11 @@ def term_vs_overnight(evaluation: dict, long: pd.DataFrame | None = None) -> dic
         premium = (known_term - known_on) * 100
         window = pred.loc[S:M - pd.Timedelta(days=1), median_col]
         level = data.point_in_time(y, F.TARGET_LAG["USD"], pd.DatetimeIndex([S]), "USD").iloc[0]
-        spike = float(window.mean() - level) if len(window) else float("nan")
+        # Night-weighted, like the cost it is compared with (corrected 2026-11-05, METHODOLOGY.md U0).
+        bdays = data.business_days("USD", S, M - pd.Timedelta(days=1))
+        medians = window.reindex(bdays).ffill().bfill()
+        weights = st.night_weights(bdays, M)
+        spike = st.weighted_mean(medians.to_numpy(), weights) - level if len(window) else float("nan")
         lock = bool(spike > premium)
         rows.append({"turn": T, "start": S, "type": pred.loc[T, "day_type"], "premium_bp": float(premium),
                      "spike_bp": spike, "lock_term": lock, "cost_on": cost_on, "cost_term": cost_term,
@@ -235,6 +239,17 @@ def term_vs_overnight(evaluation: dict, long: pd.DataFrame | None = None) -> dic
             "saving_vs_on": totals.get("on", np.nan) - totals.get("rule", np.nan) if totals else float("nan"),
             "saving_vs_term": totals.get("term", np.nan) - totals.get("rule", np.nan) if totals else float("nan"),
             "windows": df}
+
+
+STALE_TERM_BD = 20                        # METHODOLOGY.md, U0: older than this, the premium is stale
+
+
+def term_staleness(term: pd.Series, as_of: pd.Timestamp) -> dict:
+    """Date of the latest published term rate and its age in US business days at the as-of date."""
+    last = term.dropna().index.max()
+    age = max(len(data.business_days("USD", last, as_of)) - 1, 0)
+    return {"latest_term_date": str(last.date()), "term_age_bd": int(age), "term_stale": bool(age > STALE_TERM_BD),
+            "stale_after_bd": STALE_TERM_BD}
 
 
 # --------------------------------------------------------------------------- #
@@ -374,6 +389,7 @@ def run(long: pd.DataFrame | None = None, out_dir: Path = OUT_DIR) -> dict:
     on_now = data.point_in_time(data.get("repo_dvp_on", long), 1, day, "USD").iloc[0]
     tvo["latest_premium_bp"] = float((term_now - on_now) * 100)
     tvo["latest_term_rate"], tvo["latest_on_rate"] = float(term_now), float(on_now)
+    tvo.update(term_staleness(data.get("repo_dvp_term", long), as_of))
     summary["term_vs_overnight"] = {"USD": {k: v for k, v in tvo.items() if k != "windows"},
                                     "EUR": {"skipped": True,
                                             "reason": "no free daily euro term repo rate (see CLAUDE.md, Plan adjustments)"}}

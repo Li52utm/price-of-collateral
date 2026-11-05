@@ -17,6 +17,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 STEPS: list[tuple[str, str]] = [  # (module, function); filled in phase by phase
     ("forecast", "run"),
+    ("tails", "run"),
     ("corridors", "run"),
     ("collateral", "run"),
     ("france", "run"),

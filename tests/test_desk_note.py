@@ -13,9 +13,9 @@ import wording as w
 
 def test_term_out_and_client_verdict_flip() -> None:
     lock, line = w.term_out_line("USD", 8.0, 3.0, 1.0)
-    assert lock and line.startswith("USD: Term out") and "above the term premium (+3.0 bp)" in line
+    assert lock and line.startswith("USD: Term out") and "above the term premium (+3.0 bp: term funding costs 3.0 bp more" in line
     lock, line = w.term_out_line("EUR", 0.1, None, 1.0)
-    assert not lock and "Stay overnight" in line and "no free term rate" in line
+    assert not lock and "Stay overnight" in line and "no usable term rate" in line
     assert w.client_verdict(True, True)[0] == "Yes"
     assert w.client_verdict(True, False)[0] == "Partly" and "dollar leg" in w.client_verdict(True, False)[1]
     assert w.client_verdict(False, False)[0] == "No"
@@ -59,3 +59,16 @@ def test_expected_excess_uses_the_window_mean() -> None:
                                         ("2026-12-18", "2026-12-21", "2026-12-22", "2026-12-23", "2026-12-24",
                                          "2026-12-28", "2026-12-29", "2026-12-30", "2026-12-31", "2027-01-04")}}
     assert desk_note.expected_excess(fc) == pytest.approx(1.0)
+
+
+def test_night_weights_give_the_turn_its_weekend() -> None:
+    import pandas as pd
+
+    import stats_tools as st
+    days = pd.DatetimeIndex(["2026-12-21", "2026-12-22", "2026-12-23", "2026-12-24", "2026-12-28", "2026-12-29",
+                             "2026-12-30", "2026-12-31"])
+    weights = st.night_weights(days, pd.Timestamp("2027-01-04"))
+    assert list(weights) == [1, 1, 1, 4, 1, 1, 1, 4] and weights.sum() == 14
+    fc = {"latest_level": 0.0, "path": {str(d.date()): {"q50": 14.0 if d == days[-1] else 0.0} for d in days}}
+    fc["path"]["2027-01-04"] = {"q50": 0.0}
+    assert desk_note.expected_excess(fc) == pytest.approx(4.0)  # 14 bp x 4 nights / 14 nights

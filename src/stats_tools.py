@@ -76,6 +76,27 @@ def bootstrap_indices(n: int, n_boot: int, seed: int = 42, block: int = 1) -> np
     return np.minimum(idx, n - 1)
 
 
+def night_weights(days: pd.DatetimeIndex, end: pd.Timestamp) -> np.ndarray:
+    """Calendar nights each business day's overnight rate applies for, up to `end` (exclusive).
+
+    A rate set on a business day applies until the next business day (weekends and holidays accrue at
+    the last rate), so Thursday 31 December 2026 covers four nights to Monday 4 January 2027.
+    `days` must be every business day of the window, in order.
+    """
+    days = pd.DatetimeIndex(days)
+    if len(days) == 0:
+        return np.array([])
+    stops = list(days[1:]) + [pd.Timestamp(end)]
+    return np.array([max((b - a).days, 0) for a, b in zip(days, stops)], dtype=float)
+
+
+def weighted_mean(values: np.ndarray, weights: np.ndarray) -> float:
+    """Weighted mean; NaN when the weights sum to zero."""
+    values, weights = np.asarray(values, float), np.asarray(weights, float)
+    total = weights.sum()
+    return float((values * weights).sum() / total) if total > 0 else float("nan")
+
+
 def summary_quantiles(x: pd.Series | np.ndarray, qs=(0.05, 0.5, 0.95)) -> dict:
     x = np.asarray(x, dtype=float)
     x = x[~np.isnan(x)]

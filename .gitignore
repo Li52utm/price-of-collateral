@@ -26,3 +26,6 @@ Thumbs.db
 .idea/
 
 # NOTE: results/ is deliberately tracked (the dashboard and tests read it).
+
+# Local secrets (WEBSTAT_API_KEY); never commit
+.env

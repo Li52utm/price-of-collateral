@@ -19,6 +19,11 @@ def wider_or_narrower(x: float) -> str:
     return "wider" if x > 0 else "narrower" if x < 0 else "unchanged"
 
 
+def more_or_less(x: float) -> str:
+    """'more' for a positive difference, 'less' for a negative one (the number is printed as a magnitude)."""
+    return "more" if x >= 0 else "less"
+
+
 def rose_or_fell(x: float) -> str:
     return "rose" if x > 0 else "fell" if x < 0 else "was unchanged"
 
@@ -81,7 +86,7 @@ def yearend_contrast_sentence(usd_mean: float, usd_share_up: float, usd_n: int,
                               eur_mean: float, eur_share_up: float, eur_n: int) -> str:
     """Direction and size of the year-end turn in each currency."""
     def one(name: str, mean: float, share: float, n: int) -> str:
-        direction = "rose" if mean > 0 else "fell"
+        direction = rose_or_fell(mean)
         return (f"{name} {direction} by {bp(mean)} on average at the year-end turn relative to the previous "
                 f"two weeks ({share:.0%} of {n} year-ends up)")
     same = (usd_mean > 0) == (eur_mean > 0)
@@ -171,12 +176,17 @@ def markov_sentence(currency: str, calm_mean: float, stressed_mean: float, stres
 
 
 def reserves_sentence(currency: str, winner: str, slope: float, point: float, band: list, latest: float,
-                      unit: str) -> str:
+                      unit: str, identified: bool = True, edge_share: float | None = None) -> str:
+    """Slope of the spread on liquidity, and where pressure starts only if the kink is identified (U0)."""
     move = "rises" if slope < 0 else "falls"
     head = (f"Out of sample, the best description of the link between {unit} and the spread is {winner}: "
             f"the spread {move} by about {bp(slope)} for each 1 trillion less.")
     if point != point:
         return head
+    if not identified:
+        share = f" ({edge_share:.0%} of bootstrap estimates sit at the edge of the search range)"             if edge_share is not None else ""
+        return (f"{head} The point where pressure starts is not identified: the estimated kink lies at the edge of "
+                f"the range searched{share}, so the data cannot place it.")
     where = ("below" if latest < band[0] else "inside" if latest <= band[1] else "above")
     caveat = "" if winner != "linear" else " (a reference only: the threshold model did not win out of sample)"
     return (f"{head} The estimated point where pressure starts is {point:.2f} trillion{caveat}, with a 95% band of "
@@ -223,7 +233,8 @@ def verdict_phrase(verdict: str) -> str:
 
 def collateral_sentence(country: str, verdict: str, credit_effect: float, scarcity_effect: float, r2: float,
                         mean_spread: float, latest: float) -> str:
-    return (f"{COUNTRY_NAMES[country]} collateral cost {bp(mean_spread)} more than German collateral in repo on "
+    return (f"{COUNTRY_NAMES[country]} collateral cost {bp(mean_spread)} {more_or_less(mean_spread)} than German "
+            f"collateral in repo on "
             f"average (latest {signed_bp(latest)}). The regression explains {r2:.0%} of the variation and reads as "
             f"{verdict_phrase(verdict)}: a one-standard-deviation move in the yield spread is worth "
             f"{signed_bp(credit_effect)}, the two scarcity measures together {bp(scarcity_effect)}.")
@@ -317,8 +328,9 @@ def repo_treatment_sentence(fr_before: float, fr_after: float, it_before: float,
                             latest_it: float) -> str:
     closer = pos_after > pos_before
     text = (f"In repo, French collateral moved {'closer to Italian' if closer else 'away from Italian'} pricing after "
-            f"June 2024: its premium over German collateral went from {bp(fr_before)} to {bp(fr_after)}, the Italian "
-            f"premium from {bp(it_before)} to {bp(it_after)}, and France's position between Germany (0) and Italy (1) "
+            f"June 2024: its spread to German collateral went from {signed_bp(fr_before)} to {signed_bp(fr_after)}, the "
+            f"Italian spread from {signed_bp(it_before)} to {signed_bp(it_after)}, and France's position between Germany "
+            f"(0) and Italy (1) "
             f"from {pos_before:.2f} to {pos_after:.2f}. The change in the Italy-France gap is "
             f"{significance_phrase(p_gap)}.")
     if latest_fr > latest_it:
@@ -393,31 +405,76 @@ def story_answer(it_mean: float, it_latest: float, fr_latest: float, it_latest_2
                "French collateral still costs less than Italian")
     return ("A secured overnight loan, and the bond changes the price",
             f"Repo is borrowing cash against a government bond, like a pawn shop for bonds. Lending against Italian "
-            f"bonds has paid {bp(it_mean)} more than lending against German bonds on average since 2018 "
+            f"bonds has paid {bp(it_mean)} {more_or_less(it_mean)} than lending against German bonds on average since 2018 "
             f"(latest {signed_bp(it_latest)}); {ranking} ({signed_bp(fr_latest)}).")
 
 
-def term_out_line(currency: str, excess_bp: float, premium_bp: float | None, threshold_bp: float) -> tuple[bool, str]:
-    """(term out?, sentence) for one currency (rule in METHODOLOGY.md, Phase 6)."""
+def term_out_line(currency: str, excess_bp: float, premium_bp: float | None, threshold_bp: float,
+                  turn_median_bp: float | None = None) -> tuple[bool, str]:
+    """(term out?, sentence) for one currency (rule in METHODOLOGY.md, Phase 6, corrected in U0).
+
+    Term out iff the expected night-weighted excess overnight cost exceeds the hurdle: the term premium
+    (term minus overnight; negative = term is cheaper) or, without a usable premium, a fixed hurdle.
+    """
     hurdle = premium_bp if premium_bp is not None else threshold_bp
     lock = excess_bp > hurdle
-    what = f"the term premium ({signed_bp(premium_bp)})" if premium_bp is not None else         f"a {bp(threshold_bp, 0)} hurdle (no free term rate exists)"
+    if premium_bp is None:
+        what = f"a {bp(threshold_bp, 0)} hurdle (no usable term rate)"
+    elif premium_bp < 0:
+        what = f"the term premium ({signed_bp(premium_bp)}: term funding is {bp(premium_bp)} cheaper than overnight)"
+    elif premium_bp > 0:
+        what = f"the term premium ({signed_bp(premium_bp)}: term funding costs {bp(premium_bp)} more than overnight)"
+    else:
+        what = "the term premium (zero: term and overnight cost the same)"
     verdict = "Term out" if lock else "Stay overnight"
-    return lock, (f"{currency}: {verdict}. The forecast puts overnight funding over the turn {signed_bp(excess_bp)} "
-                  f"away from today's level, {'above' if lock else 'below'} {what}.")
+    turn = f"the 31 December median is {signed_bp(turn_median_bp)}, and " if turn_median_bp is not None else ""
+    return lock, (f"{currency}: {verdict}. Over the 14 nights from 7 business days before the turn, {turn}the forecast "
+                  f"puts overnight funding {signed_bp(excess_bp)} away from today's level on average (weighted by "
+                  f"nights), {above_or_below(excess_bp - hurdle)} {what}.")
 
 
-def client_verdict(usd_lock: bool, eur_lock: bool) -> tuple[str, str]:
+def term_staleness_sentence(term_date: str | None, age_bd: int | None, stale: bool, limit_bd: int) -> str:
+    """Empty when the term rate is fresh; otherwise says it is stale and that the hurdle replaced it."""
+    if not stale or term_date is None:
+        return ""
+    return (f"The latest published term rate is from {pd_day(term_date)}, {age_bd} business days old (more than "
+            f"{limit_bd}), so the term premium is treated as stale and the 1 bp hurdle is used instead.")
+
+
+def client_verdict(usd_lock: bool, eur_lock: bool, usd_premium_bp: float | None = None) -> tuple[str, str]:
+    """'Yes' / 'Partly' / 'No' and the sentence, from the two currencies' term-out decisions."""
     n = int(usd_lock) + int(eur_lock)
     verdict = {2: "Yes", 1: "Partly", 0: "No"}[n]
     if n == 2:
-        sentence = "Both the dollar and the euro forecasts imply that locking in term funding across 31 December 2026 should cost less than rolling overnight."
+        sentence = ("Both the dollar and the euro forecasts imply that locking in term funding across 31 December "
+                    "2026 should cost less than rolling overnight.")
     elif usd_lock:
-        sentence = ("Term out the dollar leg, where the forecast year-end spike exceeds the term premium; keep euro "
-                    "funding overnight, where the turn has historically pushed rates down rather than up.")
+        sentence = ("Term out the dollar leg, where the expected cost of rolling overnight over the turn exceeds the "
+                    "term rate; keep euro funding overnight, where the expected excess cost is below the hurdle.")
     elif eur_lock:
         sentence = "Term out the euro leg only; the dollar forecast does not exceed the term premium."
+    elif usd_premium_bp is not None and usd_premium_bp < 0:
+        sentence = ("Stay overnight in both currencies. Dollar term funding is currently cheaper than overnight, but "
+                    "the forecast expects overnight funding over the turn window to fall by more than that discount; "
+                    "in euros the expected excess cost is below the hurdle. The upper tail is the risk to manage.")
     else:
-        sentence = ("Neither forecast spike is large enough to pay for term funding; rolling overnight is the "
-                    "cheaper expected choice in both currencies, with the upper tail as the risk to manage.")
+        sentence = ("Stay overnight in both currencies: the expected excess cost of rolling overnight over the turn "
+                    "is below the hurdle in each, with the upper tail as the risk to manage.")
     return verdict, sentence
+
+
+def tail_sentence(currency: str, q90: float, q95: float, raw90: float, raw95: float, n_year_ends: int,
+                  pins: list[str], same_pins: bool) -> str:
+    """Why the frozen 90th and 95th percentiles on 31 December are (nearly) the same (U0 diagnosis)."""
+    crossed = raw90 > raw95
+    order = (f"before sorting the 90th percentile ({signed_bp(raw90, 2)}) was above the 95th ({signed_bp(raw95, 2)}), "
+             "so the two were swapped" if crossed else
+             f"before sorting the 90th and 95th percentiles were {signed_bp(raw90, 2)} and {signed_bp(raw95, 2)}")
+    pinned = (f"both pass exactly through the same {share_words(len(pins), len(pins)) if len(pins) > 1 else 'one'} "
+              f"year-end{'s' if len(pins) > 1 else ''} ({', '.join(pd_day(d) for d in pins)})" if same_pins and pins
+              else "they pass through different year-ends")
+    return (f"{currency}: the frozen 90th and 95th percentiles ({signed_bp(q90)} and {signed_bp(q95)}) are not "
+            f"separately identified. The year-end effect is fitted on only {n_year_ends} year-ends with two "
+            f"year-end parameters; at the 90th and 95th percentiles {pinned}, and {order}. With {n_year_ends} "
+            f"year-ends, any quantile above {(n_year_ends - 1) / n_year_ends:.0%} leaves no year-end above the "
+            "fit, so the upper tail rests on the single largest past turns.")

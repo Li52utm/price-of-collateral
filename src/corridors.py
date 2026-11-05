@@ -25,6 +25,9 @@ TEST_START = pd.Timestamp("2023-01-01")
 PRESSURE_BP = 2.0
 MARKOV_SEED = 0
 BOOT_N, BOOT_BLOCK, BOOT_SEED = 500, 8, 42
+KINK_GRID_N = 60          # grid points between the 5th and 95th percentile of reserves
+KINK_EDGE_STEPS = 2       # a kink within this many grid steps of either end is at the boundary (U0)
+KINK_EDGE_SHARE = 0.10    # more bootstrap kinks than this at the boundary: not identified (U0)
 CASES = {"September 2019": ("2019-09-02", "2019-09-30"), "March 2020": ("2020-03-02", "2020-03-31"),
          "Year-end 2025": ("2025-12-01", "2026-01-09")}
 LIQUIDITY = {"USD": ("reserves", 1e6, "reserve balances (USD trillion)"),
@@ -182,7 +185,7 @@ def predict_linear(m: dict, x: np.ndarray) -> np.ndarray:
 
 def fit_piecewise(x: np.ndarray, y: np.ndarray) -> dict:
     """y = a + b*x + c*max(k - x, 0): an extra slope below the kink k (scarcity)."""
-    grid = np.linspace(np.quantile(x, 0.05), np.quantile(x, 0.95), 60)
+    grid = kink_grid(x)
     best = None
     for k in grid:
         X = np.column_stack([np.ones_like(x), x, np.maximum(k - x, 0)])
@@ -192,6 +195,18 @@ def fit_piecewise(x: np.ndarray, y: np.ndarray) -> dict:
             best = (ssr, k, beta)
     _, k, beta = best
     return {"kind": "piecewise", "params": [float(v) for v in beta], "kink": float(k)}
+
+
+def kink_grid(x: np.ndarray) -> np.ndarray:
+    """Candidate kinks: KINK_GRID_N points from the 5th to the 95th percentile of x."""
+    return np.linspace(np.quantile(x, 0.05), np.quantile(x, 0.95), KINK_GRID_N)
+
+
+def at_grid_edge(kink: float, x: np.ndarray) -> bool:
+    """True if `kink` is within KINK_EDGE_STEPS grid steps of either end of x's grid."""
+    grid = kink_grid(x)
+    tol = KINK_EDGE_STEPS * (grid[1] - grid[0]) + 1e-12
+    return bool(kink <= grid[0] + tol or kink >= grid[-1] - tol)
 
 
 def predict_piecewise(m: dict, x: np.ndarray) -> np.ndarray:
@@ -253,10 +268,17 @@ def reserves_analysis(currency: str, long: pd.DataFrame | None = None) -> dict:
     threshold_kind = winner if winner != "linear" else "piecewise"
     threshold_model = full if winner != "linear" else fit_piecewise(x, y)
     point = pressure_point(threshold_model)
-    boot = []
+    boot, edge = [], []
     for idx in st.bootstrap_indices(len(x), BOOT_N, BOOT_SEED, BOOT_BLOCK):
-        boot.append(pressure_point(FITS[threshold_kind][0](x[idx], y[idx])))
+        b = pressure_point(FITS[threshold_kind][0](x[idx], y[idx]))
+        boot.append(b)
+        if threshold_kind == "piecewise" and b == b:
+            edge.append(at_grid_edge(b, x[idx]))
     boot = np.array([b for b in boot if b == b])
+    # Identification (METHODOLOGY.md, U0): a kink at the edge of the search grid is not a threshold.
+    edge_share = float(np.mean(edge)) if edge else 0.0
+    point_at_edge = threshold_kind == "piecewise" and point == point and at_grid_edge(point, x)
+    identified = bool(point == point and not point_at_edge and edge_share <= KINK_EDGE_SHARE)
     grid = np.linspace(x.min(), x.max(), 80)
     curve = pd.DataFrame({"liq": grid, "fit": predictor(full, grid),
                           "threshold_fit": FITS[threshold_kind][1](threshold_model, grid)})
@@ -267,6 +289,8 @@ def reserves_analysis(currency: str, long: pd.DataFrame | None = None) -> dict:
             "slope_per_unit": float(fit_linear(x, y)["params"][1]),
             "pressure_band": [float(np.quantile(boot, 0.025)), float(np.quantile(boot, 0.975))] if len(boot) > 20
             else [float("nan"), float("nan")],
+            "kink_identified": identified, "kink_at_grid_edge": bool(point_at_edge),
+            "boot_edge_share": edge_share, "kink_grid": [float(kink_grid(x)[0]), float(kink_grid(x)[-1])],
             "latest_liq": float(x[-1]), "latest_date": str(pairs.index[-1].date()),
             "pairs": pairs, "curve": curve}
 

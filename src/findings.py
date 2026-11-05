@@ -17,7 +17,8 @@ RESULTS_DIR = ROOT / "results"
 SUMMARIES = {"forecast": "forecast/summary.json", "corridors": "corridors/summary.json",
              "collateral": "collateral/summary.json", "france": "france/summary.json",
              "japan": "japan/summary.json", "frozen": "forecasts/yearend_2026.json",
-             "score": "forecasts/yearend_2026_score.json", "validation": "data_validation.json"}
+             "score": "forecasts/yearend_2026_score.json", "validation": "data_validation.json",
+             "tails": "forecast/tail_diagnosis.json"}
 
 QUESTIONS = {
     "story": "What is repo, and why does the bond you hand over matter?",

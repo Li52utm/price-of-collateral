@@ -9,6 +9,7 @@ from __future__ import annotations
 import pandas as pd
 
 import findings
+import stats_tools as st
 import wording as w
 
 WINDOW_START_BD = 7      # business days before 31 Dec 2026 (the Phase 2 term rule)
@@ -17,18 +18,37 @@ EUR_HURDLE_BP = 1.0
 YEAR_END = pd.Timestamp("2026-12-31")
 
 
-def window_days(path: dict) -> list[str]:
+def window_bounds(path: dict) -> tuple[pd.Timestamp, pd.Timestamp]:
+    """Start (7 business days before 31 Dec 2026) and exclusive end (14 calendar days later) of the window."""
     days = sorted(pd.Timestamp(d) for d in path)
     before = [d for d in days if d <= YEAR_END]
     start = before[-(WINDOW_START_BD + 1)] if len(before) > WINDOW_START_BD else before[0]
-    end = start + pd.Timedelta(days=WINDOW_DAYS)
-    return [str(d.date()) for d in days if start <= d < end]
+    return start, start + pd.Timedelta(days=WINDOW_DAYS)
+
+
+def window_days(path: dict) -> list[str]:
+    """Business days of the frozen path inside the turn window."""
+    start, end = window_bounds(path)
+    return [str(d.date()) for d in sorted(pd.Timestamp(x) for x in path) if start <= d < end]
 
 
 def expected_excess(fc: dict) -> float:
+    """Night-weighted mean of the frozen medians over the window minus the latest level (bp).
+
+    Each business day's rate applies until the next business day, so 24 and 31 December 2026 carry
+    four nights each (corrected 2026-11-05, METHODOLOGY.md U0; it was an unweighted business-day mean).
+    """
     days = window_days(fc["path"])
+    _, end = window_bounds(fc["path"])
     medians = [fc["path"][d]["q50"] for d in days]
-    return float(sum(medians) / len(medians) - fc["latest_level"])
+    weights = st.night_weights(pd.DatetimeIndex(days), end)
+    return float(st.weighted_mean(medians, weights) - fc["latest_level"])
+
+
+def usd_hurdle(tvo: dict) -> tuple[float | None, bool]:
+    """(premium to compare with, stale?): a stale premium is replaced by the 1 bp hurdle (U0)."""
+    stale = bool(tvo.get("term_stale", False))
+    return (None if stale else tvo.get("latest_premium_bp")), stale
 
 
 def build(r: dict) -> dict | None:
@@ -37,10 +57,15 @@ def build(r: dict) -> dict | None:
         return None
     usd, eur = frozen["currencies"]["USD"], frozen["currencies"]["EUR"]
     tvo = fcs["term_vs_overnight"]["USD"]
-    premium = tvo.get("latest_premium_bp")
-    usd_lock, usd_line = w.term_out_line("USD", expected_excess(usd), premium, EUR_HURDLE_BP)
-    eur_lock, eur_line = w.term_out_line("EUR", expected_excess(eur), None, EUR_HURDLE_BP)
-    verdict, sentence = w.client_verdict(usd_lock, eur_lock)
+    premium, stale = usd_hurdle(tvo)
+    usd_excess, eur_excess = expected_excess(usd), expected_excess(eur)
+    usd_lock, usd_line = w.term_out_line("USD", usd_excess, premium, EUR_HURDLE_BP, usd["q50"])
+    eur_lock, eur_line = w.term_out_line("EUR", eur_excess, None, EUR_HURDLE_BP, eur["q50"])
+    staleness = w.term_staleness_sentence(tvo.get("latest_term_date"), tvo.get("term_age_bd"), stale,
+                                          tvo.get("stale_after_bd", 20))
+    if staleness:
+        usd_line = f"{usd_line} {staleness}"
+    verdict, sentence = w.client_verdict(usd_lock, eur_lock, premium)
     turns = {c: fcs["currencies"][c]["turns"]["ye"] for c in ("USD", "EUR")}
     key_points = [
         (f"Dollar: the frozen forecast for SOFR minus interest on reserves on 31 December 2026 is "
@@ -90,6 +115,14 @@ def build(r: dict) -> dict | None:
          "the tails; treat the ranges, not the medians, as the message."),
         "French spreads are driven by domestic politics, which no model here forecasts.",
     ]
+    tails = []
+    diag = (r.get("tails") or {}).get("currencies", {})
+    for c in ("USD", "EUR"):
+        d = diag.get(c)
+        if d:
+            fz = frozen["currencies"][c]
+            tails.append(w.tail_sentence(c, fz["q90"], fz["q95"], d["raw_q"]["q90"], d["raw_q"]["q95"],
+                                         d["n_year_ends"], d["pinned_q95"], d["same_pins"]))
     disclosures = [
         "Educational project. Not investment advice. No position is held in any instrument discussed.",
         "Forecasts are statistical estimates from public data with publication lags respected; they are not a view "
@@ -105,9 +138,13 @@ def build(r: dict) -> dict | None:
         "recommendation": {"USD": "Term out" if usd_lock else "Stay overnight",
                            "EUR": "Term out" if eur_lock else "Stay overnight", "lines": [usd_line, eur_line]},
         "key_points": key_points, "forecasts": {"USD": usd, "EUR": eur}, "models": models,
-        "funding": [usd_line, eur_line, term_backtest], "france": france_lines, "risks": risks,
+        "funding": [usd_line, eur_line, term_backtest], "france": france_lines, "risks": risks, "tails": tails,
         "disclosures": disclosures, "scoring": scoring, "scored": bool(score),
         "client": {"question": findings.QUESTIONS["desk_note"], "verdict": verdict, "sentence": sentence},
+        "rule": {"USD": {"excess_bp": usd_excess, "hurdle_bp": premium if premium is not None else EUR_HURDLE_BP,
+                         "premium_bp": tvo.get("latest_premium_bp"), "lock": usd_lock, "stale": stale,
+                         "term_date": tvo.get("latest_term_date"), "term_age_bd": tvo.get("term_age_bd")},
+                 "EUR": {"excess_bp": eur_excess, "hurdle_bp": EUR_HURDLE_BP, "lock": eur_lock}},
         "frozen": frozen,
     }
 
@@ -127,6 +164,7 @@ def markdown(note: dict) -> str:
                      f"{x['q90']:+.1f} | {x['q95']:+.1f} |")
     lines += ["", *note["models"], "", "## What the turn means for funding", "", *[f"- {x}" for x in note["funding"]],
               "", "## France", "", *note["france"], "", "## Risks", "", *[f"- {x}" for x in note["risks"]], "",
+              "## Why the 90th and 95th percentiles coincide", "", *[f"- {x}" for x in note.get("tails", [])], "",
               "## Scoring", "", *note["scoring"], "", "## Disclosures", "", *[f"- {x}" for x in note["disclosures"]], "",
               f"**{note['client']['question']} {note['client']['verdict']}.** {note['client']['sentence']}", ""]
     return "\n".join(lines)

@@ -338,7 +338,11 @@
    "saving_vs_term": 37027.777777777985,
    "latest_premium_bp": -2.0000000000000018,
    "latest_term_rate": 3.94,
-   "latest_on_rate": 3.96
+   "latest_on_rate": 3.96,
+   "latest_term_date": "2026-11-02",
+   "term_age_bd": 1,
+   "term_stale": false,
+   "stale_after_bd": 20
   },
   "EUR": {
    "skipped": true,

@@ -240,6 +240,55 @@ Code: `src/desk_note.py`. "Would I advise a client to term out their year-end fu
 - Verdict: **Yes** if both currencies say term out, **Partly** if one does, **No** if neither.
 - The recommendation box: "Term out" / "Stay overnight" per currency from the same rule.
 
+## Upgrade U0: correctness review (fixed 2026-11-05, before the corrected numbers were computed)
+
+### Desk note client rule: what is compared, and in which units
+
+- Both sides are in basis points of an annual rate. The term premium is `term rate - overnight rate`
+  (OFR DVP, same segment), so a **negative premium means term funding is cheaper than overnight**.
+  The expected excess is the forecast change in SOFR minus IOR over the turn window relative to the
+  latest level. Term out iff `expected excess > premium` (equivalently: expected overnight cost >
+  term cost). This structure is kept.
+- **Change: weight by nights, not business days.** Overnight funding accrues on calendar nights;
+  a rate set on a business day applies until the next business day of the currency (Thursday
+  24 December covers four nights, Thursday 31 December 2026 covers four nights to 4 January 2027).
+  The expected excess (desk note) and the forecast spike (the Phase 2 term-vs-overnight backtest)
+  become night-weighted means of the median forecast over the 14-night window. Why: the cost the
+  rule compares against is a 14-night term trade; an unweighted business-day mean understates the
+  turn (31 December gets 1/8 of the weight instead of 4/14).
+- The wording states the premium's sign: with a negative premium the term trade is a discount, so
+  "Stay overnight" means the forecast expects overnight funding to fall by more than that discount.
+- The desk note shows the 31 December median separately from the window's expected excess, so the
+  two are not confused.
+
+### Term premium staleness
+
+- The latest published OFR term rate date is recorded. **Stale if more than 20 business days (US)
+  before the as-of date.** Why 20: about one month, the frequency at which OFR's bucket definitions
+  have changed and beyond which the premium no longer describes the current market.
+- If stale, the USD rule ignores the premium and uses the same 1 bp hurdle as the euro rule, and the
+  wording says the premium is stale and gives its date.
+
+### Reserves pressure point: identification
+
+- The kink grid runs from the 5th to the 95th percentile of the sample's reserves (60 points). **The
+  kink is "not identified" if the point estimate is within two grid steps of either end of the
+  grid, or if more than 10% of the bootstrap kinks are within two grid steps of either end of their
+  own grid.** Then no point estimate or band is quoted in words, only that the data cannot place it.
+  Why: a least-squares kink at the edge of the grid is the search hitting its limit, not a threshold.
+
+### Degenerate tails of the frozen forecast (diagnosis only; the frozen file is not touched)
+
+- Recorded in `results/forecast/tail_diagnosis.json` by `src/tails.py`: the number of year-ends in
+  the fit, the raw (unsorted) 31 December quantiles, whether they cross, and which year-end days the
+  90% and 95% fits pass through exactly (zero residual).
+
+### Consistency tests
+
+- `tests/test_consistency.py` checks every generated comparison word ("above", "below", "beats",
+  "wider", "Yes"/"No", "Term out"/"Stay overnight", "inside"/"outside") against the numbers, on the
+  real results and on sign-flipped inputs.
+
 ## Corrections log
 
 - **2026-11-04, Phase 2 sample filter.** Wrong: `forecast.dataset` dropped every day on which the
@@ -275,4 +324,40 @@ Code: `src/desk_note.py`. "Would I advise a client to term out their year-end fu
   EUR and JPY unchanged. **The frozen forecast was NOT regenerated** (it must never change): it was made
   with the earlier calendar. For transparency, the corrected code would give USD 31 Dec 2026 q05/q50/q90/q95
   of -5.65 / +6.19 / +31.58 / +31.76 bp against the frozen -5.64 / +6.21 / +31.68 / +31.76 (EUR identical).
+
+- **2026-11-05, U0 correctness review: the desk note's client rule.** Checked: units (both sides in bp of an
+  annual rate), the sign convention (premium = OFR DVP term minus overnight; the latest is -2.0 bp, so term
+  funding is 2.0 bp CHEAPER than overnight) and the comparison (term out iff expected excess overnight cost >
+  premium, i.e. expected overnight cost > term cost) are correct. The "+6.2 bp" quoted in the desk note is
+  the 31 December MEDIAN LEVEL, not the quantity the rule uses; the rule used the window's expected excess,
+  -5.3 bp, and "-5.3 below -2.0" was arithmetically right. Two real faults: (1) the window mean weighted
+  each business day equally although overnight cost accrues per night (24 and 31 December each carry four
+  of the 14 nights); (2) the client sentence ("neither forecast spike is large enough to pay for term
+  funding") is wrong when the premium is negative: there is nothing to pay for, term is a discount. Fix:
+  night-weighted means (desk note and the Phase 2 backtest), premium sign stated in the wording, the
+  31 December median shown next to the window's expected excess. Before -> after: USD expected excess
+  -5.30 -> -4.08 bp, EUR +0.08 -> -0.04 bp; USD hurdle -2.0 bp, EUR 1 bp: **verdict No -> No (Stay
+  overnight in both)**, with the corrected sentence. Backtest (43 month-end windows, 2023 on): mean spike
+  -0.17 -> -0.09 bp, lock decisions changed in 0 of 43 windows, 9 locked, USD 14.9k saved vs overnight and
+  37.0k vs term (unchanged).
+- **2026-11-05, U0: term premium staleness.** Latest OFR term rate: 2 November 2026, 1 US business day before
+  the as-of date (3 November): not stale (limit 20). Rule and wording added; no number changed.
+- **2026-11-05, U0: reserves pressure point.** Before: "USD pressure starts at 1.57 trillion, 95% band
+  1.52 to 2.89". Diagnosis: the kink grid runs 1.525 to 3.982; the point estimate is the second grid point
+  (one step from the lower edge), and 77% of bootstrap kinks are within two steps of their grid's edges.
+  The upper band end (2.89) is the 97.5% bootstrap quantile, which happens to equal the latest reserves
+  (2.89), not the grid boundary. After: **USD kink not identified** (no point or band quoted). EUR: point
+  3.19 trillion, 1% of bootstrap kinks at an edge: identified, unchanged (band 2.43 to 4.09). The linear
+  slope (USD -6.41 bp per trillion) and the out-of-sample winner (linear, both currencies) are unchanged.
+- **2026-11-05, U0: degenerate tails (diagnosis; the frozen file is unchanged).** Refitting the winning
+  model on the same data: the raw 31 December quantiles CROSS (USD q90 +31.76 > q95 +31.58; EUR q90 -4.83 >
+  q95 -4.85) and the per-day sort swaps them. Root cause: the year-end effect has two year-end-only
+  parameters (`ye`, `ye_liq`) fitted on 8 USD / 7 EUR year-ends; a quantile above (n-1)/n (87.5% / 85.7%)
+  leaves no year-end above the fit, so the 90% and 95% fits pass exactly through the SAME two year-ends
+  (USD 31 Dec 2018 and 30 Dec 2021; EUR 31 Dec 2019 and 30 Dec 2022). Collinearity is not the cause (the
+  two parameters are pinned by the data, not unstable). The 90th and 95th percentiles on the turn are
+  therefore not separately identified; chapter VII says so. v2 (U4) addresses it.
+- **2026-11-05, U0: sign-unsafe wording.** Three sentences printed a magnitude with a fixed "more"
+  (collateral cost, the story answer, the repo treatment premium); they now say "more"/"less" or print
+  signed values. No current number had the wrong sign, so no displayed conclusion changed.
 

@@ -67,6 +67,12 @@ ui.section_heading("v", "Risks")
 for line in note["risks"]:
     ui.md(f"- {line}")
 
+if note.get("tails"):
+    ui.md("**Why the 90th and 95th percentiles coincide.** The diagnosis below refits the frozen model on the "
+          "same data; the frozen file itself is never changed.")
+    for line in note["tails"]:
+        ui.md(f"- {line}")
+
 ui.section_heading("vi", "Scoring")
 for line in note["scoring"]:
     ui.note(line, "info" if note["scored"] else "warning")

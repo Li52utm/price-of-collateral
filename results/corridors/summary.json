@@ -204,6 +204,13 @@
     1.5184036,
     2.8914970923728807
    ],
+   "kink_identified": false,
+   "kink_at_grid_edge": true,
+   "boot_edge_share": 0.77,
+   "kink_grid": [
+    1.525044,
+    3.981746
+   ],
    "latest_liq": 2.89377,
    "latest_date": "2026-10-28"
   },
@@ -232,6 +239,13 @@
    "pressure_band": [
     2.4341931738135596,
     4.087708749427966
+   ],
+   "kink_identified": true,
+   "kink_at_grid_edge": false,
+   "boot_edge_share": 0.01,
+   "kink_grid": [
+    1.91151455,
+    4.69738825
    ],
    "latest_liq": 2.270045,
    "latest_date": "2026-10-23"

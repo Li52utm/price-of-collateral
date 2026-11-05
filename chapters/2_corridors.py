@@ -68,8 +68,9 @@ ui.section_heading("iii", "What happens as balance sheets shrink")
 for cur in ("USD", "EUR"):
     ra = c["reserves"][cur]
     pairs, curve = ui.csv(f"corridors/reserves_pairs_{cur}.csv"), ui.csv(f"corridors/reserves_curve_{cur}.csv", None, False)
+    identified = ra.get("kink_identified", True)
     ui.md(w.reserves_sentence(cur, ra["winner"], ra["slope_per_unit"], ra["pressure_point"], ra["pressure_band"],
-                              ra["latest_liq"], ra["label"]))
+                              ra["latest_liq"], ra["label"], identified, ra.get("boot_edge_share")))
     if pairs is None or curve is None:
         continue
     fig = go.Figure()
@@ -79,7 +80,7 @@ for cur in ("USD", "EUR"):
                     line=dict(color=ui.COLORS["ink"], width=2))
     fig.add_scatter(x=curve["liq"], y=curve["threshold_fit"], name=f"{ra['pressure_from']} fit (reference)",
                     line=ui.ref_line(ui.COLORS["amber"], "dash"))
-    if ra["pressure_band"][0] is not None:
+    if ra["pressure_band"][0] is not None and identified:
         fig.add_vrect(x0=ra["pressure_band"][0], x1=ra["pressure_band"][1], fillcolor=ui.COLORS["amber_light"],
                       opacity=0.2, line_width=0)
     fig.add_vline(x=ra["latest_liq"], line=ui.ref_line(ui.COLORS["loss"], "dot"),
@@ -88,7 +89,8 @@ for cur in ("USD", "EUR"):
     fig.update_yaxes(title="spread to policy rate, next week (bp)")
     if cur == "USD":
         fig.update_yaxes(range=[-25, 40])
-    ui.show_chart(fig, f"{cur}: liquidity against the overnight spread (band: 95% bootstrap range of the kink)", height=360)
+    ui.show_chart(fig, f"{cur}: liquidity against the overnight spread" + (" (band: 95% bootstrap range of the kink)" if identified
+                                                             else " (kink not identified, no band shown)"), height=360)
 
 ui.section_heading("iv", "Three episodes")
 for case in c["cases"]:
