@@ -348,6 +348,58 @@ France widened gradually (the trailing mean rose with the spread), which Rule 1 
 - The monthly mean of the daily TEC10 against the ECB IRS French yield: PASS if the mean absolute
   difference is at most 10 bp, WARN up to 25 bp, FAIL above (the Bund check's yardstick).
 
+## Upgrade U2: uncertainty and multiple testing (fixed 2026-11-05, before any interval or adjusted p-value was computed)
+
+Code: `src/inference.py` (reads the results files, writes `results/inference/`), `stats_tools.holm`,
+`stats_tools.block_bootstrap_ci`, `stats_tools.clopper_pearson`.
+
+### Moving-block bootstrap (95% percentile intervals, seed 42, B = 1,000 resamples for every quantity)
+
+| Headline number | Unit resampled | Block length | Why this block |
+|---|---|---|---|
+| Pinball-loss difference vs the baseline (each model, all test days and turn days) | test day | 40 business days | forecasts 40 days ahead overlap, so errors are correlated up to 39 days |
+| 5-95% interval coverage on test days (each model) | test day | 40 business days | same |
+| Reserves slope (bp per trillion, linear, full sample) | week | 8 weeks | as the Phase 3 kink bootstrap |
+| Credit and scarcity standardised effects and their difference (IT, FR) | maintenance period | 4 periods (about 6 months) | spreads are persistent across neighbouring periods |
+| France-specific vs euro-wide split since June 2024 | month of the 2010-2023 fit sample | 6 months | parameter uncertainty of the euro-wide beta; the post-2024 changes are the realised data |
+| Japan half-lives (negative-rate and post-exit samples) | business day of the ECM sample | 20 business days | about a month of daily dependence |
+
+The difference between the credit and scarcity effects is `|credit| - (|liquidity| + |German holdings|)`,
+the quantity the Phase 4 decision rule compares; positive means credit dominates.
+
+### Multiple testing (Holm, within each family, alpha 5%)
+
+| Family | Tests | Used in wording |
+|---|---|---|
+| F1 Forecast vs baseline, turn days (Diebold-Mariano) | USD, EUR, JPY x calendar, state = 6 | yes (chapter V, VII) |
+| F2 Forecast vs baseline, all days (Diebold-Mariano) | 6 | no (reported) |
+| F3 Collateral regression, full sample (HAC t-tests) | IT, FR x credit, liquidity, German holdings = 6 | yes (the decision rule) |
+| F4 Collateral regression by sub-period (before / after QT) | 2 countries x 2 periods x 3 = 12 | yes (sub-period verdicts) |
+| F5 Structural breaks (Chow) | QT break IT, FR; June 2024 break FR-DE, IT-FR = 4 | yes (chapters III, IV) |
+| F6 Euro-wide split betas (HAC) | IT, ES = 2 | no (reported) |
+| F7 Japan error correction (HAC t-test on the gap coefficient) | full, negative-rate, exit = 3 | no (reported) |
+| F8 Calibration (5-95% coverage = 90%, exact binomial) | USD, EUR, JPY winners = 3 | yes (verdicts use the CI below) |
+
+Event-study percentiles and z-scores are descriptive (no test); the Markov comparison is a likelihood
+comparison, not a test. **Every generated sentence that says "significant" uses the Holm-adjusted p-value**;
+the decision rule of chapter III uses the adjusted p-values of F3 (full sample) and F4 (sub-periods).
+Raw and adjusted p-values are listed in `results/inference/tests.json` and on the pages.
+
+### Calibration (test period, each currency's models)
+
+- Coverage per quantile (share of test days with the actual at or below the forecast) with an exact
+  Clopper-Pearson 95% interval, and the 5-95% interval coverage with its interval. The binomial interval
+  assumes independent days; the block-bootstrap interval above is shown beside it.
+- PIT histogram at the resolution the four quantiles allow: bins below q05, q05-q50, q50-q90, q90-q95,
+  above q95, against the expected 5%, 45%, 40%, 5%, 5%.
+- **Verdict per currency (winning model):** "well calibrated" if the Clopper-Pearson interval of the 5-95%
+  coverage contains 90%; "too narrow" if it lies entirely below 90%; "too wide" if entirely above.
+
+### Credit vs scarcity: "too close to call"
+
+- **If the 95% bootstrap interval of the difference between the credit and scarcity effects includes zero,
+  that country's answer reads "too close to call", whatever the point-estimate decision rule says.**
+
 ## Corrections log
 
 - **2026-11-04, Phase 2 sample filter.** Wrong: `forecast.dataset` dropped every day on which the
@@ -430,3 +482,20 @@ France widened gradually (the trailing mean rose with the spread), which Rule 1 
   widening within the next 12 months. Daily decomposition since 7 June 2024: spread 49 -> 162 bp; OAT
   yields +187 bp, Bund yields +74 bp. Daily event study: both verified events moved the spread by -1 bp
   over two days (26th and 28th percentile of two-day windows).
+- **2026-11-05, U2: significance now uses Holm-adjusted p-values (a change to existing choices).**
+  (1) Chapter III decision rule: before, raw HAC p-values; after, Holm within F3/F4. Italy: liquidity term
+  p 0.023 -> 0.113 (credit stays significant, p < 0.001), so **Italy: scarcity -> both / unclear**; France
+  unchanged (both / unclear). Sub-periods unchanged (IT after QT stays scarcity: liquidity p < 0.001
+  adjusted). (2) Chapter V: USD state model vs baseline on turn days, DM p 0.043 -> **0.130 (no longer
+  significant)**; EUR 0.180 -> 0.360. Chapter V answer: "Partly: reliably in dollars" -> "Partly: the
+  models beat a naive rule, but not significantly". Note: the block-bootstrap interval of the USD turn-day
+  loss difference (-1.14 to -0.06) excludes zero; the two methods disagree and the wording reports both,
+  with the pre-registered Holm-adjusted DM deciding "significant". (3) Chow tests (F5): QT break IT 0.035 ->
+  0.035, FR < 0.001; June 2024 FR-DE 0.006 -> 0.011, IT-FR < 0.001: no conclusion changes.
+- **2026-11-05, U2: wording correction, "too close to call".** Italy's credit-minus-scarcity difference is
+  -2.2 bp with a 95% interval of -12.7 to +1.5 bp (includes zero), so Italy's answer reads **"too close to
+  call"** (before: "mainly scarcity of German collateral"; after the Holm change alone it would have read
+  "neither clearly credit nor scarcity"). France: -3.0 bp (-9.1 to -0.7): the interval excludes zero (the
+  scarcity effects are larger in size), but no scarcity coefficient is significant after Holm, so France
+  stays "neither clearly credit nor scarcity". Chapter III answer: "Scarcity for Italy; no clear driver for
+  France" -> **"Too close to call"**.

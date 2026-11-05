@@ -101,3 +101,48 @@ def summary_quantiles(x: pd.Series | np.ndarray, qs=(0.05, 0.5, 0.95)) -> dict:
     x = np.asarray(x, dtype=float)
     x = x[~np.isnan(x)]
     return {f"q{int(q * 100):02d}": float(np.quantile(x, q)) for q in qs} if len(x) else {}
+
+
+def holm(p_values) -> np.ndarray:
+    """Holm step-down adjusted p-values (same order as the input; NaN stays NaN).
+
+    Sort the m valid p-values ascending; adjusted p_(i) = max over j <= i of min(1, (m - j + 1) p_(j)).
+    """
+    p = np.asarray(p_values, dtype=float)
+    out = np.full(p.shape, np.nan)
+    valid = np.where(~np.isnan(p))[0]
+    m = len(valid)
+    if m == 0:
+        return out
+    order = valid[np.argsort(p[valid], kind="mergesort")]
+    running = 0.0
+    for rank, i in enumerate(order):
+        running = max(running, min(1.0, (m - rank) * p[i]))
+        out[i] = running
+    return out
+
+
+def block_bootstrap_ci(statistic, n: int, block: int, n_boot: int = 1000, seed: int = 42,
+                       level: float = 0.95) -> dict:
+    """Percentile interval of `statistic(idx)` over moving-block resamples of 0..n-1.
+
+    `statistic` takes an index array and returns a float (NaN results are dropped and counted).
+    """
+    draws = np.array([statistic(idx) for idx in bootstrap_indices(n, n_boot, seed, block)], dtype=float)
+    ok = draws[~np.isnan(draws)]
+    tail = (1 - level) / 2
+    if len(ok) < max(20, n_boot // 10):
+        return {"lower": float("nan"), "upper": float("nan"), "n_boot": n_boot, "n_valid": int(len(ok)),
+                "block": block}
+    return {"lower": float(np.quantile(ok, tail)), "upper": float(np.quantile(ok, 1 - tail)), "n_boot": n_boot,
+            "n_valid": int(len(ok)), "block": block}
+
+
+def clopper_pearson(k: int, n: int, level: float = 0.95) -> tuple[float, float]:
+    """Exact binomial confidence interval for a proportion k / n."""
+    if n == 0:
+        return float("nan"), float("nan")
+    a = (1 - level) / 2
+    lower = 0.0 if k == 0 else float(stats.beta.ppf(a, k, n - k + 1))
+    upper = 1.0 if k == n else float(stats.beta.ppf(1 - a, k + 1, n - k))
+    return lower, upper

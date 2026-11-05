@@ -23,6 +23,7 @@ STEPS: list[tuple[str, str]] = [  # (module, function); filled in phase by phase
     ("france", "run"),
     ("france_daily", "run"),
     ("japan", "run"),
+    ("inference", "run"),
 ]
 
 

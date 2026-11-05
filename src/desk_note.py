@@ -81,8 +81,11 @@ def build(r: dict) -> dict | None:
         cur = fcs["currencies"][c]
         win = next(m for m in cur["models"] if m["model"] == cur["winner"])
         base = next(m for m in cur["models"] if m["model"] == "baseline")
+        ci = (((r.get("bootstrap") or {}).get("forecast") or {}).get(c) or {}).get("models", {}).get(
+            cur["winner"], {}).get("ci_diff_turn")
         models.append(w.model_comparison_sentence(c, win["label"], win["pinball_turn"], base["pinball_turn"],
-                                                  win.get("dm_turn_p"), cur["winner"] == "baseline"))
+                                                  win.get("dm_turn_p_holm", win.get("dm_turn_p")),
+                                                  cur["winner"] == "baseline", ci, "dm_turn_p_holm" in win))
     term_backtest = w.term_rule_sentence(tvo["saving_vs_on"], tvo["saving_vs_term"], tvo["n_locked"], tvo["n_windows"])
     france_q, france_a, france_e = findings.answer("france", r)
     fr = r.get("france") or {}
@@ -91,8 +94,10 @@ def build(r: dict) -> dict | None:
         repo = fr["repo"]
         france_lines.append(w.repo_treatment_sentence(repo["fr_de_before"], repo["fr_de_after"], repo["it_de_before"],
                                                       repo["it_de_after"], repo["position_before"], repo["position_after"],
-                                                      repo["chow_it_fr"]["p_value"], repo["latest"]["fr_de"],
-                                                      repo["latest"]["it_de"]))
+                                                      findings.adjusted_p(r, "chow_june2024_it_fr",
+                                                                          repo["chow_it_fr"]["p_value"])[0],
+                                                      repo["latest"]["fr_de"], repo["latest"]["it_de"],
+                                                      findings.adjusted_p(r, "chow_june2024_it_fr")[1]))
     score = r.get("score")
     if score:
         scoring = []

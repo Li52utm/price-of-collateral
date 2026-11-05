@@ -55,15 +55,19 @@ for cur in ("USD", "EUR", "JPY"):
     cur_s = fc["currencies"][cur]
     win = next(m for m in cur_s["models"] if m["model"] == cur_s["winner"])
     base = next(m for m in cur_s["models"] if m["model"] == "baseline")
+    boot_m = (((ui.results().get("bootstrap") or {}).get("forecast") or {}).get(cur) or {}).get("models", {})
     ui.md(w.model_comparison_sentence(cur, win["label"], win["pinball_turn"], base["pinball_turn"],
-                                      win.get("dm_turn_p"), cur_s["winner"] == "baseline"))
+                                      win.get("dm_turn_p_holm", win.get("dm_turn_p")), cur_s["winner"] == "baseline",
+                                      boot_m.get(cur_s["winner"], {}).get("ci_diff_turn"), "dm_turn_p_holm" in win))
     table = pd.DataFrame([{
         "Model": m["label"], "Pinball loss, all days": round(m["pinball_all"], 3),
         "Pinball loss, turn days": round(m["pinball_turn"], 3),
         "Below 90th pct": f"{m['below_q90']:.0%}", "Below 95th pct": f"{m['below_q95']:.0%}",
         "Inside 5-95%": f"{m['interval_coverage']:.0%}",
         "DM p vs baseline (all / turns)": (f"{m['dm_all_p']:.3f} / {m['dm_turn_p']:.3f}" if m.get("dm_all_p") is not None
-                                            else "n/a")} for m in cur_s["models"]])
+                                            else "n/a"),
+        "Holm-adjusted (all / turns)": (f"{m['dm_all_p_holm']:.3f} / {m['dm_turn_p_holm']:.3f}"
+                                        if m.get("dm_all_p_holm") is not None else "n/a")} for m in cur_s["models"]])
     with st.expander(f"{cur}: test period {cur_s['test_start']} to {cur_s['test_end']}, {cur_s['n_test']} days, "
                      f"{cur_s['n_test_turn']} turn days", expanded=cur == "USD"):
         ui.table(table)

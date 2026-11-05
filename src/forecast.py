@@ -366,6 +366,15 @@ def _json_ready(obj):
     return obj
 
 
+def adjust_dm(currencies: dict) -> None:
+    """Holm-adjust the Diebold-Mariano p-values within F1 (turn days) and F2 (all days), in place (U2)."""
+    for kind in ("turn", "all"):
+        rows = [m for c in EVAL_CURRENCIES for m in currencies[c]["models"] if m["model"] != "baseline"]
+        adjusted = st.holm([m[f"dm_{kind}_p"] for m in rows])
+        for m, p in zip(rows, adjusted):
+            m[f"dm_{kind}_p_holm"] = float(p)
+
+
 def run(long: pd.DataFrame | None = None, out_dir: Path = OUT_DIR) -> dict:
     """Write results/forecast/* and, if the frozen forecast exists and can be scored, the score file."""
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -381,6 +390,7 @@ def run(long: pd.DataFrame | None = None, out_dir: Path = OUT_DIR) -> dict:
         effects.to_csv(out_dir / f"turn_effects_{currency}.csv", index=False, float_format="%.3f")
         summary["currencies"][currency] = {k: v for k, v in ev.items() if k != "predictions"}
         summary["currencies"][currency]["turns"] = turn_summary(effects)
+    adjust_dm(summary["currencies"])
     tvo = term_vs_overnight(evaluations["USD"], long)
     tvo["windows"].to_csv(out_dir / "term_vs_overnight_USD.csv", index=False, float_format="%.2f")
     as_of = data.as_of(long)

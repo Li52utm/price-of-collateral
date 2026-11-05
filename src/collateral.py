@@ -91,7 +91,8 @@ def regression(panel: pd.DataFrame, country: str) -> dict:
             Xp = sm.add_constant(part.drop(columns=f"repo_{country}").rename(columns={f"credit_{country}": "credit"}))
             rp = sm.OLS(part[f"repo_{country}"], Xp).fit(cov_type="HAC", cov_kwds={"maxlags": HAC_LAGS})
             eff = {k: float(rp.params[k] * Xp[k].std(ddof=1)) for k in ("credit", *SCARCITY)}
-            sub_verdicts[name] = {"n": len(part), "verdict": decide(eff, {k: float(rp.pvalues[k]) for k in eff}),
+            pv = {k: float(rp.pvalues[k]) for k in eff}
+            sub_verdicts[name] = {"n": len(part), "verdict": decide(eff, pv), "pvalues": pv,
                                   "std_effect": eff, "mean_spread": float(part[f"repo_{country}"].mean())}
     return {"country": country, "n": int(len(df)), "first": str(df.index[0].date()), "last": str(df.index[-1].date()),
             "params": {k: float(v) for k, v in res.params.items()}, "pvalues": {k: float(v) for k, v in res.pvalues.items()},
@@ -112,6 +113,29 @@ def decide(std_effect: dict, pvals: dict) -> str:
     return "both / unclear"
 
 
+TERMS = ("credit", *SCARCITY)
+
+
+def apply_holm(results: dict) -> None:
+    """Holm-adjust the coefficient p-values (F3: full sample; F4: sub-periods) and re-apply the decision
+    rule with the adjusted values (METHODOLOGY.md, U2). The raw-p verdict is kept as `verdict_raw`."""
+    keys = [(c, k) for c in results for k in TERMS]
+    adjusted = st.holm([results[c]["pvalues"][k] for c, k in keys])
+    for (c, k), p in zip(keys, adjusted):
+        results[c].setdefault("pvalues_holm", {})[k] = float(p)
+    for c, r in results.items():
+        r["verdict_raw"] = r["verdict"]
+        r["verdict"] = decide(r["std_effect"], r["pvalues_holm"])
+    sub_keys = [(c, s, k) for c in results for s in results[c]["sub_periods"] for k in TERMS]
+    adjusted = st.holm([results[c]["sub_periods"][s]["pvalues"][k] for c, s, k in sub_keys])
+    for (c, s, k), p in zip(sub_keys, adjusted):
+        results[c]["sub_periods"][s].setdefault("pvalues_holm", {})[k] = float(p)
+    for c in results:
+        for part in results[c]["sub_periods"].values():
+            part["verdict_raw"] = part["verdict"]
+            part["verdict"] = decide(part["std_effect"], part["pvalues_holm"])
+
+
 def run(long: pd.DataFrame | None = None, out_dir: Path = OUT_DIR) -> dict:
     out_dir.mkdir(parents=True, exist_ok=True)
     panel = period_panel(long)
@@ -122,6 +146,7 @@ def run(long: pd.DataFrame | None = None, out_dir: Path = OUT_DIR) -> dict:
         r = regression(panel, c)
         pd.DataFrame(r.pop("rolling")).to_csv(out_dir / f"rolling_{c}.csv", index=False, float_format="%.4f")
         results[c] = r
+    apply_holm(results)
     summary = {"data_as_of": str(data.as_of(long).date()), "n_periods": int(len(panel)),
                "qt_start": str(QT_START.date()), "regressions": results, "labels": LABELS}
     (out_dir / "summary.json").write_text(json.dumps(summary, indent=1, default=str), encoding="utf-8")

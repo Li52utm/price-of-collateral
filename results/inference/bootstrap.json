@@ -1,0 +1,360 @@
+{
+ "settings": {
+  "n_boot": 1000,
+  "seed": 42,
+  "level": 0.95
+ },
+ "forecast": {
+  "USD": {
+   "winner": "state",
+   "block": 40,
+   "models": {
+    "baseline": {
+     "mean_diff_all": 0.0,
+     "mean_diff_turn": 0.0,
+     "coverage": 0.9196242171189979,
+     "ci_coverage": {
+      "lower": 0.8569937369519833,
+      "upper": 0.9582724425887265,
+      "n_boot": 1000,
+      "n_valid": 1000,
+      "block": 40
+     }
+    },
+    "calendar": {
+     "mean_diff_all": 0.30269277139874745,
+     "mean_diff_turn": 0.08666847826086986,
+     "coverage": 0.9624217118997912,
+     "ci_diff_all": {
+      "lower": 0.0835426291753655,
+      "upper": 0.47509057933194154,
+      "n_boot": 1000,
+      "n_valid": 1000,
+      "block": 40
+     },
+     "ci_diff_turn": {
+      "lower": -0.8772416610054345,
+      "upper": 0.7676266709065682,
+      "n_boot": 1000,
+      "n_valid": 1000,
+      "block": 40
+     },
+     "ci_coverage": {
+      "lower": 0.9185542797494781,
+      "upper": 0.9895615866388309,
+      "n_boot": 1000,
+      "n_valid": 1000,
+      "block": 40
+     }
+    },
+    "state": {
+     "mean_diff_all": -0.10123810020876828,
+     "mean_diff_turn": -0.5022885869565217,
+     "coverage": 0.8580375782881002,
+     "ci_diff_all": {
+      "lower": -0.21745662415187894,
+      "upper": 0.03415930519311065,
+      "n_boot": 1000,
+      "n_valid": 1000,
+      "block": 40
+     },
+     "ci_diff_turn": {
+      "lower": -1.1440179713164251,
+      "upper": -0.056148274456521784,
+      "n_boot": 1000,
+      "n_valid": 1000,
+      "block": 40
+     },
+     "ci_coverage": {
+      "lower": 0.7609342379958247,
+      "upper": 0.9331941544885177,
+      "n_boot": 1000,
+      "n_valid": 1000,
+      "block": 40
+     }
+    }
+   }
+  },
+  "EUR": {
+   "winner": "state",
+   "block": 40,
+   "models": {
+    "baseline": {
+     "mean_diff_all": 0.0,
+     "mean_diff_turn": 0.0,
+     "coverage": 0.9062181447502549,
+     "ci_coverage": {
+      "lower": 0.8623598369011214,
+      "upper": 0.9429153924566769,
+      "n_boot": 1000,
+      "n_valid": 1000,
+      "block": 40
+     }
+    },
+    "calendar": {
+     "mean_diff_all": 0.32537079510703365,
+     "mean_diff_turn": 0.31381793478260867,
+     "coverage": 0.7370030581039755,
+     "ci_diff_all": {
+      "lower": 0.23939570591233436,
+      "upper": 0.4135320208970439,
+      "n_boot": 1000,
+      "n_valid": 1000,
+      "block": 40
+     },
+     "ci_diff_turn": {
+      "lower": 0.1604857016947057,
+      "upper": 0.4634721436511858,
+      "n_boot": 1000,
+      "n_valid": 1000,
+      "block": 40
+     },
+     "ci_coverage": {
+      "lower": 0.5911824668705403,
+      "upper": 0.8919724770642201,
+      "n_boot": 1000,
+      "n_valid": 1000,
+      "block": 40
+     }
+    },
+    "state": {
+     "mean_diff_all": -0.014495795107033643,
+     "mean_diff_turn": -0.053791032608695666,
+     "coverage": 0.9938837920489296,
+     "ci_diff_all": {
+      "lower": -0.033087997260448525,
+      "upper": 0.006644566450050956,
+      "n_boot": 1000,
+      "n_valid": 1000,
+      "block": 40
+     },
+     "ci_diff_turn": {
+      "lower": -0.13736522569444454,
+      "upper": 0.014805324135638278,
+      "n_boot": 1000,
+      "n_valid": 1000,
+      "block": 40
+     },
+     "ci_coverage": {
+      "lower": 0.9877675840978594,
+      "upper": 0.9989806320081549,
+      "n_boot": 1000,
+      "n_valid": 1000,
+      "block": 40
+     }
+    }
+   }
+  },
+  "JPY": {
+   "winner": "baseline",
+   "block": 40,
+   "models": {
+    "baseline": {
+     "mean_diff_all": 0.0,
+     "mean_diff_turn": 0.0,
+     "coverage": 0.8374331550802139,
+     "ci_coverage": {
+      "lower": 0.7262032085561497,
+      "upper": 0.9444385026737967,
+      "n_boot": 1000,
+      "n_valid": 1000,
+      "block": 40
+     }
+    },
+    "calendar": {
+     "mean_diff_all": 1.4268312834224597,
+     "mean_diff_turn": 1.2048940217391304,
+     "coverage": 0.24705882352941178,
+     "ci_diff_all": {
+      "lower": 0.8666935929144387,
+      "upper": 1.9997611129679138,
+      "n_boot": 1000,
+      "n_valid": 1000,
+      "block": 40
+     },
+     "ci_diff_turn": {
+      "lower": 0.6293243885869565,
+      "upper": 1.7430910326086957,
+      "n_boot": 1000,
+      "n_valid": 1000,
+      "block": 40
+     },
+     "ci_coverage": {
+      "lower": 0.08553475935828879,
+      "upper": 0.39788770053475936,
+      "n_boot": 1000,
+      "n_valid": 1000,
+      "block": 40
+     }
+    },
+    "state": {
+     "mean_diff_all": 1.2836763903743316,
+     "mean_diff_turn": 1.0551755434782608,
+     "coverage": 0.24705882352941178,
+     "ci_diff_all": {
+      "lower": 0.7981568074866312,
+      "upper": 1.8191658111631013,
+      "n_boot": 1000,
+      "n_valid": 1000,
+      "block": 40
+     },
+     "ci_diff_turn": {
+      "lower": 0.5500916216177151,
+      "upper": 1.5555491389627663,
+      "n_boot": 1000,
+      "n_valid": 1000,
+      "block": 40
+     },
+     "ci_coverage": {
+      "lower": 0.0877005347593583,
+      "upper": 0.3925133689839572,
+      "n_boot": 1000,
+      "n_valid": 1000,
+      "block": 40
+     }
+    }
+   }
+  }
+ },
+ "reserves_slope": {
+  "USD": {
+   "slope": -6.41484729083758,
+   "lower": -7.914617451513484,
+   "upper": -5.123960427248244,
+   "n_boot": 1000,
+   "n_valid": 1000,
+   "block": 8
+  },
+  "EUR": {
+   "slope": -1.2385486887125714,
+   "lower": -1.6717754415293802,
+   "upper": -0.6959954800961893,
+   "n_boot": 1000,
+   "n_valid": 1000,
+   "block": 8
+  }
+ },
+ "credit_scarcity": {
+  "IT": {
+   "point": {
+    "credit": 4.76218046071576,
+    "liquidity": 5.221151298190039,
+    "de_holdings": -1.777010900307443,
+    "difference": -2.2359817377817226
+   },
+   "credit": {
+    "lower": 2.012656046571154,
+    "upper": 7.317584808504435,
+    "n_boot": 1000,
+    "n_valid": 1000,
+    "block": 4
+   },
+   "liquidity": {
+    "lower": 0.13036491294701444,
+    "upper": 11.625451741591654,
+    "n_boot": 1000,
+    "n_valid": 1000,
+    "block": 4
+   },
+   "de_holdings": {
+    "lower": -8.09414428147305,
+    "upper": 3.379979430145311,
+    "n_boot": 1000,
+    "n_valid": 1000,
+    "block": 4
+   },
+   "difference": {
+    "lower": -12.698137937304026,
+    "upper": 1.5407513581767693,
+    "n_boot": 1000,
+    "n_valid": 1000,
+    "block": 4
+   },
+   "too_close_to_call": true
+  },
+  "FR": {
+   "point": {
+    "credit": -0.20367244746810653,
+    "liquidity": 1.9505235817647928,
+    "de_holdings": 1.2981953842505891,
+    "difference": -3.045046518547275
+   },
+   "credit": {
+    "lower": -1.952189481091527,
+    "upper": 1.9098834554140638,
+    "n_boot": 1000,
+    "n_valid": 1000,
+    "block": 4
+   },
+   "liquidity": {
+    "lower": -2.6614981056279223,
+    "upper": 6.406660671976179,
+    "n_boot": 1000,
+    "n_valid": 1000,
+    "block": 4
+   },
+   "de_holdings": {
+    "lower": -2.2636478731874004,
+    "upper": 7.251615364663948,
+    "n_boot": 1000,
+    "n_valid": 1000,
+    "block": 4
+   },
+   "difference": {
+    "lower": -9.110276329858056,
+    "upper": -0.7416480075194866,
+    "n_boot": 1000,
+    "n_valid": 1000,
+    "block": 4
+   },
+   "too_close_to_call": false
+  }
+ },
+ "france_split": {
+  "cum_change": 45.5,
+  "euro_wide": -8.773949472875312,
+  "france_specific": 54.273949472875316,
+  "share_france": 1.192834054348908,
+  "since": "2024-06",
+  "n_fit": 168,
+  "ci_euro_wide": {
+   "lower": -34.024888347164804,
+   "upper": 20.51783156971261,
+   "n_boot": 1000,
+   "n_valid": 1000,
+   "block": 6
+  },
+  "ci_france_specific": {
+   "lower": 24.98216843028739,
+   "upper": 79.5248883471648,
+   "n_boot": 1000,
+   "n_valid": 1000,
+   "block": 6
+  },
+  "ci_share_france": {
+   "lower": 0.5490586468195031,
+   "upper": 1.747799743893732,
+   "n_boot": 1000,
+   "n_valid": 1000,
+   "block": 6
+  }
+ },
+ "japan_half_life": {
+  "negative": {
+   "half_life": 13.177850816008604,
+   "lower": 9.744212635340006,
+   "upper": 17.781496449489126,
+   "n_boot": 1000,
+   "n_valid": 1000,
+   "block": 20
+  },
+  "exit": {
+   "half_life": 0.4293743970981303,
+   "lower": 0.3172161839021139,
+   "upper": 0.5919775429557956,
+   "n_boot": 1000,
+   "n_valid": 1000,
+   "block": 20
+  }
+ }
+}

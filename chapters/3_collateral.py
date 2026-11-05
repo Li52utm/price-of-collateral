@@ -9,6 +9,7 @@ import pandas as pd  # noqa: E402
 import plotly.graph_objects as go  # noqa: E402
 import streamlit as st  # noqa: E402
 
+import findings  # noqa: E402
 import ui  # noqa: E402
 import wording as w  # noqa: E402
 
@@ -44,17 +45,28 @@ st.markdown("Two stories can explain the premium. **Credit**: lenders want more 
             "supply because the Eurosystem holds so many, and plentiful central bank liquidity lets cash chase "
             "them, so the Bund repo rate falls below the others.")
 rows = []
+res = ui.results()
+boot_cs = (res.get("bootstrap") or {}).get("credit_scarcity", {})
 for cty in ("IT", "FR"):
     r = c["regressions"][cty]
     scarcity = abs(r["std_effect"]["liquidity"]) + abs(r["std_effect"]["de_holdings"])
-    ui.md(w.collateral_sentence(cty, r["verdict"], r["std_effect"]["credit"], scarcity, r["r2"], r["mean_spread"],
+    verdict = findings.collateral_verdict(res, cty)
+    ui.md(w.collateral_sentence(cty, verdict, r["std_effect"]["credit"], scarcity, r["r2"], r["mean_spread"],
                                 r["latest_spread"]))
-    ui.md(w.qt_break_sentence(cty, r["chow"]["p_value"], r["sub_periods"].get("before_qt", {}).get("verdict"),
-                              r["sub_periods"].get("after_qt", {}).get("verdict")))
+    cs = boot_cs.get(cty)
+    if cs:
+        ui.md(w.credit_scarcity_ci_sentence(cty, cs["point"]["difference"], cs["difference"]["lower"],
+                                            cs["difference"]["upper"]))
+    p_break, adjusted = findings.adjusted_p(res, f"chow_qt_{cty}", r["chow"]["p_value"])
+    ui.md(w.qt_break_sentence(cty, p_break, r["sub_periods"].get("before_qt", {}).get("verdict"),
+                              r["sub_periods"].get("after_qt", {}).get("verdict"), adjusted))
     for k in ("credit", "liquidity", "de_holdings"):
+        ci = cs[k] if cs else {"lower": float("nan"), "upper": float("nan")}
         rows.append({"Collateral": w.COUNTRY_NAMES[cty], "Variable": c["labels"][k],
                      "Coefficient": round(r["params"][k], 3), "p-value (Newey-West)": round(r["pvalues"][k], 3),
-                     "Effect of one standard deviation (bp)": round(r["std_effect"][k], 2)})
+                     "Holm-adjusted p": round(r.get("pvalues_holm", r["pvalues"])[k], 3),
+                     "Effect of one standard deviation (bp)": round(r["std_effect"][k], 2),
+                     "95% CI of the effect (bp)": f"{ci['lower']:+.1f} to {ci['upper']:+.1f}"})
 ui.table(pd.DataFrame(rows))
 st.caption(f"{c['n_periods']} maintenance periods; Newey-West standard errors with 3 lags; structural break test "
            f"(Chow) at the start of quantitative tightening, {c['qt_start']}.")

@@ -1,0 +1,752 @@
+{
+ "USD": {
+  "model": "state",
+  "n": 958,
+  "per_quantile": {
+   "q05": {
+    "nominal": 0.05,
+    "share_below": 0.055323590814196244,
+    "lower": 0.041712278253948076,
+    "upper": 0.07174320221865141,
+    "verdict": "consistent"
+   },
+   "q50": {
+    "nominal": 0.5,
+    "share_below": 0.3966597077244259,
+    "lower": 0.3655180248091379,
+    "upper": 0.42843868160714604,
+    "verdict": "too low"
+   },
+   "q90": {
+    "nominal": 0.9,
+    "share_below": 0.8705636743215032,
+    "lower": 0.8476423236494405,
+    "upper": 0.8911775245769494,
+    "verdict": "too low"
+   },
+   "q95": {
+    "nominal": 0.95,
+    "share_below": 0.9133611691022965,
+    "lower": 0.8937295287041824,
+    "upper": 0.9304036508430862,
+    "verdict": "too low"
+   }
+  },
+  "interval_coverage": 0.8580375782881002,
+  "interval_lower": 0.8343153183794686,
+  "interval_upper": 0.8795329430463407,
+  "verdict": "too narrow",
+  "p_coverage": 4.001359763085813e-05,
+  "pit": {
+   "bins": [
+    "below q05",
+    "q05-q50",
+    "q50-q90",
+    "q90-q95",
+    "above q95"
+   ],
+   "observed": [
+    0.055323590814196244,
+    0.34029227557411273,
+    0.47494780793319413,
+    0.04279749478079332,
+    0.08663883089770355
+   ],
+   "expected": [
+    0.05,
+    0.45,
+    0.4,
+    0.05,
+    0.05
+   ]
+  },
+  "by_model": {
+   "baseline": {
+    "model": "baseline",
+    "n": 958,
+    "per_quantile": {
+     "q05": {
+      "nominal": 0.05,
+      "share_below": 0.03966597077244259,
+      "lower": 0.028220188966712273,
+      "upper": 0.05404046700763195,
+      "verdict": "consistent"
+     },
+     "q50": {
+      "nominal": 0.5,
+      "share_below": 0.5772442588726514,
+      "lower": 0.5452430875356742,
+      "upper": 0.6087691703149296,
+      "verdict": "too high"
+     },
+     "q90": {
+      "nominal": 0.9,
+      "share_below": 0.9258872651356994,
+      "lower": 0.9074330423329336,
+      "upper": 0.941666786366103,
+      "verdict": "too high"
+     },
+     "q95": {
+      "nominal": 0.95,
+      "share_below": 0.9498956158663883,
+      "lower": 0.93411481972173,
+      "upper": 0.9628292452207124,
+      "verdict": "consistent"
+     }
+    },
+    "interval_coverage": 0.9196242171189979,
+    "interval_lower": 0.9005660539544392,
+    "interval_upper": 0.9360507115167421,
+    "verdict": "too wide",
+    "p_coverage": 0.046055473475199754,
+    "pit": {
+     "bins": [
+      "below q05",
+      "q05-q50",
+      "q50-q90",
+      "q90-q95",
+      "above q95"
+     ],
+     "observed": [
+      0.030271398747390398,
+      0.32254697286012524,
+      0.5490605427974948,
+      0.04801670146137787,
+      0.05010438413361169
+     ],
+     "expected": [
+      0.05,
+      0.45,
+      0.4,
+      0.05,
+      0.05
+     ]
+    }
+   },
+   "calendar": {
+    "model": "calendar",
+    "n": 958,
+    "per_quantile": {
+     "q05": {
+      "nominal": 0.05,
+      "share_below": 0.027139874739039668,
+      "lower": 0.017803579859113346,
+      "upper": 0.03951458896364674,
+      "verdict": "too low"
+     },
+     "q50": {
+      "nominal": 0.5,
+      "share_below": 0.673277661795407,
+      "lower": 0.6425575965463458,
+      "upper": 0.7029281533622251,
+      "verdict": "too high"
+     },
+     "q90": {
+      "nominal": 0.9,
+      "share_below": 0.9686847599164927,
+      "lower": 0.9555957321944368,
+      "upper": 0.9787740508399514,
+      "verdict": "too high"
+     },
+     "q95": {
+      "nominal": 0.95,
+      "share_below": 0.9728601252609603,
+      "lower": 0.9604854110363532,
+      "upper": 0.9821964201408867,
+      "verdict": "too high"
+     }
+    },
+    "interval_coverage": 0.9624217118997912,
+    "interval_lower": 0.9483531674427419,
+    "interval_upper": 0.9735443974734712,
+    "verdict": "too wide",
+    "p_coverage": 6.715339711925329e-13,
+    "pit": {
+     "bins": [
+      "below q05",
+      "q05-q50",
+      "q50-q90",
+      "q90-q95",
+      "above q95"
+     ],
+     "observed": [
+      0.010438413361169102,
+      0.6440501043841336,
+      0.3048016701461378,
+      0.013569937369519834,
+      0.027139874739039668
+     ],
+     "expected": [
+      0.05,
+      0.45,
+      0.4,
+      0.05,
+      0.05
+     ]
+    }
+   },
+   "state": {
+    "model": "state",
+    "n": 958,
+    "per_quantile": {
+     "q05": {
+      "nominal": 0.05,
+      "share_below": 0.055323590814196244,
+      "lower": 0.041712278253948076,
+      "upper": 0.07174320221865141,
+      "verdict": "consistent"
+     },
+     "q50": {
+      "nominal": 0.5,
+      "share_below": 0.3966597077244259,
+      "lower": 0.3655180248091379,
+      "upper": 0.42843868160714604,
+      "verdict": "too low"
+     },
+     "q90": {
+      "nominal": 0.9,
+      "share_below": 0.8705636743215032,
+      "lower": 0.8476423236494405,
+      "upper": 0.8911775245769494,
+      "verdict": "too low"
+     },
+     "q95": {
+      "nominal": 0.95,
+      "share_below": 0.9133611691022965,
+      "lower": 0.8937295287041824,
+      "upper": 0.9304036508430862,
+      "verdict": "too low"
+     }
+    },
+    "interval_coverage": 0.8580375782881002,
+    "interval_lower": 0.8343153183794686,
+    "interval_upper": 0.8795329430463407,
+    "verdict": "too narrow",
+    "p_coverage": 4.001359763085813e-05,
+    "pit": {
+     "bins": [
+      "below q05",
+      "q05-q50",
+      "q50-q90",
+      "q90-q95",
+      "above q95"
+     ],
+     "observed": [
+      0.055323590814196244,
+      0.34029227557411273,
+      0.47494780793319413,
+      0.04279749478079332,
+      0.08663883089770355
+     ],
+     "expected": [
+      0.05,
+      0.45,
+      0.4,
+      0.05,
+      0.05
+     ]
+    }
+   }
+  }
+ },
+ "EUR": {
+  "model": "state",
+  "n": 981,
+  "per_quantile": {
+   "q05": {
+    "nominal": 0.05,
+    "share_below": 0.0061162079510703364,
+    "lower": 0.0022477496939974084,
+    "upper": 0.013264558880497624,
+    "verdict": "too low"
+   },
+   "q50": {
+    "nominal": 0.5,
+    "share_below": 0.7166156982670744,
+    "lower": 0.6872849670455758,
+    "upper": 0.7446398205101684,
+    "verdict": "too high"
+   },
+   "q90": {
+    "nominal": 0.9,
+    "share_below": 1.0,
+    "lower": 0.9962467355296255,
+    "upper": 1.0,
+    "verdict": "too high"
+   },
+   "q95": {
+    "nominal": 0.95,
+    "share_below": 1.0,
+    "lower": 0.9962467355296255,
+    "upper": 1.0,
+    "verdict": "too high"
+   }
+  },
+  "interval_coverage": 0.9938837920489296,
+  "interval_lower": 0.9867354411195024,
+  "interval_upper": 0.9977522503060026,
+  "verdict": "too wide",
+  "p_coverage": 6.6337519713277e-36,
+  "pit": {
+   "bins": [
+    "below q05",
+    "q05-q50",
+    "q50-q90",
+    "q90-q95",
+    "above q95"
+   ],
+   "observed": [
+    0.0061162079510703364,
+    0.709480122324159,
+    0.28440366972477066,
+    0.0,
+    0.0
+   ],
+   "expected": [
+    0.05,
+    0.45,
+    0.4,
+    0.05,
+    0.05
+   ]
+  },
+  "by_model": {
+   "baseline": {
+    "model": "baseline",
+    "n": 981,
+    "per_quantile": {
+     "q05": {
+      "nominal": 0.05,
+      "share_below": 0.0020387359836901123,
+      "lower": 0.0002469958174440018,
+      "upper": 0.0073450299024704485,
+      "verdict": "too low"
+     },
+     "q50": {
+      "nominal": 0.5,
+      "share_below": 0.13557594291539246,
+      "lower": 0.11476276933887435,
+      "upper": 0.15860315755845125,
+      "verdict": "too low"
+     },
+     "q90": {
+      "nominal": 0.9,
+      "share_below": 0.7767584097859327,
+      "lower": 0.7493803131696244,
+      "upper": 0.8024639822347913,
+      "verdict": "too low"
+     },
+     "q95": {
+      "nominal": 0.95,
+      "share_below": 0.908256880733945,
+      "lower": 0.8884365342485758,
+      "upper": 0.9255832347319464,
+      "verdict": "too low"
+     }
+    },
+    "interval_coverage": 0.9062181447502549,
+    "interval_lower": 0.8862260431358594,
+    "interval_upper": 0.9237295558255659,
+    "verdict": "well calibrated",
+    "p_coverage": 0.5582358765099842,
+    "pit": {
+     "bins": [
+      "below q05",
+      "q05-q50",
+      "q50-q90",
+      "q90-q95",
+      "above q95"
+     ],
+     "observed": [
+      0.0020387359836901123,
+      0.08460754332313965,
+      0.601427115188583,
+      0.22018348623853212,
+      0.09174311926605505
+     ],
+     "expected": [
+      0.05,
+      0.45,
+      0.4,
+      0.05,
+      0.05
+     ]
+    }
+   },
+   "calendar": {
+    "model": "calendar",
+    "n": 981,
+    "per_quantile": {
+     "q05": {
+      "nominal": 0.05,
+      "share_below": 0.290519877675841,
+      "lower": 0.2622643792759815,
+      "upper": 0.3200387295518841,
+      "verdict": "too high"
+     },
+     "q50": {
+      "nominal": 0.5,
+      "share_below": 0.9133537206931702,
+      "lower": 0.8939746089253535,
+      "upper": 0.930205411507867,
+      "verdict": "too high"
+     },
+     "q90": {
+      "nominal": 0.9,
+      "share_below": 1.0,
+      "lower": 0.9962467355296255,
+      "upper": 1.0,
+      "verdict": "too high"
+     },
+     "q95": {
+      "nominal": 0.95,
+      "share_below": 1.0,
+      "lower": 0.9962467355296255,
+      "upper": 1.0,
+      "verdict": "too high"
+     }
+    },
+    "interval_coverage": 0.7370030581039755,
+    "interval_lower": 0.7082582684440926,
+    "interval_upper": 0.764317492021857,
+    "verdict": "too narrow",
+    "p_coverage": 1.0274767958881215e-47,
+    "pit": {
+     "bins": [
+      "below q05",
+      "q05-q50",
+      "q50-q90",
+      "q90-q95",
+      "above q95"
+     ],
+     "observed": [
+      0.26299694189602446,
+      0.6330275229357798,
+      0.10397553516819572,
+      0.0,
+      0.0
+     ],
+     "expected": [
+      0.05,
+      0.45,
+      0.4,
+      0.05,
+      0.05
+     ]
+    }
+   },
+   "state": {
+    "model": "state",
+    "n": 981,
+    "per_quantile": {
+     "q05": {
+      "nominal": 0.05,
+      "share_below": 0.0061162079510703364,
+      "lower": 0.0022477496939974084,
+      "upper": 0.013264558880497624,
+      "verdict": "too low"
+     },
+     "q50": {
+      "nominal": 0.5,
+      "share_below": 0.7166156982670744,
+      "lower": 0.6872849670455758,
+      "upper": 0.7446398205101684,
+      "verdict": "too high"
+     },
+     "q90": {
+      "nominal": 0.9,
+      "share_below": 1.0,
+      "lower": 0.9962467355296255,
+      "upper": 1.0,
+      "verdict": "too high"
+     },
+     "q95": {
+      "nominal": 0.95,
+      "share_below": 1.0,
+      "lower": 0.9962467355296255,
+      "upper": 1.0,
+      "verdict": "too high"
+     }
+    },
+    "interval_coverage": 0.9938837920489296,
+    "interval_lower": 0.9867354411195024,
+    "interval_upper": 0.9977522503060026,
+    "verdict": "too wide",
+    "p_coverage": 6.6337519713277e-36,
+    "pit": {
+     "bins": [
+      "below q05",
+      "q05-q50",
+      "q50-q90",
+      "q90-q95",
+      "above q95"
+     ],
+     "observed": [
+      0.0061162079510703364,
+      0.709480122324159,
+      0.28440366972477066,
+      0.0,
+      0.0
+     ],
+     "expected": [
+      0.05,
+      0.45,
+      0.4,
+      0.05,
+      0.05
+     ]
+    }
+   }
+  }
+ },
+ "JPY": {
+  "model": "baseline",
+  "n": 935,
+  "per_quantile": {
+   "q05": {
+    "nominal": 0.05,
+    "share_below": 0.08449197860962566,
+    "lower": 0.06746170474929335,
+    "upper": 0.10419106482043179,
+    "verdict": "too high"
+   },
+   "q50": {
+    "nominal": 0.5,
+    "share_below": 0.7401069518716578,
+    "lower": 0.7107320514407711,
+    "upper": 0.7679605766153071,
+    "verdict": "too high"
+   },
+   "q90": {
+    "nominal": 0.9,
+    "share_below": 0.9005347593582887,
+    "lower": 0.8795362169978395,
+    "upper": 0.9189673666532772,
+    "verdict": "consistent"
+   },
+   "q95": {
+    "nominal": 0.95,
+    "share_below": 0.9219251336898395,
+    "lower": 0.9028312965971744,
+    "upper": 0.9383052893568752,
+    "verdict": "too low"
+   }
+  },
+  "interval_coverage": 0.8374331550802139,
+  "interval_lower": 0.812193034478104,
+  "interval_upper": 0.8605256852721731,
+  "verdict": "too narrow",
+  "p_coverage": 3.0711606424449163e-09,
+  "pit": {
+   "bins": [
+    "below q05",
+    "q05-q50",
+    "q50-q90",
+    "q90-q95",
+    "above q95"
+   ],
+   "observed": [
+    0.08449197860962566,
+    0.5433155080213904,
+    0.2716577540106952,
+    0.022459893048128343,
+    0.07807486631016043
+   ],
+   "expected": [
+    0.05,
+    0.45,
+    0.4,
+    0.05,
+    0.05
+   ]
+  },
+  "by_model": {
+   "baseline": {
+    "model": "baseline",
+    "n": 935,
+    "per_quantile": {
+     "q05": {
+      "nominal": 0.05,
+      "share_below": 0.08449197860962566,
+      "lower": 0.06746170474929335,
+      "upper": 0.10419106482043179,
+      "verdict": "too high"
+     },
+     "q50": {
+      "nominal": 0.5,
+      "share_below": 0.7401069518716578,
+      "lower": 0.7107320514407711,
+      "upper": 0.7679605766153071,
+      "verdict": "too high"
+     },
+     "q90": {
+      "nominal": 0.9,
+      "share_below": 0.9005347593582887,
+      "lower": 0.8795362169978395,
+      "upper": 0.9189673666532772,
+      "verdict": "consistent"
+     },
+     "q95": {
+      "nominal": 0.95,
+      "share_below": 0.9219251336898395,
+      "lower": 0.9028312965971744,
+      "upper": 0.9383052893568752,
+      "verdict": "too low"
+     }
+    },
+    "interval_coverage": 0.8374331550802139,
+    "interval_lower": 0.812193034478104,
+    "interval_upper": 0.8605256852721731,
+    "verdict": "too narrow",
+    "p_coverage": 3.0711606424449163e-09,
+    "pit": {
+     "bins": [
+      "below q05",
+      "q05-q50",
+      "q50-q90",
+      "q90-q95",
+      "above q95"
+     ],
+     "observed": [
+      0.08449197860962566,
+      0.5433155080213904,
+      0.2716577540106952,
+      0.022459893048128343,
+      0.07807486631016043
+     ],
+     "expected": [
+      0.05,
+      0.45,
+      0.4,
+      0.05,
+      0.05
+     ]
+    }
+   },
+   "calendar": {
+    "model": "calendar",
+    "n": 935,
+    "per_quantile": {
+     "q05": {
+      "nominal": 0.05,
+      "share_below": 0.7101604278074867,
+      "lower": 0.6799150462916728,
+      "upper": 0.7390753365063577,
+      "verdict": "too high"
+     },
+     "q50": {
+      "nominal": 0.5,
+      "share_below": 0.7700534759358288,
+      "lower": 0.7417190056071752,
+      "upper": 0.7966751975306547,
+      "verdict": "too high"
+     },
+     "q90": {
+      "nominal": 0.9,
+      "share_below": 0.8770053475935828,
+      "lower": 0.8542247031987666,
+      "upper": 0.897378178605504,
+      "verdict": "too low"
+     },
+     "q95": {
+      "nominal": 0.95,
+      "share_below": 0.9550802139037433,
+      "lower": 0.9397638278468936,
+      "upper": 0.9674370633397024,
+      "verdict": "consistent"
+     }
+    },
+    "interval_coverage": 0.24705882352941178,
+    "interval_lower": 0.2197111054591897,
+    "interval_upper": 0.27600978247130953,
+    "verdict": "too narrow",
+    "p_coverage": 0.0,
+    "pit": {
+     "bins": [
+      "below q05",
+      "q05-q50",
+      "q50-q90",
+      "q90-q95",
+      "above q95"
+     ],
+     "observed": [
+      0.7080213903743315,
+      0.06096256684491978,
+      0.0962566844919786,
+      0.08983957219251337,
+      0.044919786096256686
+     ],
+     "expected": [
+      0.05,
+      0.45,
+      0.4,
+      0.05,
+      0.05
+     ]
+    }
+   },
+   "state": {
+    "model": "state",
+    "n": 935,
+    "per_quantile": {
+     "q05": {
+      "nominal": 0.05,
+      "share_below": 0.7219251336898396,
+      "lower": 0.6920026188186947,
+      "upper": 0.7504422848433407,
+      "verdict": "too high"
+     },
+     "q50": {
+      "nominal": 0.5,
+      "share_below": 0.7914438502673797,
+      "lower": 0.7639687484353282,
+      "upper": 0.8170688887499822,
+      "verdict": "too high"
+     },
+     "q90": {
+      "nominal": 0.9,
+      "share_below": 0.9561497326203209,
+      "lower": 0.9409797941118162,
+      "upper": 0.9683515357785805,
+      "verdict": "too high"
+     },
+     "q95": {
+      "nominal": 0.95,
+      "share_below": 0.9689839572192513,
+      "lower": 0.9557579640024975,
+      "upper": 0.9791317047484203,
+      "verdict": "too high"
+     }
+    },
+    "interval_coverage": 0.24705882352941178,
+    "interval_lower": 0.2197111054591897,
+    "interval_upper": 0.27600978247130953,
+    "verdict": "too narrow",
+    "p_coverage": 0.0,
+    "pit": {
+     "bins": [
+      "below q05",
+      "q05-q50",
+      "q50-q90",
+      "q90-q95",
+      "above q95"
+     ],
+     "observed": [
+      0.7219251336898396,
+      0.06951871657754011,
+      0.16470588235294117,
+      0.012834224598930482,
+      0.031016042780748664
+     ],
+     "expected": [
+      0.05,
+      0.45,
+      0.4,
+      0.05,
+      0.05
+     ]
+    }
+   }
+  }
+ }
+}

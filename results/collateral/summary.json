@@ -26,7 +26,7 @@
     "liquidity": 5.221164333703218,
     "de_holdings": -1.776993861937332
    },
-   "verdict": "scarcity",
+   "verdict": "both / unclear",
    "chow": {
     "F": 2.7776167195456622,
     "p_value": 0.034628498628240606,
@@ -38,26 +38,54 @@
     "before_qt": {
      "n": 40,
      "verdict": "both / unclear",
+     "pvalues": {
+      "credit": 0.00012293746090187541,
+      "liquidity": 0.24418482036994216,
+      "de_holdings": 0.8633079475627778
+     },
      "std_effect": {
       "credit": 3.473333197653225,
       "liquidity": 5.5278348449203465,
       "de_holdings": -0.9750589116107081
      },
-     "mean_spread": 14.025000000000002
+     "mean_spread": 14.025000000000002,
+     "pvalues_holm": {
+      "credit": 0.0012293746090187541,
+      "liquidity": 1.0,
+      "de_holdings": 1.0
+     },
+     "verdict_raw": "both / unclear"
     },
     "after_qt": {
      "n": 29,
      "verdict": "scarcity",
+     "pvalues": {
+      "credit": 0.5498082194830956,
+      "liquidity": 1.2638947066831903e-08,
+      "de_holdings": 0.006575096758264291
+     },
      "std_effect": {
       "credit": 0.6479847776114372,
       "liquidity": 9.965851184066345,
       "de_holdings": -6.8563514501449845
      },
-     "mean_spread": 6.827586206896556
+     "mean_spread": 6.827586206896556,
+     "pvalues_holm": {
+      "credit": 1.0,
+      "liquidity": 1.5166736480198284e-07,
+      "de_holdings": 0.05917587082437861
+     },
+     "verdict_raw": "scarcity"
     }
    },
    "mean_spread": 11.000000000000004,
-   "latest_spread": 2.9999999999999805
+   "latest_spread": 2.9999999999999805,
+   "pvalues_holm": {
+    "credit": 4.99587122639457e-05,
+    "liquidity": 0.11322388815061883,
+    "de_holdings": 1.0
+   },
+   "verdict_raw": "scarcity"
   },
   "FR": {
    "country": "FR",
@@ -94,26 +122,54 @@
     "before_qt": {
      "n": 40,
      "verdict": "both / unclear",
+     "pvalues": {
+      "credit": 7.81830774831908e-05,
+      "liquidity": 0.4154438893224074,
+      "de_holdings": 0.882140759587193
+     },
      "std_effect": {
       "credit": 3.269478433592466,
       "liquidity": 3.2396404898246964,
       "de_holdings": -0.6673883355871703
      },
-     "mean_spread": 7.775
+     "mean_spread": 7.775,
+     "pvalues_holm": {
+      "credit": 0.0008600138523150988,
+      "liquidity": 1.0,
+      "de_holdings": 1.0
+     },
+     "verdict_raw": "both / unclear"
     },
     "after_qt": {
      "n": 29,
      "verdict": "both / unclear",
+     "pvalues": {
+      "credit": 0.009517619138443654,
+      "liquidity": 0.45924904091102714,
+      "de_holdings": 0.48699642271834276
+     },
      "std_effect": {
       "credit": -0.973805621445952,
       "liquidity": 2.031339631246084,
       "de_holdings": -1.8325456981479036
      },
-     "mean_spread": 4.137931034482763
+     "mean_spread": 4.137931034482763,
+     "pvalues_holm": {
+      "credit": 0.07614095310754923,
+      "liquidity": 1.0,
+      "de_holdings": 1.0
+     },
+     "verdict_raw": "both / unclear"
     }
    },
    "mean_spread": 6.246376811594205,
-   "latest_spread": 4.0000000000000036
+   "latest_spread": 4.0000000000000036,
+   "pvalues_holm": {
+    "credit": 1.0,
+    "liquidity": 0.9280164922015866,
+    "de_holdings": 1.0
+   },
+   "verdict_raw": "both / unclear"
   }
  },
  "labels": {

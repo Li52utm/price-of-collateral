@@ -48,12 +48,25 @@ def share_words(k: int, n: int) -> str:
     return f"{k} of {n}"
 
 
-def significance_phrase(p_value: float, alpha: float = 0.05) -> str:
-    """'statistically significant (p = 0.012)' or 'not statistically significant (p = 0.310)'."""
-    if p_value != p_value:  # NaN
+def significance_phrase(p_value: float, alpha: float = 0.05, adjusted: bool = False) -> str:
+    """'statistically significant (p = 0.012)' or 'not statistically significant (Holm-adjusted p = 0.310)'."""
+    if p_value is None or p_value != p_value:  # NaN
         return "not testable"
     word = "statistically significant" if p_value < alpha else "not statistically significant"
-    return f"{word} (p = {p_value:.3f})" if p_value >= 0.001 else f"{word} (p < 0.001)"
+    label = "Holm-adjusted p" if adjusted else "p"
+    return f"{word} ({label} = {p_value:.3f})" if p_value >= 0.001 else f"{word} ({label} < 0.001)"
+
+
+def ci_text(lower: float | None, upper: float | None, unit: str = " bp", decimals: int = 1) -> str:
+    """'95% CI -1.1 to -0.1 bp' (signed bounds), or '' when the interval is missing."""
+    if lower is None or upper is None or lower != lower or upper != upper:
+        return ""
+    return f"95% CI {lower:+.{decimals}f} to {upper:+.{decimals}f}{unit}"
+
+
+def excludes_zero(lower: float | None, upper: float | None) -> bool:
+    """True if a confidence interval lies entirely on one side of zero."""
+    return lower is not None and upper is not None and lower == lower and (lower > 0 or upper < 0)
 
 
 # --------------------------------------------------------------------------- #
@@ -70,16 +83,22 @@ def money(x: float, currency: str = "USD") -> str:
 
 
 def model_comparison_sentence(currency: str, winner_label: str, winner_loss: float, baseline_loss: float,
-                              p_value: float | None, winner_is_baseline: bool) -> str:
-    """Who won on test-period turn days, by how much, and whether it is significant."""
+                              p_value: float | None, winner_is_baseline: bool, ci: dict | None = None,
+                              adjusted: bool = False) -> str:
+    """Who won on test-period turn days, by how much, and whether it is significant (Holm-adjusted DM)."""
     if winner_is_baseline:
         return (f"In {currency} the naive baseline (same as the last comparable turn) had the lowest test-period "
                 f"pinball loss on turn days ({winner_loss:.2f}); neither regression beat it.")
     gain = 1 - winner_loss / baseline_loss if baseline_loss else float("nan")
-    sig = significance_phrase(p_value) if p_value is not None else "not testable"
-    return (f"In {currency} the {winner_label.lower()} had the lowest test-period pinball loss on turn days "
+    sig = significance_phrase(p_value, adjusted=adjusted) if p_value is not None else "not testable"
+    text = (f"In {currency} the {winner_label.lower()} had the lowest test-period pinball loss on turn days "
             f"({winner_loss:.2f} against {baseline_loss:.2f} for the baseline, {gain:.0%} lower); the difference "
-            f"is {sig}.")
+            f"is {sig}")
+    if ci and ci.get("lower") is not None and ci["lower"] == ci["lower"]:
+        side = ("excludes zero" if excludes_zero(ci["lower"], ci["upper"]) else "includes zero")
+        text += (f"; the block-bootstrap interval of the loss difference ({ci_text(ci['lower'], ci['upper'], '', 2)}) "
+                 f"{side}")
+    return text + "."
 
 
 def yearend_contrast_sentence(usd_mean: float, usd_share_up: float, usd_n: int,
@@ -119,7 +138,8 @@ def term_rule_sentence(saving_vs_on: float, saving_vs_term: float, n_locked: int
 
 
 def calendar_answer(usd_win: bool, eur_win: bool, usd_p: float | None, eur_p: float | None,
-                    usd_mean: float, eur_mean: float, test_start: str = "2023") -> tuple[str, str]:
+                    usd_mean: float, eur_mean: float, test_start: str = "2023",
+                    calibration: dict | None = None) -> tuple[str, str]:
     """(answer, explanation) for chapter V's question box."""
     significant = [c for c, w, p in (("dollars", usd_win, usd_p), ("euros", eur_win, eur_p))
                    if w and p is not None and p < 0.05]
@@ -136,10 +156,14 @@ def calendar_answer(usd_win: bool, eur_win: bool, usd_p: float | None, eur_p: fl
                  else "the two currencies' turns move in the same direction")
     beat = " and ".join(beaten) if beaten else "neither currency"
     sig = " and ".join(significant) if significant else "neither"
-    return answer, (f"On the test period from {test_start}, a quantile model with calendar and state variables beat "
-                    f"the naive same-as-last-turn rule on turn days in {beat} (significantly in {sig}). "
-                    f"Across every year-end in the data, {direction} "
-                    f"({signed_bp(usd_mean)} and {signed_bp(eur_mean)} on an average year-end).")
+    text = (f"On the test period from {test_start}, a quantile model with calendar and state variables beat "
+            f"the naive same-as-last-turn rule on turn days in {beat} (significantly in {sig}, after a Holm "
+            f"correction across the six model comparisons). Across every year-end in the data, {direction} "
+            f"({signed_bp(usd_mean)} and {signed_bp(eur_mean)} on an average year-end).")
+    if calibration:
+        parts = [f"{c} {v}" for c, v in calibration.items()]
+        text += f" Calibration of the 5-95% ranges on the test period: {', '.join(parts)}."
+    return answer, text
 
 
 # --------------------------------------------------------------------------- #
@@ -205,15 +229,20 @@ def pd_day(iso: str) -> str:
     return f"{ts.day} {ts:%B %Y}"
 
 
-def corridors_answer(stats: dict, reserves: dict) -> tuple[str, str]:
+def corridors_answer(stats: dict, reserves: dict, slope_ci: dict | None = None) -> tuple[str, str]:
     """(answer, explanation) for chapter II: held tightly over the past year, and the balance-sheet effect."""
     tight = [c for c, s in stats.items() if s["recent_iqr_bp"] <= 3]
     answer = ("Yes, within a few basis points" if len(tight) == len(stats) else
               f"Mostly: {share_words(len(tight), len(stats))} held tightly")
     usd = reserves.get("USD", {})
     slope = usd.get("slope_per_unit", 0)
+    ci = ""
+    if slope_ci and slope_ci.get("lower") is not None:
+        # The interval is for the slope (negative = the spread rises as reserves fall); shown as a magnitude.
+        ci = f" (95% CI {abs(slope_ci['upper']):.1f} to {abs(slope_ci['lower']):.1f} bp)" if slope_ci["upper"] < 0 else \
+            f" ({ci_text(slope_ci['lower'], slope_ci['upper'])} for the slope)"
     tail = (f"As balance sheets shrink, SOFR has drifted up relative to the Fed's interest on reserves, about "
-            f"{bp(slope)} per trillion of reserves lost" if slope < 0 else
+            f"{bp(slope)} per trillion of reserves lost{ci}" if slope < 0 else
             "Shrinking reserves have not pushed SOFR up relative to interest on reserves")
     spreads = ", ".join(f"{MARKET_NAMES[c]} {signed_bp(s['recent_median_bp'])} (IQR {bp(s['recent_iqr_bp'])})"
                         for c, s in stats.items())
@@ -227,8 +256,27 @@ COUNTRY_NAMES = {"IT": "Italian", "FR": "French", "ES": "Spanish", "DE": "German
 
 
 def verdict_phrase(verdict: str) -> str:
+    """Plain words for a chapter III verdict."""
     return {"credit": "mainly credit risk", "scarcity": "mainly scarcity of German collateral",
-            "both / unclear": "neither clearly credit nor scarcity"}[verdict]
+            "both / unclear": "neither clearly credit nor scarcity",
+            "too close to call": "too close to call between credit and scarcity"}[verdict]
+
+
+def final_verdict(verdict: str, too_close: bool | None) -> str:
+    """U2 rule: if the interval of the credit-scarcity difference includes zero, 'too close to call'."""
+    return "too close to call" if too_close else verdict
+
+
+def credit_scarcity_ci_sentence(country: str, diff: float, lower: float, upper: float) -> str:
+    """The interval of |credit| - (|liquidity| + |holdings|) in standardised bp and what it means."""
+    if not excludes_zero(lower, upper):
+        meaning = "it includes zero, so the data cannot say which channel is larger: too close to call"
+    elif upper < 0:
+        meaning = "it lies below zero, so the scarcity effects are larger than the credit effect"
+    else:
+        meaning = "it lies above zero, so the credit effect is larger than the scarcity effects"
+    return (f"For {COUNTRY_NAMES[country]} collateral the credit effect minus the scarcity effects is "
+            f"{signed_bp(diff)} ({ci_text(lower, upper)}); {meaning}.")
 
 
 def collateral_sentence(country: str, verdict: str, credit_effect: float, scarcity_effect: float, r2: float,
@@ -240,12 +288,14 @@ def collateral_sentence(country: str, verdict: str, credit_effect: float, scarci
             f"{signed_bp(credit_effect)}, the two scarcity measures together {bp(scarcity_effect)}.")
 
 
-def qt_break_sentence(country: str, p_value: float, before: str | None, after: str | None) -> str:
+def qt_break_sentence(country: str, p_value: float, before: str | None, after: str | None,
+                      adjusted: bool = False) -> str:
+    """Chow break at the start of QT, with the sub-period verdicts."""
     changed = p_value < 0.05
     head = (f"The relationship for {COUNTRY_NAMES[country]} collateral changed at the start of quantitative "
-            f"tightening; the break is {significance_phrase(p_value)}" if changed else
+            f"tightening; the break is {significance_phrase(p_value, adjusted=adjusted)}" if changed else
             f"There is no significant break for {COUNTRY_NAMES[country]} collateral at the start of quantitative "
-            f"tightening; the test is {significance_phrase(p_value)}")
+            f"tightening; the test is {significance_phrase(p_value, adjusted=adjusted)}")
     if before and after:
         if before == after:
             return head + f"; it reads as {verdict_phrase(before)} both before and after."
@@ -253,8 +303,18 @@ def qt_break_sentence(country: str, p_value: float, before: str | None, after: s
     return head + "."
 
 
-def collateral_answer(it_verdict: str, fr_verdict: str, it_break_p: float, fr_break_p: float) -> tuple[str, str]:
+def collateral_answer(it_verdict: str, fr_verdict: str, it_break_p: float, fr_break_p: float,
+                      ci_lines: list[str] | None = None) -> tuple[str, str]:
+    """(answer, explanation) for chapter III; verdicts already include the 'too close to call' rule."""
     verdicts = (it_verdict, fr_verdict)
+    unclear = ("both / unclear", "too close to call")
+    if all(v in unclear for v in verdicts):
+        answer = ("Too close to call" if "too close to call" in verdicts else "Neither clearly")
+        breaks = sum(p < 0.05 for p in (it_break_p, fr_break_p))
+        which = {0: "neither country", 1: "one of the two countries", 2: "both countries"}[breaks]
+        return answer, (f"Italian collateral: {verdict_phrase(it_verdict)}; French collateral: "
+                        f"{verdict_phrase(fr_verdict)}. " + (" ".join(ci_lines) + " " if ci_lines else "") +
+                        f"The relationship broke at the start of quantitative tightening for {which} (Holm-adjusted).")
     if it_verdict == fr_verdict and it_verdict != "both / unclear":
         answer = "Mostly " + ("credit risk" if it_verdict == "credit" else "scarcity")
     elif "scarcity" in verdicts and "credit" not in verdicts:
@@ -270,7 +330,8 @@ def collateral_answer(it_verdict: str, fr_verdict: str, it_break_p: float, fr_br
     breaks = sum(p < 0.05 for p in (it_break_p, fr_break_p))
     which = {0: "neither country", 1: "one of the two countries", 2: "both countries"}[breaks]
     return answer, (f"Italian collateral: {verdict_phrase(it_verdict)}; French collateral: {verdict_phrase(fr_verdict)}. "
-                    f"The relationship broke at the start of quantitative tightening for {which}.")
+                    + (" ".join(ci_lines) + " " if ci_lines else "") +
+                    f"The relationship broke at the start of quantitative tightening for {which} (Holm-adjusted).")
 
 
 # --------------------------------------------------------------------------- #
@@ -293,12 +354,19 @@ def decomposition_sentence(base_month: str, last_month: str, spread_base: float,
             f"{source}.")
 
 
-def france_specific_sentence(since: str, cum_change: float, euro_wide: float, france_specific: float) -> str:
+def france_specific_sentence(since: str, cum_change: float, euro_wide: float, france_specific: float,
+                             ci_france: dict | None = None, ci_euro: dict | None = None) -> str:
+    """Euro-wide vs France-specific parts of the widening, with bootstrap intervals when available."""
     share = france_specific / cum_change if cum_change else float("nan")
     own = "France-specific" if abs(france_specific) > abs(euro_wide) else "euro-wide"
-    return (f"Since {since} the French spread moved {signed_bp(cum_change)}: {signed_bp(euro_wide)} is what Italian "
-            f"and Spanish spreads would have implied (euro-wide), {signed_bp(france_specific)} is France-specific "
-            f"({share:.0%} of the move). The move has been mainly {own}.")
+    cf = f", {ci_text(ci_france['lower'], ci_france['upper'], ' bp', 0)}" if ci_france else ""
+    ce = f", {ci_text(ci_euro['lower'], ci_euro['upper'], ' bp', 0)}" if ci_euro else ""
+    text = (f"Since {since} the French spread moved {signed_bp(cum_change)}: {signed_bp(euro_wide)} is what Italian "
+            f"and Spanish spreads would have implied (euro-wide{ce}), {signed_bp(france_specific)} is France-specific "
+            f"({share:.0%} of the move{cf}). The move has been mainly {own}")
+    if ci_france and excludes_zero(ci_france["lower"], ci_france["upper"]) and ci_france["lower"] > 0:
+        text += ", and the France-specific part is clearly above zero"
+    return text + "."
 
 
 def survival_sentence(n: int, n_countries: int, median: float, s12: float, s12_lo: float, s12_hi: float,
@@ -325,14 +393,14 @@ def france_status_sentence(in_episode: bool, spread_now: float, baseline: float 
 
 def repo_treatment_sentence(fr_before: float, fr_after: float, it_before: float, it_after: float,
                             pos_before: float, pos_after: float, p_gap: float, latest_fr: float,
-                            latest_it: float) -> str:
+                            latest_it: float, adjusted: bool = False) -> str:
     closer = pos_after > pos_before
     text = (f"In repo, French collateral moved {'closer to Italian' if closer else 'away from Italian'} pricing after "
             f"June 2024: its spread to German collateral went from {signed_bp(fr_before)} to {signed_bp(fr_after)}, the "
             f"Italian spread from {signed_bp(it_before)} to {signed_bp(it_after)}, and France's position between Germany "
             f"(0) and Italy (1) "
             f"from {pos_before:.2f} to {pos_after:.2f}. The change in the Italy-France gap is "
-            f"{significance_phrase(p_gap)}.")
+            f"{significance_phrase(p_gap, adjusted=adjusted)}.")
     if latest_fr > latest_it:
         text += (f" In the latest period French collateral cost more than Italian ({signed_bp(latest_fr)} against "
                  f"{signed_bp(latest_it)}).")
@@ -394,6 +462,13 @@ def oat_answer(in_episode: bool, median_months: float, p_half_12: float, share_c
 # --------------------------------------------------------------------------- #
 # Chapter VI: Japan
 # --------------------------------------------------------------------------- #
+def _days_ci(ci: dict | None) -> str:
+    """' (95% CI 0.3 to 0.6)' for a half-life interval, or ''."""
+    if not ci or ci.get("lower") is None or ci["lower"] != ci["lower"]:
+        return ""
+    return f" (95% CI {ci['lower']:.1f} to {ci['upper']:.1f})"
+
+
 def japan_change_sentence(date: str, change_bp: float, days: int | None, pass_20d: float) -> str:
     direction = "rise" if change_bp > 0 else "cut"
     speed = ("on the effective day" if days == 0 else f"after {days} business days" if days is not None
@@ -403,7 +478,7 @@ def japan_change_sentence(date: str, change_bp: float, days: int | None, pass_20
 
 
 def japan_answer(n_changes: int, n_same_day: int, exit_half_life: float, negative_half_life: float,
-                 latest_gap_bp: float) -> tuple[str, str]:
+                 latest_gap_bp: float, exit_ci: dict | None = None, negative_ci: dict | None = None) -> tuple[str, str]:
     if n_same_day == n_changes:
         answer = "Yes, immediately"
     elif n_same_day >= n_changes / 2:
@@ -412,7 +487,8 @@ def japan_answer(n_changes: int, n_same_day: int, exit_half_life: float, negativ
         answer = "Only partly"
     return answer, (f"{n_same_day} of {n_changes} BoJ policy changes since 2016 reached TONA on the effective day. "
                     f"After the exit, a gap between TONA and the policy rate halves in {exit_half_life:.1f} business "
-                    f"days (against {negative_half_life:.1f} under negative rates). TONA now sits "
+                    f"days{_days_ci(exit_ci)}, against {negative_half_life:.1f}{_days_ci(negative_ci)} under negative "
+                    f"rates. TONA now sits "
                     f"{bp(latest_gap_bp)} {above_or_below(latest_gap_bp)} the policy rate.")
 
 
@@ -481,6 +557,16 @@ def client_verdict(usd_lock: bool, eur_lock: bool, usd_premium_bp: float | None 
         sentence = ("Stay overnight in both currencies: the expected excess cost of rolling overnight over the turn "
                     "is below the hurdle in each, with the upper tail as the risk to manage.")
     return verdict, sentence
+
+
+def calibration_sentence(currency: str, model_label: str, coverage: float, lower: float, upper: float,
+                         verdict: str, n: int) -> str:
+    """Plain-English calibration verdict of the 5-95% range on the test period (U2 rule)."""
+    meaning = {"well calibrated": "consistent with the nominal 90%",
+               "too narrow": "below the nominal 90%: the ranges are too narrow",
+               "too wide": "above the nominal 90%: the ranges are too wide"}[verdict]
+    return (f"{currency} ({model_label.lower()}): the 5-95% range contained the outcome on {coverage:.1%} of "
+            f"{n} test days (exact 95% CI {lower:.1%} to {upper:.1%}), {meaning}. Verdict: {verdict}.")
 
 
 def tail_sentence(currency: str, q90: float, q95: float, raw90: float, raw95: float, n_year_ends: int,

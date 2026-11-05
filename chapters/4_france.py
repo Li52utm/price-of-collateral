@@ -9,6 +9,7 @@ import pandas as pd  # noqa: E402
 import plotly.graph_objects as go  # noqa: E402
 import streamlit as st  # noqa: E402
 
+import findings  # noqa: E402
 import ui  # noqa: E402
 import wording as w  # noqa: E402
 
@@ -74,7 +75,9 @@ d, e = f["decomposition"], f["euro_wide"]
 ui.section_heading("iii", "Bund leg or OAT leg; France or the euro area? (monthly)")
 ui.md(w.decomposition_sentence(d["base_month"], d["last_month"], d["spread_base"], d["spread_last"], d["oat_leg"],
                                d["bund_leg"]))
-ui.md(w.france_specific_sentence(e["since"], e["cum_change"], e["cum_euro_wide"], e["cum_france_specific"]))
+fs = (ui.results().get("bootstrap") or {}).get("france_split")
+ui.md(w.france_specific_sentence(e["since"], e["cum_change"], e["cum_euro_wide"], e["cum_france_specific"],
+                                 fs["ci_france_specific"] if fs else None, fs["ci_euro_wide"] if fs else None))
 split = ui.csv("france/france_specific_monthly.csv")
 if split is not None:
     since = split.loc[e["since"]:]
@@ -136,9 +139,10 @@ ui.table(pd.DataFrame(rows))
 
 ui.section_heading("vi", "Is French collateral now priced like Italian?")
 r = f["repo"]
+p_gap, adjusted = findings.adjusted_p(ui.results(), "chow_june2024_it_fr", r["chow_it_fr"]["p_value"])
 ui.md(w.repo_treatment_sentence(r["fr_de_before"], r["fr_de_after"], r["it_de_before"], r["it_de_after"],
-                                r["position_before"], r["position_after"], r["chow_it_fr"]["p_value"],
-                                r["latest"]["fr_de"], r["latest"]["it_de"]))
+                                r["position_before"], r["position_after"], p_gap,
+                                r["latest"]["fr_de"], r["latest"]["it_de"], adjusted))
 panel = ui.csv("collateral/period_panel.csv")
 if panel is not None:
     fig = go.Figure()

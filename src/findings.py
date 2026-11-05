@@ -18,7 +18,9 @@ SUMMARIES = {"forecast": "forecast/summary.json", "corridors": "corridors/summar
              "collateral": "collateral/summary.json", "france": "france/summary.json",
              "japan": "japan/summary.json", "frozen": "forecasts/yearend_2026.json",
              "score": "forecasts/yearend_2026_score.json", "validation": "data_validation.json",
-             "tails": "forecast/tail_diagnosis.json", "france_daily": "france/daily_summary.json"}
+             "tails": "forecast/tail_diagnosis.json", "france_daily": "france/daily_summary.json",
+             "bootstrap": "inference/bootstrap.json", "tests": "inference/tests.json",
+             "calibration": "inference/calibration.json"}
 
 QUESTIONS = {
     "story": "What is repo, and why does the bond you hand over matter?",
@@ -40,6 +42,22 @@ def load_results(results_dir: Path = RESULTS_DIR) -> dict:
     return out
 
 
+def adjusted_p(r: dict, test_id: str, fallback: float | None = None) -> tuple[float | None, bool]:
+    """(Holm-adjusted p of a registered test, True) or (fallback, False) if the inference file is missing."""
+    tests = (r.get("tests") or {}).get("tests", [])
+    for t in tests:
+        if t["id"] == test_id:
+            return t["p_holm"], True
+    return fallback, False
+
+
+def collateral_verdict(r: dict, country: str) -> str:
+    """The chapter III verdict after the U2 'too close to call' rule."""
+    reg = r["collateral"]["regressions"][country]
+    cs = ((r.get("bootstrap") or {}).get("credit_scarcity") or {}).get(country)
+    return w.final_verdict(reg["verdict"], cs["too_close_to_call"] if cs else None)
+
+
 # --------------------------------------------------------------------------- #
 # Per chapter
 # --------------------------------------------------------------------------- #
@@ -54,7 +72,8 @@ def story_answer(r: dict) -> tuple[str, str]:
 
 def corridors_answer(r: dict) -> tuple[str, str]:
     c = r.get("corridors")
-    return w.corridors_answer(c["stats"], c["reserves"]) if c else NOT_AVAILABLE
+    ci = ((r.get("bootstrap") or {}).get("reserves_slope") or {}).get("USD")
+    return w.corridors_answer(c["stats"], c["reserves"], ci) if c else NOT_AVAILABLE
 
 
 def collateral_answer(r: dict) -> tuple[str, str]:
@@ -62,7 +81,12 @@ def collateral_answer(r: dict) -> tuple[str, str]:
     if not c:
         return NOT_AVAILABLE
     it, fr = c["regressions"]["IT"], c["regressions"]["FR"]
-    return w.collateral_answer(it["verdict"], fr["verdict"], it["chow"]["p_value"], fr["chow"]["p_value"])
+    p_it, _ = adjusted_p(r, "chow_qt_IT", it["chow"]["p_value"])
+    p_fr, _ = adjusted_p(r, "chow_qt_FR", fr["chow"]["p_value"])
+    cs = (r.get("bootstrap") or {}).get("credit_scarcity") or {}
+    lines = [w.credit_scarcity_ci_sentence(k, v["point"]["difference"], v["difference"]["lower"],
+                                           v["difference"]["upper"]) for k, v in cs.items()]
+    return w.collateral_answer(collateral_verdict(r, "IT"), collateral_verdict(r, "FR"), p_it, p_fr, lines)
 
 
 def france_answer(r: dict) -> tuple[str, str]:
@@ -98,7 +122,7 @@ def model_winner(fc: dict, currency: str) -> tuple[bool, float | None]:
     if winner == "baseline":
         return False, None
     row = next(m for m in cur["models"] if m["model"] == winner)
-    return True, row.get("dm_turn_p")
+    return True, row.get("dm_turn_p_holm", row.get("dm_turn_p"))
 
 
 def calendar_answer(r: dict) -> tuple[str, str]:
@@ -107,8 +131,10 @@ def calendar_answer(r: dict) -> tuple[str, str]:
         return NOT_AVAILABLE
     uw, up = model_winner(fc, "USD")
     ew, ep = model_winner(fc, "EUR")
+    cal = r.get("calibration") or {}
+    verdicts = {c: cal[c]["verdict"] for c in ("USD", "EUR") if c in cal}
     return w.calendar_answer(uw, ew, up, ep, fc["currencies"]["USD"]["turns"]["ye"]["mean"],
-                             fc["currencies"]["EUR"]["turns"]["ye"]["mean"], fc["test_start"][:4])
+                             fc["currencies"]["EUR"]["turns"]["ye"]["mean"], fc["test_start"][:4], verdicts)
 
 
 def japan_answer(r: dict) -> tuple[str, str]:
@@ -117,8 +143,9 @@ def japan_answer(r: dict) -> tuple[str, str]:
         return NOT_AVAILABLE
     same_day = sum(1 for c in j["changes"] if c["tona"].get("half_gap_days") == 0)
     latest_gap = (j["latest"]["tona"] - j["latest"]["policy"]) * 100
+    hl = (r.get("bootstrap") or {}).get("japan_half_life") or {}
     return w.japan_answer(len(j["changes"]), same_day, j["ecm_exit"]["half_life_days"],
-                          j["ecm_negative"]["half_life_days"], latest_gap)
+                          j["ecm_negative"]["half_life_days"], latest_gap, hl.get("exit"), hl.get("negative"))
 
 
 def desk_note_answer(r: dict) -> tuple[str, str]:
