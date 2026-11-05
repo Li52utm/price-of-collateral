@@ -108,7 +108,7 @@
    "family": "F4",
    "id": "coef_IT_before_qt_credit",
    "p": 0.00012293746090187541,
-   "what": "IT collateral, before qt: credit coefficient = 0 (HAC)",
+   "what": "IT collateral, before QT: credit coefficient = 0 (HAC)",
    "p_holm": 0.0012293746090187541,
    "m": 12
   },
@@ -116,7 +116,7 @@
    "family": "F4",
    "id": "coef_IT_after_qt_credit",
    "p": 0.5498082194830956,
-   "what": "IT collateral, after qt: credit coefficient = 0 (HAC)",
+   "what": "IT collateral, after QT: credit coefficient = 0 (HAC)",
    "p_holm": 1.0,
    "m": 12
   },
@@ -132,7 +132,7 @@
    "family": "F4",
    "id": "coef_IT_before_qt_liquidity",
    "p": 0.24418482036994216,
-   "what": "IT collateral, before qt: liquidity coefficient = 0 (HAC)",
+   "what": "IT collateral, before QT: liquidity coefficient = 0 (HAC)",
    "p_holm": 1.0,
    "m": 12
   },
@@ -140,7 +140,7 @@
    "family": "F4",
    "id": "coef_IT_after_qt_liquidity",
    "p": 1.2638947066831903e-08,
-   "what": "IT collateral, after qt: liquidity coefficient = 0 (HAC)",
+   "what": "IT collateral, after QT: liquidity coefficient = 0 (HAC)",
    "p_holm": 1.5166736480198284e-07,
    "m": 12
   },
@@ -148,7 +148,7 @@
    "family": "F3",
    "id": "coef_IT_de_holdings",
    "p": 0.4043210741081469,
-   "what": "IT collateral: de_holdings coefficient = 0 (HAC)",
+   "what": "IT collateral: German holdings coefficient = 0 (HAC)",
    "p_holm": 1.0,
    "m": 6
   },
@@ -156,7 +156,7 @@
    "family": "F4",
    "id": "coef_IT_before_qt_de_holdings",
    "p": 0.8633079475627778,
-   "what": "IT collateral, before qt: de_holdings coefficient = 0 (HAC)",
+   "what": "IT collateral, before QT: German holdings coefficient = 0 (HAC)",
    "p_holm": 1.0,
    "m": 12
   },
@@ -164,7 +164,7 @@
    "family": "F4",
    "id": "coef_IT_after_qt_de_holdings",
    "p": 0.006575096758264291,
-   "what": "IT collateral, after qt: de_holdings coefficient = 0 (HAC)",
+   "what": "IT collateral, after QT: German holdings coefficient = 0 (HAC)",
    "p_holm": 0.05917587082437861,
    "m": 12
   },
@@ -188,7 +188,7 @@
    "family": "F4",
    "id": "coef_FR_before_qt_credit",
    "p": 7.81830774831908e-05,
-   "what": "FR collateral, before qt: credit coefficient = 0 (HAC)",
+   "what": "FR collateral, before QT: credit coefficient = 0 (HAC)",
    "p_holm": 0.0008600138523150988,
    "m": 12
   },
@@ -196,7 +196,7 @@
    "family": "F4",
    "id": "coef_FR_after_qt_credit",
    "p": 0.009517619138443654,
-   "what": "FR collateral, after qt: credit coefficient = 0 (HAC)",
+   "what": "FR collateral, after QT: credit coefficient = 0 (HAC)",
    "p_holm": 0.07614095310754923,
    "m": 12
   },
@@ -212,7 +212,7 @@
    "family": "F4",
    "id": "coef_FR_before_qt_liquidity",
    "p": 0.4154438893224074,
-   "what": "FR collateral, before qt: liquidity coefficient = 0 (HAC)",
+   "what": "FR collateral, before QT: liquidity coefficient = 0 (HAC)",
    "p_holm": 1.0,
    "m": 12
   },
@@ -220,7 +220,7 @@
    "family": "F4",
    "id": "coef_FR_after_qt_liquidity",
    "p": 0.45924904091102714,
-   "what": "FR collateral, after qt: liquidity coefficient = 0 (HAC)",
+   "what": "FR collateral, after QT: liquidity coefficient = 0 (HAC)",
    "p_holm": 1.0,
    "m": 12
   },
@@ -228,7 +228,7 @@
    "family": "F3",
    "id": "coef_FR_de_holdings",
    "p": 0.5207922413345618,
-   "what": "FR collateral: de_holdings coefficient = 0 (HAC)",
+   "what": "FR collateral: German holdings coefficient = 0 (HAC)",
    "p_holm": 1.0,
    "m": 6
   },
@@ -236,7 +236,7 @@
    "family": "F4",
    "id": "coef_FR_before_qt_de_holdings",
    "p": 0.882140759587193,
-   "what": "FR collateral, before qt: de_holdings coefficient = 0 (HAC)",
+   "what": "FR collateral, before QT: German holdings coefficient = 0 (HAC)",
    "p_holm": 1.0,
    "m": 12
   },
@@ -244,7 +244,7 @@
    "family": "F4",
    "id": "coef_FR_after_qt_de_holdings",
    "p": 0.48699642271834276,
-   "what": "FR collateral, after qt: de_holdings coefficient = 0 (HAC)",
+   "what": "FR collateral, after QT: German holdings coefficient = 0 (HAC)",
    "p_holm": 1.0,
    "m": 12
   },

@@ -34,6 +34,7 @@ PIT_EXPECTED = (0.05, 0.45, 0.40, 0.05, 0.05)
 NOMINAL_INTERVAL = 0.90
 FIT_SPLIT = ("2010-01-01", "2023-12-01")      # France euro-wide beta (Phase 4 IV(a))
 POLITICAL_MONTH = "2024-06-01"
+TERM_NAMES = {"credit": "credit", "liquidity": "liquidity", "de_holdings": "German holdings"}
 
 
 def _read_json(rel: str) -> dict | None:
@@ -228,11 +229,13 @@ def test_registry(r: dict, calib: dict) -> list[dict]:
     if col:
         for c, reg in col["regressions"].items():
             for k in ("credit", "liquidity", "de_holdings"):
+                name = TERM_NAMES[k]
                 tests.append({"family": "F3", "id": f"coef_{c}_{k}", "p": reg["pvalues"][k],
-                              "what": f"{c} collateral: {k} coefficient = 0 (HAC)"})
+                              "what": f"{c} collateral: {name} coefficient = 0 (HAC)"})
                 for s, part in reg["sub_periods"].items():
                     tests.append({"family": "F4", "id": f"coef_{c}_{s}_{k}", "p": part["pvalues"][k],
-                                  "what": f"{c} collateral, {s.replace('_', ' ')}: {k} coefficient = 0 (HAC)"})
+                                  "what": f"{c} collateral, {s.replace('_qt', ' QT').replace('_', ' ')}: {name} "
+                                          "coefficient = 0 (HAC)"})
             tests.append({"family": "F5", "id": f"chow_qt_{c}", "p": reg["chow"]["p_value"],
                           "what": f"{c} collateral regression: break at the start of QT (Chow)"})
     if fr:
