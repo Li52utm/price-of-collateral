@@ -1,0 +1,230 @@
+{
+ "model_version": "forecast-v2",
+ "caveat": "designed after seeing v1's test-period calibration, so these test-period results are not a clean out-of-sample claim; the clean test is the 31 December 2026 score",
+ "currencies": {
+  "EUR": {
+   "currency": "EUR",
+   "label": "Conformalised quantile regression (CQR), with a year-end analogue distribution for the turn",
+   "caveat": "designed after seeing v1's test-period calibration, so these test-period results are not a clean out-of-sample claim; the clean test is the 31 December 2026 score",
+   "fit_end": "2021-12-31",
+   "calibration": [
+    "2022-01-01",
+    "2022-12-31"
+   ],
+   "n_cal": {
+    "turn": 12,
+    "ordinary": 245
+   },
+   "offsets": {
+    "turn": {
+     "q05": -2.239932156591923,
+     "q50": -0.9433170633140797,
+     "q90": -0.29178171545791365,
+     "q95": -0.4115721651939559
+    },
+    "ordinary": {
+     "q05": -1.4377341456518629,
+     "q50": -0.8801922336176116,
+     "q90": -0.4869608956087923,
+     "q95": -0.44789580124871264
+    }
+   },
+   "n_test": 981,
+   "n_test_turn": 46,
+   "models": {
+    "cqr": {
+     "pinball_all": 0.2242248605620766,
+     "pinball_turn": 0.3364166229704438,
+     "coverage": 0.6248725790010193,
+     "coverage_lower": 0.5937274668367964,
+     "coverage_upper": 0.655265664764032,
+     "verdict": "too narrow",
+     "coverage_turn": 0.717391304347826,
+     "below": {
+      "q05": 0.3751274209989806,
+      "q50": 0.9898063200815495,
+      "q90": 1.0,
+      "q95": 1.0
+     }
+    },
+    "v1_state": {
+     "pinball_all": 0.10185906938448107,
+     "pinball_turn": 0.180493400682175,
+     "coverage": 0.9938837920489296,
+     "coverage_lower": 0.9867354411195024,
+     "coverage_upper": 0.9977522503060026,
+     "verdict": "too wide",
+     "coverage_turn": 0.9347826086956522,
+     "below": {
+      "q05": 0.0061162079510703364,
+      "q50": 0.7155963302752294,
+      "q90": 1.0,
+      "q95": 1.0
+     }
+    },
+    "baseline": {
+     "pinball_all": 0.11635524974515844,
+     "pinball_turn": 0.23428260869565296,
+     "coverage": 0.873598369011213,
+     "coverage_lower": 0.8511682073529437,
+     "coverage_upper": 0.8937567173167278,
+     "verdict": "too narrow",
+     "coverage_turn": 0.6521739130434783,
+     "below": {
+      "q05": 0.0020387359836901123,
+      "q50": 0.11926605504587157,
+      "q90": 0.7747196738022426,
+      "q95": 0.8756371049949032
+     }
+    }
+   },
+   "analogue_test": [
+    {
+     "date": "2023-12-29",
+     "n_prior": 4,
+     "actual": -11.799999999999988,
+     "q05": -12.961999999999996,
+     "q50": -11.80000000000001,
+     "q90": -9.702000000000005,
+     "q95": -9.261000000000005,
+     "inside": true,
+     "pinball": 0.09871250000000216
+    },
+    {
+     "date": "2024-12-31",
+     "n_prior": 5,
+     "actual": -9.50000000000002,
+     "q05": -11.315999999999992,
+     "q50": -10.219999999999985,
+     "q90": -8.416000000000004,
+     "q95": -7.828000000000001,
+     "inside": true,
+     "pinball": 0.16069999999999593
+    },
+    {
+     "date": "2025-12-31",
+     "n_prior": 6,
+     "actual": -7.899999999999996,
+     "q05": -9.689999999999992,
+     "q50": -8.639999999999997,
+     "q90": -6.8100000000000085,
+     "q95": -6.245000000000003,
+     "inside": true,
+     "pinball": 0.16281249999999972
+    }
+   ]
+  },
+  "USD": {
+   "currency": "USD",
+   "label": "Conformalised quantile regression (CQR), with a year-end analogue distribution for the turn",
+   "caveat": "designed after seeing v1's test-period calibration, so these test-period results are not a clean out-of-sample claim; the clean test is the 31 December 2026 score",
+   "fit_end": "2021-12-31",
+   "calibration": [
+    "2022-01-01",
+    "2022-12-31"
+   ],
+   "n_cal": {
+    "turn": 12,
+    "ordinary": 237
+   },
+   "offsets": {
+    "turn": {
+     "q05": -5.911724504378013,
+     "q50": -4.6225546716835835,
+     "q90": -4.168707805395069,
+     "q95": -4.558946629839117
+    },
+    "ordinary": {
+     "q05": -6.107422427683442,
+     "q50": -3.2784115506726614,
+     "q90": -0.193192132880327,
+     "q95": 0.24954065938754155
+    }
+   },
+   "n_test": 958,
+   "n_test_turn": 46,
+   "models": {
+    "cqr": {
+     "pinball_all": 1.1056846702223255,
+     "pinball_turn": 1.9319491155031074,
+     "coverage": 0.9164926931106472,
+     "coverage_lower": 0.8971441797454627,
+     "coverage_upper": 0.9332308520890175,
+     "verdict": "well calibrated",
+     "coverage_turn": 0.9130434782608695,
+     "below": {
+      "q05": 0.0010438413361169101,
+      "q50": 0.1304801670146138,
+      "q90": 0.8496868475991649,
+      "q95": 0.9175365344467641
+     }
+    },
+    "v1_state": {
+     "pinball_all": 0.8130125955662539,
+     "pinball_turn": 1.4824911195955421,
+     "coverage": 0.8580375782881002,
+     "coverage_lower": 0.8343153183794686,
+     "coverage_upper": 0.8795329430463407,
+     "verdict": "too narrow",
+     "coverage_turn": 0.9347826086956522,
+     "below": {
+      "q05": 0.055323590814196244,
+      "q50": 0.3966597077244259,
+      "q90": 0.8705636743215032,
+      "q95": 0.9133611691022965
+     }
+    },
+    "baseline": {
+     "pinball_all": 0.914248434237997,
+     "pinball_turn": 1.9847826086956544,
+     "coverage": 0.9091858037578288,
+     "coverage_lower": 0.889187297163259,
+     "coverage_upper": 0.926623245558967,
+     "verdict": "well calibrated",
+     "coverage_turn": 0.8260869565217391,
+     "below": {
+      "q05": 0.037578288100208766,
+      "q50": 0.5751565762004175,
+      "q90": 0.9112734864300627,
+      "q95": 0.9467640918580376
+     }
+    }
+   },
+   "analogue_test": [
+    {
+     "date": "2023-12-29",
+     "n_prior": 5,
+     "actual": -2.000000000000046,
+     "q05": -12.160000000000068,
+     "q50": -9.200000000000067,
+     "q90": 28.03999999999993,
+     "q95": 40.11999999999992,
+     "inside": true,
+     "pinball": 2.3045000000000018
+    },
+    {
+     "date": "2024-12-31",
+     "n_prior": 6,
+     "actual": 8.999999999999986,
+     "q05": -10.50000000000003,
+     "q50": -7.100000000000055,
+     "q90": 26.699999999999985,
+     "q95": 40.24999999999999,
+     "inside": true,
+     "pinball": 3.0893750000000058
+    },
+    {
+     "date": "2025-12-31",
+     "n_prior": 7,
+     "actual": 22.00000000000002,
+     "q05": 9.959999999999955,
+     "q50": 13.799999999999903,
+     "q90": 47.31999999999998,
+     "q95": 60.759999999999934,
+     "inside": true,
+     "pinball": 2.2930000000000135
+    }
+   ]
+  }
+ }
+}

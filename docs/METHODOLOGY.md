@@ -418,6 +418,48 @@ linked to the table (Appendix page). The baseline specification is not counted a
 | R7 | VI | Gaps between TONA and the policy rate close faster after the exit than under negative rates | exit half-life < negative-rate half-life | exit sample from 1 Aug 2024; negative sample from 1 Oct 2016 (after yield-curve control began); no same-day pass-through term; bootstrap block 10 and 40 days (intervals do not overlap) |
 | R8 | VII | Client verdict "No" (stay overnight in both currencies) | the same verdict | business-day weights (the pre-U0 rule); window from 5 business days before; from 10; euro hurdle 0 bp; euro hurdle 2 bp |
 
+## Upgrade U4: the challenger forecast v2 (fixed 2026-11-05, before any v2 result was computed)
+
+Code: `src/forecast_v2.py`; frozen file `results/forecasts/yearend_2026_v2.json` (written once by
+`scripts/freeze_forecast.py --version v2`, which refuses to overwrite).
+
+**Status of the evidence.** v2 was designed AFTER seeing v1's test-period calibration (USD and JPY ranges
+too narrow, EUR too wide; the 90th and 95th year-end percentiles not separately identified). Its
+test-period results are therefore NOT a clean out-of-sample claim and are labelled as such everywhere.
+Its clean test is the score on 31 December 2026. **v1 stays the pre-registered headline forecast**; v2 is
+the challenger shown beside it.
+
+### (a) Conformalised quantile regression (CQR) for every day
+
+- Base model: the v1 "calendar + state" quantile regression (same features, same 40-business-day
+  horizon, same publication lags), fitted on days up to **31 December 2021**.
+- Calibration set: **1 January to 31 December 2022**. For each quantile tau and each day class (turn days =
+  month-, quarter- and year-ends; ordinary days), the conformity scores are s = y - q_tau(x) and the
+  adjustment is their empirical quantile with the finite-sample correction of Romano, Patterson and Candès
+  (2019) applied one quantile at a time: for tau >= 0.5 the ceil((n+1) tau)-th smallest score (the largest
+  if that exceeds n), for tau < 0.5 the floor((n+1) tau)-th smallest (the smallest if that is 0).
+  Separate classes because turn days are where v1's tails failed. Adjusted quantiles are sorted per day.
+- Test: **1 January 2023 onward**, the same test days as v1: pinball loss (all days and turn days), the
+  5-95% coverage with its exact binomial interval, and the calibration verdict rule of U2.
+- For the 2026 forecast: the base model is fitted on all days to 31 December 2025 and calibrated on
+  1 January 2026 to the as-of date (the year after the fit, as in the test design).
+
+### (b) "History of year-ends" analogue for the turn itself
+
+- For each past year-end D of the target: jump(D) = y(D) - level(D), where level(D) is the 5-day mean of the
+  target published at D's forecast origin (40 business days before, the v1 `level` feature).
+- The forecast quantiles for 31 December 2026 = the latest level + the empirical quantiles of all past
+  jumps (numpy linear interpolation), USD 8 year-ends (2018-2025), EUR 7 (2019-2025).
+- v2's 31 December numbers are the analogue's; every other day of the path is CQR.
+- Test (labelled as above): expanding window over the 2023, 2024 and 2025 year-ends, each forecast with
+  only the year-ends before it: pinball loss and whether the actual fell inside the 5-95% range. Three
+  points per currency: a description, not a test.
+
+### Scoring
+
+- After 31 December 2026 the refresh scores BOTH frozen files: v1 in `yearend_2026_score.json`, v2 in
+  `yearend_2026_v2_score.json` (actual, inside the 5-95% range, pinball loss per quantile).
+
 ## Corrections log
 
 - **2026-11-04, Phase 2 sample filter.** Wrong: `forecast.dataset` dropped every day on which the
