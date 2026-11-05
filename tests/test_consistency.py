@@ -267,3 +267,15 @@ def test_v2_test_sentence_words(r: dict) -> None:
                                sum(a["inside"] for a in e["analogue_test"]), len(e["analogue_test"]))
         assert ("lower than v1" in s) == (m["cqr"]["pinball_turn"] < m["v1_state"]["pinball_turn"])
         assert "not a clean out-of-sample test" in s
+
+
+def test_event_summary_words(r: dict) -> None:
+    s = r["france_daily"]["events_summary"]
+    rows = r["france_daily"]["events"]
+    assert s["n_unusual"] == sum(e["percentile"] >= 0.9 for e in rows)
+    assert s["n_widened"] == sum(e["change_bp"] > 0 for e in rows)
+    text = w.event_study_summary_sentence(s["n"], s["n_unusual"], s["mean_change"], s["n_widened"])
+    assert w.signed_bp(s["mean_change"]) in text
+    for e in rows:
+        line = w.daily_event_sentence(e["event"], e["event_day"], e["change_bp"], e["percentile"])
+        assert ("widened" if e["change_bp"] > 0 else "narrowed" if e["change_bp"] < 0 else "unchanged") in line

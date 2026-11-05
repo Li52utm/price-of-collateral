@@ -211,6 +211,15 @@ def daily_event_study(spread: pd.Series, event_list: list[dict] | None = None) -
     return out
 
 
+def events_summary(rows: list[dict]) -> dict:
+    """How many events moved the spread by an unusually large amount (90th percentile or above)."""
+    if not rows:
+        return {"n": 0}
+    changes = [r["change_bp"] for r in rows]
+    return {"n": len(rows), "n_unusual": sum(r["percentile"] >= 0.9 for r in rows),
+            "n_widened": sum(c > 0 for c in changes), "mean_change": float(np.mean(changes))}
+
+
 # --------------------------------------------------------------------------- #
 # Everything
 # --------------------------------------------------------------------------- #
@@ -244,6 +253,7 @@ def run(long: pd.DataFrame | None = None, out_dir: Path = OUT_DIR) -> dict:
                "rules": rules, "gradual_panel": {k: v for k, v in base_rates.items() if k != "km"},
                "gradual_panel_sensitivity": sens, "decomposition": daily_decomposition(long),
                "events": daily_event_study(frame["spread"])}
+    summary["events_summary"] = events_summary(summary["events"])
     (out_dir / "daily_summary.json").write_text(json.dumps(_json(summary), indent=1), encoding="utf-8")
     return summary
 

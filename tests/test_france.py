@@ -55,9 +55,13 @@ def test_collateral_decision_rule() -> None:
 
 
 def test_events_have_official_sources_and_exclusions_are_recorded() -> None:
+    listed = ("Assemblée nationale", "Bloomberg", "CNBC", "Reuters", "Financial Times", "Les Echos", "Le Monde",
+              "Moody's (official)", "Agence France Trésor (official)")
     for ev in events.EVENTS:
-        assert ev["url"].startswith("https://") and ev["http_status"] == 200
-        assert "assemblee-nationale.fr" in ev["url"]
+        outlets = {s["outlet"] for s in ev["sources"]}
+        assert len(outlets) >= 2 and outlets <= set(listed)                     # two independent listed sources
+        for s in ev["sources"]:
+            assert s["url"].startswith("https://") and s["accessed"] and s["method"]
         pd.Timestamp(ev["date"])
     assert events.EXCLUDED and all(e["reason"] for e in events.EXCLUDED)
 

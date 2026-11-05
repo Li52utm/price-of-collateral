@@ -9,6 +9,7 @@ import pandas as pd  # noqa: E402
 import plotly.graph_objects as go  # noqa: E402
 import streamlit as st  # noqa: E402
 
+import events  # noqa: E402
 import findings  # noqa: E402
 import ui  # noqa: E402
 import wording as w  # noqa: E402
@@ -155,13 +156,27 @@ if panel is not None:
     ui.show_chart(fig, "French and Italian collateral in repo", height=300, sources=SRC)
 
 ui.section_heading("vii", "Events")
-for ev in f["events"]:
-    ui.md("- " + w.event_sentence(ev["event"], ev["month"], ev["change_bp"], ev["percentile"])
-          + f" Source: [{ev['source']}]({ev['url']}).")
-if fd and fd.get("events"):
-    ui.md("**Daily (two-day window around each event):**")
-    for ev in fd["events"]:
-        ui.md("- " + w.daily_event_sentence(ev["event"], ev["event_day"], ev["change_bp"], ev["percentile"]))
-st.caption(f"Only events with an official source that loaded when checked ({f['events_checked_on']}) are included. "
-           "Excluded: " + "; ".join(f"{x['event']} ({x['reason']})" for x in f["excluded_events"]) + ".")
+st.markdown("Each event is confirmed by at least two independent reputable sources (official sites, Reuters, "
+            "Bloomberg, the Financial Times, CNBC, Les Echos, Le Monde), listed below with the access date and method.")
+daily_by_date = {ev["date"]: ev for ev in (fd or {}).get("events", [])}
+monthly_by_date = {ev["date"]: ev for ev in f["events"]}
+rows = []
+for ev in events.EVENTS:
+    d, m = daily_by_date.get(ev["date"]), monthly_by_date.get(ev["date"])
+    rows.append({"Date": ev["date"], "Kind": ev["kind"], "Event": ev["event"],
+                 "Two-day change (bp)": round(d["change_bp"], 1) if d else None,
+                 "Percentile (two-day)": f"{d['percentile']:.0%}" if d else "n/a",
+                 "Month change (bp)": round(m["change_bp"], 1) if m else None,
+                 "Sources": "; ".join(f"{s['outlet']} ({s['method']}, {s['accessed']})" for s in ev["sources"])})
+ui.table(pd.DataFrame(rows))
+for ev in (fd or {}).get("events", []):
+    ui.md("- " + w.daily_event_sentence(ev["event"], ev["event_day"], ev["change_bp"], ev["percentile"]))
+if fd and fd.get("events_summary"):
+    s = fd["events_summary"]
+    ui.md(w.event_study_summary_sentence(s["n"], s["n_unusual"], s["mean_change"], s["n_widened"]))
+with st.expander("Source links"):
+    for ev in events.EVENTS:
+        ui.md(f"- {ev['date']}, {ev['event']}: " + ", ".join(f"[{s['outlet']}]({s['url']})" for s in ev["sources"]))
+st.caption(f"Sources checked on {events.CHECKED_ON}. Excluded: "
+           + "; ".join(f"{x['event']} ({x['reason']})" for x in events.EXCLUDED) + ".")
 ui.footer()

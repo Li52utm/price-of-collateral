@@ -141,12 +141,110 @@
  },
  "events": [
   {
+   "date": "2024-06-09",
+   "kind": "political",
+   "event": "President Macron dissolves the National Assembly",
+   "sources": [
+    {
+     "outlet": "CNBC",
+     "url": "https://www.cnbc.com/2024/06/09/french-president-macron-calls-for-snap-election-after-heavy-defeat-in-eu-vote-.html",
+     "title": "France's Macron calls for snap election after losing big to the far right in EU vote",
+     "method": "search listing (title and dated URL)",
+     "accessed": "2026-11-05"
+    },
+    {
+     "outlet": "Bloomberg",
+     "url": "https://www.bloomberg.com/news/articles/2024-06-18/macron-says-snap-election-was-needed-to-avoid-chaos-in-france",
+     "title": "Macron Says Snap Election Was Needed to Avoid Chaos",
+     "method": "search listing (title and dated URL)",
+     "accessed": "2026-11-05"
+    }
+   ],
+   "month": "2024-06",
+   "change_bp": 15.399999999999991,
+   "percentile": 0.9651741293532339,
+   "z": 1.8518748777186338,
+   "n_months": 201
+  },
+  {
+   "date": "2024-10-25",
+   "kind": "rating",
+   "event": "Moody's moves France's Aa2 outlook to negative",
+   "sources": [
+    {
+     "outlet": "Bloomberg",
+     "url": "https://www.bloomberg.com/news/articles/2024-10-25/france-rating-outlook-cut-to-negative-by-moody-s-on-deficit-woes",
+     "title": "France's Credit Rating Put on Negative Outlook by Moody's on Deficit Woes",
+     "method": "search listing (title and dated URL)",
+     "accessed": "2026-11-05"
+    },
+    {
+     "outlet": "CNBC",
+     "url": "https://www.cnbc.com/video/2024/10/28/moodys-downgrades-frances-outlook.html",
+     "title": "Moody's downgrades France's outlook",
+     "method": "search listing (title and dated URL)",
+     "accessed": "2026-11-05"
+    }
+   ],
+   "month": "2024-10",
+   "change_bp": 2.799999999999997,
+   "percentile": 0.7164179104477612,
+   "z": 0.3053789119751667,
+   "n_months": 201
+  },
+  {
    "date": "2024-12-04",
    "kind": "political",
    "event": "The National Assembly adopts a motion of censure; the Barnier government falls",
-   "source": "Assembl\u00e9e nationale, compte rendu int\u00e9gral, s\u00e9ance du mercredi 4 d\u00e9cembre 2024",
-   "url": "https://questions.assemblee-nationale.fr/dyn/17/comptes-rendus/seance/session-ordinaire-de-2024-2025/seance-du-mercredi-04-decembre-2024.pdf",
-   "http_status": 200,
+   "sources": [
+    {
+     "outlet": "Assembl\u00e9e nationale",
+     "url": "https://questions.assemblee-nationale.fr/dyn/17/comptes-rendus/seance/session-ordinaire-de-2024-2025/seance-du-mercredi-04-decembre-2024.pdf",
+     "title": "Compte rendu int\u00e9gral, s\u00e9ance du mercredi 4 d\u00e9cembre 2024",
+     "method": "fetched (HTTP 200)",
+     "accessed": "2026-11-04"
+    },
+    {
+     "outlet": "CNBC",
+     "url": "https://www.cnbc.com/2024/12/04/french-government-toppled-in-no-confidence-vote-brought-by-opposition.html",
+     "title": "French government toppled in no-confidence vote brought by opposition",
+     "method": "search listing (title and dated URL)",
+     "accessed": "2026-11-05"
+    },
+    {
+     "outlet": "Bloomberg",
+     "url": "https://www.bloomberg.com/news/articles/2024-12-04/french-far-right-joins-forces-with-left-to-topple-government",
+     "title": "Le Pen, Left Wing Topple French Government",
+     "method": "search listing (title and dated URL)",
+     "accessed": "2026-11-05"
+    }
+   ],
+   "month": "2024-12",
+   "change_bp": 4.700000000000017,
+   "percentile": 0.8109452736318408,
+   "z": 0.5385806845872794,
+   "n_months": 201
+  },
+  {
+   "date": "2024-12-13",
+   "kind": "rating",
+   "event": "Moody's downgrades France to Aa3 (Friday evening)",
+   "sources": [
+    {
+     "outlet": "Bloomberg",
+     "url": "https://www.bloomberg.com/news/articles/2024-12-13/france-downgraded-by-moody-s-after-le-pen-derails-deficit-push",
+     "title": "French Credit Rating Cut on Crisis That Imperils Finances",
+     "method": "search listing (title and dated URL)",
+     "accessed": "2026-11-05"
+    },
+    {
+     "outlet": "Moody's (official)",
+     "url": "https://ratings.moodys.com/ratings-news/434553",
+     "title": "Rating Action",
+     "method": "search listing (title and dated URL)",
+     "accessed": "2026-11-05"
+    }
+   ],
    "month": "2024-12",
    "change_bp": 4.700000000000017,
    "percentile": 0.8109452736318408,
@@ -157,27 +255,164 @@
    "date": "2025-09-08",
    "kind": "political",
    "event": "The National Assembly refuses its confidence to the Bayrou government (article 49, paragraph 1)",
-   "source": "Assembl\u00e9e nationale, compte rendu int\u00e9gral, s\u00e9ance du lundi 8 septembre 2025",
-   "url": "https://questions.assemblee-nationale.fr/dyn/17/comptes-rendus/seance/2e-session-extraordinaire-de-2024-2025/seance-du-lundi-08-septembre-2025.pdf",
-   "http_status": 200,
+   "sources": [
+    {
+     "outlet": "Assembl\u00e9e nationale",
+     "url": "https://questions.assemblee-nationale.fr/dyn/17/comptes-rendus/seance/2e-session-extraordinaire-de-2024-2025/seance-du-lundi-08-septembre-2025.pdf",
+     "title": "Compte rendu int\u00e9gral, s\u00e9ance du lundi 8 septembre 2025",
+     "method": "fetched (HTTP 200)",
+     "accessed": "2026-11-04"
+    },
+    {
+     "outlet": "CNBC",
+     "url": "https://www.cnbc.com/2025/09/08/french-prime-minister-francois-bayrou-ousted-in-confidence-vote.html",
+     "title": "French prime minister Francois Bayrou ousted in confidence vote",
+     "method": "search listing (title and dated URL)",
+     "accessed": "2026-11-05"
+    }
+   ],
    "month": "2025-09",
    "change_bp": 7.09999999999998,
    "percentile": 0.8706467661691543,
    "z": 0.8331513447288876,
    "n_months": 201
+  },
+  {
+   "date": "2025-09-12",
+   "kind": "rating",
+   "event": "Fitch downgrades France to A+ (Friday evening)",
+   "sources": [
+    {
+     "outlet": "Bloomberg",
+     "url": "https://www.bloomberg.com/news/articles/2025-09-12/france-s-debt-woes-mount-as-fitch-downgrades-credit-rating",
+     "title": "France's Debt Woes Mount as Fitch Downgrades Credit Rating",
+     "method": "search listing (title and dated URL)",
+     "accessed": "2026-11-05"
+    },
+    {
+     "outlet": "CNBC",
+     "url": "https://www.cnbc.com/2025/09/15/frances-borrowing-costs-rise-after-fitch-downgrade-.html",
+     "title": "France's borrowing costs rise after Fitch downgrade",
+     "method": "search listing (title and dated URL)",
+     "accessed": "2026-11-05"
+    }
+   ],
+   "month": "2025-09",
+   "change_bp": 7.09999999999998,
+   "percentile": 0.8706467661691543,
+   "z": 0.8331513447288876,
+   "n_months": 201
+  },
+  {
+   "date": "2025-10-06",
+   "kind": "political",
+   "event": "Prime Minister Lecornu resigns; his first government falls",
+   "sources": [
+    {
+     "outlet": "CNBC",
+     "url": "https://www.cnbc.com/2025/10/06/frances-new-pm-resigns-as-political-chaos-continues.html",
+     "title": "French PM resigns after 27 days, sparking fresh political chaos",
+     "method": "search listing (title and dated URL)",
+     "accessed": "2026-11-05"
+    },
+    {
+     "outlet": "Bloomberg",
+     "url": "https://www.bloomberg.com/news/articles/2025-10-06/french-prime-minister-lecornu-has-resigned-after-cabinet-panned",
+     "title": "French Premier Lecornu Resigns After Cabinet Criticized",
+     "method": "search listing (title and dated URL)",
+     "accessed": "2026-11-05"
+    }
+   ],
+   "month": "2025-10",
+   "change_bp": 0.6000000000000227,
+   "percentile": 0.5472636815920398,
+   "z": 0.035355806845358044,
+   "n_months": 201
+  },
+  {
+   "date": "2025-10-17",
+   "kind": "rating",
+   "event": "S&P downgrades France to A+ (Friday evening, unscheduled)",
+   "sources": [
+    {
+     "outlet": "Bloomberg",
+     "url": "https://www.bloomberg.com/news/articles/2025-10-17/france-s-gets-debt-warning-as-s-p-downgrades-in-unscheduled-move",
+     "title": "France Gets Debt Warning as S&P Downgrades in Unscheduled Move",
+     "method": "search listing (title and dated URL)",
+     "accessed": "2026-11-05"
+    },
+    {
+     "outlet": "CNBC",
+     "url": "https://www.cnbc.com/video/2025/10/20/sp-downgrades-france-as-political-uncertainty-takes-its-toll.html",
+     "title": "S&P downgrades France as political uncertainty takes its toll",
+     "method": "search listing (title and dated URL)",
+     "accessed": "2026-11-05"
+    }
+   ],
+   "month": "2025-10",
+   "change_bp": 0.6000000000000227,
+   "percentile": 0.5472636815920398,
+   "z": 0.035355806845358044,
+   "n_months": 201
+  },
+  {
+   "date": "2025-10-24",
+   "kind": "rating",
+   "event": "Moody's moves France's Aa3 outlook to negative",
+   "sources": [
+    {
+     "outlet": "Bloomberg",
+     "url": "https://www.bloomberg.com/news/articles/2025-10-24/france-gets-fresh-warning-on-finances-as-moody-s-turns-negative",
+     "title": "France Gets Fresh Warning on Debt as Moody's Turns Negative",
+     "method": "search listing (title and dated URL)",
+     "accessed": "2026-11-05"
+    },
+    {
+     "outlet": "CNBC",
+     "url": "https://www.cnbc.com/video/2025/10/27/moodys-negative-france-outlook-shows-markets-fear-more-budget-chaos.html",
+     "title": "Moody's negative France outlook shows markets fear more budget chaos",
+     "method": "search listing (title and dated URL)",
+     "accessed": "2026-11-05"
+    }
+   ],
+   "month": "2025-10",
+   "change_bp": 0.6000000000000227,
+   "percentile": 0.5472636815920398,
+   "z": 0.035355806845358044,
+   "n_months": 201
   }
  ],
  "excluded_events": [
   {
-   "date": "2024-06-09",
-   "event": "Dissolution of the National Assembly",
-   "reason": "\u00c9lys\u00e9e page did not contain the announcement when fetched and then reset the connection; L\u00e9gifrance HTTP 403"
+   "date": "2024-05-31",
+   "event": "S&P downgrades France to AA-",
+   "reason": "only one listed source reachable (Bloomberg, 31 May 2024); other confirming outlets are not on the list"
+  },
+  {
+   "date": "2024-10-11",
+   "event": "Fitch moves France's AA- outlook to negative",
+   "reason": "only one listed source reachable (Bloomberg, 11 Oct 2024); fitchratings.com refuses the search tool"
+  },
+  {
+   "date": "2025-02-28",
+   "event": "S&P moves France's AA- outlook to negative",
+   "reason": "only one listed source reachable (Bloomberg, 28 Feb 2025)"
+  },
+  {
+   "date": "2024-11-29, 2026-05-29, 2026-08-28",
+   "event": "S&P and Fitch affirmations with no change",
+   "reason": "affirmations are not rating actions (the candidate list is downgrades and outlook changes)"
   },
   {
    "date": "2024-2026",
-   "event": "Sovereign rating actions on France (S&P, Moody's, Fitch)",
-   "reason": "agency press releases not found; aft.gouv.fr ratings page HTTP 403 to scripts"
+   "event": "Scope and Morningstar DBRS actions",
+   "reason": "not among the three agencies in the pre-registered candidate list"
+  },
+  {
+   "date": "2026",
+   "event": "A fall of a French government in 2026",
+   "reason": "none found: the Lecornu government survived every censure vote reported (Bloomberg, Jan-Feb 2026)"
   }
  ],
- "events_checked_on": "2026-11-04"
+ "events_checked_on": "2026-11-05"
 }

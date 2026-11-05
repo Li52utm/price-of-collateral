@@ -460,6 +460,24 @@ the challenger shown beside it.
 - After 31 December 2026 the refresh scores BOTH frozen files: v1 in `yearend_2026_score.json`, v2 in
   `yearend_2026_v2_score.json` (actual, inside the 5-95% range, pinball loss per quantile).
 
+## Upgrade U5: events (fixed 2026-11-05, before any new event was searched for or measured)
+
+- **Inclusion rule (replaces "one official URL that returned HTTP 200"):** an event is included if at least
+  two independent reputable sources confirm it and its date. Reputable: official sites (government,
+  parliament, rating agencies), Reuters, Bloomberg, Financial Times, CNBC, Les Echos, Le Monde. Independent:
+  different organisations (two articles from the same outlet count once). Each source is recorded in
+  `src/events.py` with its URL, the access date and the method (fetched page, or search-result listing
+  with title and date). Anything that cannot be confirmed this way is listed as excluded, with the reason.
+- **Candidates searched (fixed now):** the dissolution of the National Assembly (9 June 2024); every fall of
+  a French government since 2024; every rating action on France by S&P, Moody's and Fitch since 1 January
+  2024 (downgrades and outlook changes), including any Moody's action in October 2026.
+- **Event date:** the day of the announcement (Paris time). Rating actions published after the close
+  (typically Friday evening) keep their announcement date; the daily two-day window (close of the
+  business day before to close of the business day after) then captures the first trading day.
+- **Method unchanged:** the monthly event study (Phase 4 IV(d)) and the daily two-day study (U1) are re-run
+  on the extended list with no other change. A table on the chapter IV page lists every event with its
+  sources.
+
 ## Corrections log
 
 - **2026-11-04, Phase 2 sample filter.** Wrong: `forecast.dataset` dropped every day on which the
@@ -572,3 +590,16 @@ the challenger shown beside it.
   claim): CQR turn-day pinball USD 1.93 (v1 1.48, baseline 1.98), EUR 0.34 (v1 0.18, baseline 0.23); 5-95%
   coverage USD 91.6% (well calibrated; v1 85.8%), EUR 62.5% (too narrow; v1 99.4%). The analogue range
   contained all three 2023-2025 year-ends in both currencies. v1 remains the headline.
+- **2026-11-05, U5: event list extended under the two-source rule (method unchanged).** Before: 2 events
+  (the Barnier and Bayrou votes). After: 11 events (dissolution 9 Jun 2024; Moody's negative outlook 25 Oct
+  2024; Barnier 4 Dec 2024; Moody's downgrade to Aa3 13 Dec 2024; Bayrou 8 Sep 2025; Fitch to A+ 12 Sep
+  2025; Lecornu resignation 6 Oct 2025; S&P to A+ 17 Oct 2025; Moody's negative outlook 24 Oct 2025;
+  Moody's review with no action 23 Oct 2026; Fitch negative outlook 30 Oct 2026). Excluded: S&P 31 May 2024,
+  Fitch 11 Oct 2024 and S&P 28 Feb 2025 (one listed source reachable); affirmations; Scope and DBRS; no
+  government fell in 2026. Limitation: Reuters, the FT, Le Monde, Les Echos and fitchratings.com refuse the
+  search tool, so confirmation relied on Bloomberg, CNBC and official sites, mostly from search listings
+  (title and dated URL) rather than fetched pages. Daily results: 4 of 11 events were unusually large
+  (90th percentile or above): the dissolution (+15 bp, 99th), Moody's downgrade (+4, 92nd), Lecornu's
+  resignation (+4, 93rd) and Fitch's negative outlook (+6.5, 96th); Moody's no-downgrade review narrowed the
+  spread by 18 bp (lowest percentile). The monthly study keeps its method, so events in the same month share
+  that month's change (Oct 2026 is beyond the monthly data).

@@ -654,3 +654,10 @@ def daily_event_sentence(event: str, day: str, change: float, percentile: float)
     move = "widened" if change > 0 else "narrowed" if change < 0 else "was unchanged"
     return (f"{event} ({pd_day(day)}): over the two days around it the OAT-Bund spread {move} by {bp(change)}, "
             f"{size} move ({percentile:.0%} of two-day windows since 2010 saw a smaller change).")
+
+
+def event_study_summary_sentence(n: int, n_unusual: int, mean_change: float, n_widened: int) -> str:
+    """Overall result of the daily event study."""
+    return (f"Across the {n} verified events, the spread widened in {share_words(n_widened, n)} two-day windows "
+            f"(average change {signed_bp(mean_change)}); {share_words(n_unusual, n)} "
+            f"{'was' if n_unusual == 1 else 'were'} unusually large (90th percentile of all two-day changes or above).")

@@ -471,6 +471,26 @@
  },
  "events": [
   {
+   "date": "2024-06-09",
+   "kind": "political",
+   "event": "President Macron dissolves the National Assembly",
+   "event_day": "2024-06-10",
+   "change_bp": 14.99999999999995,
+   "percentile": 0.9934456928838952,
+   "z": 3.687727101702336,
+   "n_windows": 4272
+  },
+  {
+   "date": "2024-10-25",
+   "kind": "rating",
+   "event": "Moody's moves France's Aa2 outlook to negative",
+   "event_day": "2024-10-25",
+   "change_bp": 0.9999999999999716,
+   "percentile": 0.6451310861423221,
+   "z": 0.23088392448677253,
+   "n_windows": 4272
+  },
+  {
    "date": "2024-12-04",
    "kind": "political",
    "event": "The National Assembly adopts a motion of censure; the Barnier government falls",
@@ -478,6 +498,16 @@
    "change_bp": -1.0000000000000284,
    "percentile": 0.2588951310861423,
    "z": -0.2629508151154516,
+   "n_windows": 4272
+  },
+  {
+   "date": "2024-12-13",
+   "kind": "rating",
+   "event": "Moody's downgrades France to Aa3 (Friday evening)",
+   "event_day": "2024-12-13",
+   "change_bp": 3.9999999999999574,
+   "percentile": 0.9197097378277154,
+   "z": 0.9716360338901051,
    "n_windows": 4272
   },
   {
@@ -489,6 +519,72 @@
    "percentile": 0.2752808988764045,
    "z": -0.2629508151154481,
    "n_windows": 4272
+  },
+  {
+   "date": "2025-09-12",
+   "kind": "rating",
+   "event": "Fitch downgrades France to A+ (Friday evening)",
+   "event_day": "2025-09-12",
+   "change_bp": 0.0,
+   "percentile": 0.4487359550561798,
+   "z": -0.01603344531433251,
+   "n_windows": 4272
+  },
+  {
+   "date": "2025-10-06",
+   "kind": "political",
+   "event": "Prime Minister Lecornu resigns; his first government falls",
+   "event_day": "2025-10-06",
+   "change_bp": 4.000000000000057,
+   "percentile": 0.9290730337078652,
+   "z": 0.9716360338901298,
+   "n_windows": 4272
+  },
+  {
+   "date": "2025-10-17",
+   "kind": "rating",
+   "event": "S&P downgrades France to A+ (Friday evening, unscheduled)",
+   "event_day": "2025-10-17",
+   "change_bp": 2.0,
+   "percentile": 0.8031367041198502,
+   "z": 0.47780129428789153,
+   "n_windows": 4272
+  },
+  {
+   "date": "2025-10-24",
+   "kind": "rating",
+   "event": "Moody's moves France's Aa3 outlook to negative",
+   "event_day": "2025-10-24",
+   "change_bp": 0.0,
+   "percentile": 0.4487359550561798,
+   "z": -0.01603344531433251,
+   "n_windows": 4272
+  },
+  {
+   "date": "2026-10-23",
+   "kind": "rating review",
+   "event": "Moody's periodic review keeps France at Aa3, outlook negative (no rating action)",
+   "event_day": "2026-10-23",
+   "change_bp": -18.200000000000045,
+   "percentile": 0.003979400749063671,
+   "z": -4.509929575694583,
+   "n_windows": 4272
+  },
+  {
+   "date": "2026-10-30",
+   "kind": "rating",
+   "event": "Fitch moves France's A+ outlook to negative (unscheduled)",
+   "event_day": "2026-10-30",
+   "change_bp": 6.499999999999943,
+   "percentile": 0.9639513108614233,
+   "z": 1.5889294583928817,
+   "n_windows": 4272
   }
- ]
+ ],
+ "events_summary": {
+  "n": 11,
+  "n_unusual": 4,
+  "n_widened": 6,
+  "mean_change": 1.1181818181817993
+ }
 }
