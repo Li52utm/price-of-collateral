@@ -578,6 +578,27 @@ def robustness_badge_text(holds: int, n: int, not_computable: int = 0) -> str:
     return text
 
 
+def v1_v2_sentence(currency: str, m1: float, lo1: float, q90_1: float, hi1: float, m2: float, lo2: float,
+                   q90_2: float, hi2: float, n_ye: int | None) -> str:
+    """v1 (pre-registered) against v2 (challenger) on 31 December 2026."""
+    wider = (hi2 - lo2) - (hi1 - lo1)
+    return (f"{currency} on 31 December 2026: v1 median {signed_bp(m1)}, 5-95% {signed_bp(lo1)} to {signed_bp(hi1)}; "
+            f"v2 median {signed_bp(m2)}, 5-95% {signed_bp(lo2)} to {signed_bp(hi2)}. The v2 range is "
+            f"{bp(wider)} {wider_or_narrower(wider)}, and its 90th and 95th percentiles ({signed_bp(q90_2)}, "
+            f"{signed_bp(hi2)}) are {'separated' if hi2 - q90_2 >= 0.5 else 'still close together'}"
+            + (f"; its year-end distribution rests on {n_ye} past year-ends." if n_ye else "."))
+
+
+def v2_test_sentence(currency: str, cqr_turn: float, v1_turn: float, base_turn: float, cqr_cov: float,
+                     cqr_verdict: str, v1_cov: float, analogue_inside: int, analogue_n: int) -> str:
+    """v2's test-period results, always with the caveat that they are not a clean out-of-sample claim."""
+    better = "lower" if cqr_turn < v1_turn else "higher"
+    return (f"{currency} (not a clean out-of-sample test: v2 was designed after seeing v1's test results): the CQR "
+            f"turn-day pinball loss was {cqr_turn:.2f}, {better} than v1's {v1_turn:.2f} (baseline {base_turn:.2f}); "
+            f"its 5-95% range covered {cqr_cov:.1%} of test days ({cqr_verdict}; v1 {v1_cov:.1%}). The year-end "
+            f"analogue's range contained {share_words(analogue_inside, analogue_n)} of the 2023-2025 year-ends.")
+
+
 def tail_sentence(currency: str, q90: float, q95: float, raw90: float, raw95: float, n_year_ends: int,
                   pins: list[str], same_pins: bool) -> str:
     """Why the frozen 90th and 95th percentiles on 31 December are (nearly) the same (U0 diagnosis)."""

@@ -566,3 +566,9 @@ the challenger shown beside it.
   at 0.21, and with train end 2021 for EUR); R2 4/4; R3 5/5; R4 4/5 (fails with MMSR overnight: France
   reads as scarcity); R5 5/6 (fails only under the monthly rule, whose data end in September 2026);
   R6 4/4; R7 5/5; R8 4/4.
+- **2026-11-05, U4: v2 frozen.** `results/forecasts/yearend_2026_v2.json`, created 2026-11-05 19:29:42 UTC,
+  code commit c9e81af, data as of 3 November 2026. 31 December 2026: USD median +8.5 bp, 5-95% +1.6 to +50.1
+  (90th +34.4); EUR median -7.5 bp, 5-95% -8.5 to -5.2 (90th -5.9). Test period (NOT a clean out-of-sample
+  claim): CQR turn-day pinball USD 1.93 (v1 1.48, baseline 1.98), EUR 0.34 (v1 0.18, baseline 0.23); 5-95%
+  coverage USD 91.6% (well calibrated; v1 85.8%), EUR 62.5% (too narrow; v1 99.4%). The analogue range
+  contained all three 2023-2025 year-ends in both currencies. v1 remains the headline.

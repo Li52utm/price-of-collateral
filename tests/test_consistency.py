@@ -250,3 +250,20 @@ def test_no_sentence_prints_a_negative_magnitude_after_more_or_less() -> None:
     """'cost -3.0 bp more' would contradict itself: magnitudes are printed unsigned."""
     s = w.collateral_sentence("FR", "scarcity", -1.0, 2.0, 0.3, -4.0, -2.0)
     assert not re.search(r"-\d+\.\d bp (more|less)", s)
+
+
+@pytest.mark.parametrize("hi2", [40.0, 20.0])
+def test_v1_v2_width_word_flips(hi2: float) -> None:
+    s = w.v1_v2_sentence("USD", 6.0, -5.0, 31.7, 31.8, 8.0, 0.0, 30.0, hi2, 8)
+    wider = (hi2 - 0.0) - (31.8 + 5.0)
+    assert (" wider" in s) == (wider > 0) and (" narrower" in s) == (wider < 0)
+
+
+def test_v2_test_sentence_words(r: dict) -> None:
+    for c, e in r["v2"]["currencies"].items():
+        m = e["models"]
+        s = w.v2_test_sentence(c, m["cqr"]["pinball_turn"], m["v1_state"]["pinball_turn"], m["baseline"]["pinball_turn"],
+                               m["cqr"]["coverage"], m["cqr"]["verdict"], m["v1_state"]["coverage"],
+                               sum(a["inside"] for a in e["analogue_test"]), len(e["analogue_test"]))
+        assert ("lower than v1" in s) == (m["cqr"]["pinball_turn"] < m["v1_state"]["pinball_turn"])
+        assert "not a clean out-of-sample test" in s

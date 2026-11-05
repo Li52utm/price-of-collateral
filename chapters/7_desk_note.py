@@ -53,6 +53,42 @@ for cur in ("USD", "EUR"):
     fig.update_yaxes(title=f"{note['forecasts'][cur]['target']} (bp)")
     ui.show_chart(fig, f"{cur}: frozen forecast over the turn", height=300,
                   sources="New York Fed, ECB Data Portal, FRED, OFR, US Treasury")
+v2 = note.get("v2") or {}
+if v2.get("frozen"):
+    ui.md("**v1 and v2 side by side.** v1 is the pre-registered headline forecast. v2, the challenger "
+          "(conformalised quantile regression, with a distribution built from past year-ends for the turn itself), "
+          "was designed after seeing v1's test-period calibration, so only its 31 December 2026 score is a clean test.")
+    rows = []
+    for cur in ("USD", "EUR"):
+        for label, src in (("v1 (pre-registered)", note["frozen"]), ("v2 (challenger)", v2["frozen"])):
+            x = src["currencies"][cur]
+            rows.append({"Currency": cur, "Forecast": label, "5%": x["q05"], "Median": x["q50"], "90%": x["q90"],
+                         "95%": x["q95"]})
+    ui.table(pd.DataFrame(rows))
+    for line in v2["lines"]:
+        ui.md(f"- {line}")
+    for line in v2["test"]:
+        ui.md(f"- {line}")
+turns = ui.csv("forecast/past_year_ends.csv")
+if turns is not None:
+    fig = go.Figure()
+    for cur in ("USD", "EUR"):
+        t = turns[turns["currency"] == cur]
+        fig.add_scatter(x=t.index.year, y=t["actual"], mode="markers+lines", name=f"{cur} on the year-end day",
+                        line=dict(color=ui.CURRENCY_COLORS[cur], width=1.5), marker=dict(size=9))
+        fz = note["frozen"]["currencies"][cur]
+        fig.add_scatter(x=[2026, 2026], y=[fz["q05"], fz["q95"]], mode="lines", name=f"{cur} v1 5-95% for 2026",
+                        line=dict(color=ui.CURRENCY_COLORS[cur], width=6), opacity=0.35)
+        if v2.get("frozen"):
+            f2 = v2["frozen"]["currencies"][cur]
+            fig.add_scatter(x=[2026.15, 2026.15], y=[f2["q05"], f2["q95"]], mode="lines",
+                            name=f"{cur} v2 5-95% for 2026", line=dict(color=ui.CURRENCY_COLORS[cur], width=6, dash="dot"))
+    fig.update_xaxes(title="year-end", dtick=1)
+    fig.update_yaxes(title="spread to the policy rate on the year-end day (bp)")
+    ui.show_chart(fig, "Every past year-end turn, and the 2026 ranges they support", height=360,
+                  sources="New York Fed, FRED, ECB Data Portal")
+    st.caption(f"The year-end tail rests on {int((turns['currency'] == 'USD').sum())} dollar and "
+               f"{int((turns['currency'] == 'EUR').sum())} euro year-ends.")
 for m in note["models"]:
     ui.md(m)
 

@@ -32,8 +32,8 @@ jobs:
         env:
           WEBSTAT_API_KEY: ${{ secrets.WEBSTAT_API_KEY }}   # header-only auth; never echoed
         run: python scripts/refresh_snapshots.py
-      - name: The frozen Year-End 2026 forecast must be untouched
-        run: git diff --exit-code -- results/forecasts/yearend_2026.json
+      - name: The frozen Year-End 2026 forecasts (v1 and v2) must be untouched
+        run: git diff --exit-code -- results/forecasts/yearend_2026.json results/forecasts/yearend_2026_v2.json
       - name: Tests (offline)
         run: python -m pytest -q
       - name: Commit and push only if tests passed and files changed
@@ -46,6 +46,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A results docs/DATA_VALIDATION.md README.md
-          git reset -q -- results/forecasts/yearend_2026.json   # never committed by the bot
+          git reset -q -- results/forecasts/yearend_2026.json results/forecasts/yearend_2026_v2.json   # never committed by the bot
           git commit -m "Data refresh: as of ${AS_OF}"
           git push

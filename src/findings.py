@@ -20,7 +20,8 @@ SUMMARIES = {"forecast": "forecast/summary.json", "corridors": "corridors/summar
              "score": "forecasts/yearend_2026_score.json", "validation": "data_validation.json",
              "tails": "forecast/tail_diagnosis.json", "france_daily": "france/daily_summary.json",
              "bootstrap": "inference/bootstrap.json", "tests": "inference/tests.json",
-             "calibration": "inference/calibration.json"}
+             "calibration": "inference/calibration.json", "frozen_v2": "forecasts/yearend_2026_v2.json",
+             "v2": "forecast/v2_summary.json", "score_v2": "forecasts/yearend_2026_v2_score.json"}
 
 QUESTIONS = {
     "story": "What is repo, and why does the bond you hand over matter?",

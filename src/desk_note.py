@@ -98,17 +98,32 @@ def build(r: dict) -> dict | None:
                                                                           repo["chow_it_fr"]["p_value"])[0],
                                                       repo["latest"]["fr_de"], repo["latest"]["it_de"],
                                                       findings.adjusted_p(r, "chow_june2024_it_fr")[1]))
-    score = r.get("score")
-    if score:
-        scoring = []
-        for c, s in score["currencies"].items():
+    scoring = []
+    for label, score in (("v1 (pre-registered)", r.get("score")), ("v2 (challenger)", r.get("score_v2"))):
+        for c, s in (score or {}).get("currencies", {}).items():
             inside = "inside" if s["inside_interval"] else "outside"
-            scoring.append(f"{c}: actual {w.signed_bp(s['actual'])} on 31 December 2026, {inside} the 5-95% range; "
-                           f"error against the median {w.signed_bp(s['error_vs_median'])}; mean pinball loss "
+            scoring.append(f"{label}, {c}: actual {w.signed_bp(s['actual'])} on 31 December 2026, {inside} the 5-95% "
+                           f"range; error against the median {w.signed_bp(s['error_vs_median'])}; mean pinball loss "
                            f"{s['mean_pinball']:.2f}.")
-    else:
-        scoring = ["To be scored after 31 December 2026: the refresh scores the frozen forecast automatically once the "
-                   "year-end values are published."]
+    if not scoring:
+        scoring = ["To be scored after 31 December 2026: the refresh scores both frozen forecasts (v1 and v2) "
+                   "automatically once the year-end values are published."]
+    score = r.get("score")
+    v2f = r.get("frozen_v2")
+    challenger = []
+    if v2f:
+        for c in ("USD", "EUR"):
+            a, b = frozen["currencies"][c], v2f["currencies"][c]
+            challenger.append(w.v1_v2_sentence(c, a["q50"], a["q05"], a["q90"], a["q95"], b["q50"], b["q05"], b["q90"],
+                                               b["q95"], b.get("n_year_ends")))
+    v2s = r.get("v2") or {}
+    v2_test = []
+    for c, e in (v2s.get("currencies") or {}).items():
+        m = e["models"]
+        v2_test.append(w.v2_test_sentence(c, m["cqr"]["pinball_turn"], m["v1_state"]["pinball_turn"],
+                                          m["baseline"]["pinball_turn"], m["cqr"]["coverage"], m["cqr"]["verdict"],
+                                          m["v1_state"]["coverage"], sum(a["inside"] for a in e["analogue_test"]),
+                                          len(e["analogue_test"])))
     risks = [
         (f"The dollar upper tail: the 95th percentile ({w.signed_bp(usd['q95'])}) is far above the median; a "
          "reserve drain or heavy Treasury settlement near the turn would push SOFR towards it."),
@@ -145,6 +160,7 @@ def build(r: dict) -> dict | None:
         "key_points": key_points, "forecasts": {"USD": usd, "EUR": eur}, "models": models,
         "funding": [usd_line, eur_line, term_backtest], "france": france_lines, "risks": risks, "tails": tails,
         "disclosures": disclosures, "scoring": scoring, "scored": bool(score),
+        "v2": {"frozen": v2f, "lines": challenger, "test": v2_test, "caveat": v2s.get("caveat")},
         "client": {"question": findings.QUESTIONS["desk_note"], "verdict": verdict, "sentence": sentence},
         "rule": {"USD": {"excess_bp": usd_excess, "hurdle_bp": premium if premium is not None else EUR_HURDLE_BP,
                          "premium_bp": tvo.get("latest_premium_bp"), "lock": usd_lock, "stale": stale,
@@ -167,6 +183,14 @@ def markdown(note: dict) -> str:
         x = f[c]
         lines.append(f"| {c} | {x['target']} | {x['model_label']} | {x['q05']:+.1f} | {x['q50']:+.1f} | "
                      f"{x['q90']:+.1f} | {x['q95']:+.1f} |")
+    v2f = (note.get("v2") or {}).get("frozen")
+    if v2f:
+        for c in ("USD", "EUR"):
+            x = v2f["currencies"][c]
+            lines.append(f"| {c} | {x['target']} | v2 challenger: CQR + year-end analogue | {x['q05']:+.1f} | "
+                         f"{x['q50']:+.1f} | {x['q90']:+.1f} | {x['q95']:+.1f} |")
+        lines += ["", "v1 is the pre-registered headline; v2 was designed after seeing v1's test-period calibration.", "",
+                  *[f"- {x}" for x in note["v2"]["lines"]]]
     lines += ["", *note["models"], "", "## What the turn means for funding", "", *[f"- {x}" for x in note["funding"]],
               "", "## France", "", *note["france"], "", "## Risks", "", *[f"- {x}" for x in note["risks"]], "",
               "## Why the 90th and 95th percentiles coincide", "", *[f"- {x}" for x in note.get("tails", [])], "",

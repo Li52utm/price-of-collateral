@@ -147,7 +147,11 @@ Every place where data or tools forced a change to the original plan, with the r
   `forecast.create_frozen_forecast` opens the file in exclusive mode). It records the model version,
   data as-of date, creation timestamp, git commit (the code commit made just before freezing) and a
   SHA-256 of `src/data.py`, `src/features.py`, `src/forecast.py`, `src/stats_tools.py`.
-- `forecast.run` writes `results/forecasts/yearend_2026_score.json` only once the year-end values exist.
+- **v2 challenger (U4)**: `results/forecasts/yearend_2026_v2.json`, frozen 5 Nov 2026 with
+  `scripts/freeze_forecast.py --version v2` (commit c9e81af; CQR + a year-end analogue). Designed after
+  seeing v1's test results, so only its year-end score is a clean test; v1 stays the headline. Never overwritten.
+- `forecast.run` writes `results/forecasts/yearend_2026_score.json` only once the year-end values exist;
+  `forecast_v2.run` writes `yearend_2026_v2_score.json` the same way.
   `tests/test_forecast.py` checks that a run leaves the frozen file byte for byte unchanged.
 
 ## Dashboard
