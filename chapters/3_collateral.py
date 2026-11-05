@@ -18,6 +18,7 @@ SRC = "ECB Data Portal (MMSR, IRS), ECB PSPP breakdown"
 ui.apply_theme()
 ui.chapter_heading(**ui.CHAPTERS["collateral"])
 ui.question_box("collateral")
+ui.robustness_badge("collateral")
 
 c = ui.results().get("collateral")
 panel = ui.csv("collateral/period_panel.csv")

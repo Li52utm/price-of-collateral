@@ -34,5 +34,5 @@ pages = [
     st.Page(PAGE_FILES[key], title=f"{chapter['numeral']}. {chapter['title']}",
             url_path=key.replace("_", "-"), default=key == "story")
     for key, chapter in ui.CHAPTERS.items()
-]
+] + [st.Page(ui.APPENDIX_PAGE, title=f"{ui.APPENDIX['numeral']}. {ui.APPENDIX['title']}", url_path="robustness")]
 st.navigation(pages).run()

@@ -569,6 +569,15 @@ def calibration_sentence(currency: str, model_label: str, coverage: float, lower
             f"{n} test days (exact 95% CI {lower:.1%} to {upper:.1%}), {meaning}. Verdict: {verdict}.")
 
 
+def robustness_badge_text(holds: int, n: int, not_computable: int = 0) -> str:
+    """'Holds in 4 of 5 robustness checks' (and how many alternatives could not be computed)."""
+    text = (f"Holds in all {n} robustness checks" if holds == n and n > 1 else
+            f"Holds in {holds} of {n} robustness check{'s' if n != 1 else ''}")
+    if not_computable:
+        text += f" ({not_computable} not computable)"
+    return text
+
+
 def tail_sentence(currency: str, q90: float, q95: float, raw90: float, raw95: float, n_year_ends: int,
                   pins: list[str], same_pins: bool) -> str:
     """Why the frozen 90th and 95th percentiles on 31 December are (nearly) the same (U0 diagnosis)."""

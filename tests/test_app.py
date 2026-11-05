@@ -97,3 +97,13 @@ def test_stale_data_shows_a_warning(offline_app, monkeypatch) -> None:
     at = offline_app("chapters/5_calendar.py")
     assert not at.exception
     assert "The data may be stale" in text_of(at)
+
+
+def test_appendix_renders_with_robustness_and_tests(offline_app) -> None:
+    at = offline_app(ui.APPENDIX_PAGE)
+    assert not at.exception, [e.value for e in at.exception]
+    text = text_of(at)
+    rob = ui.read_result_json("robustness/table.json")
+    for key, s in rob["summary"].items():
+        assert f"**{key}.**" in text
+        assert f"{s['holds']} of {s['n']}" in text or f"all {s['n']}" in text

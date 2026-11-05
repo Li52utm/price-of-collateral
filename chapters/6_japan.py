@@ -17,6 +17,7 @@ SRC = "Bank of Japan"
 ui.apply_theme()
 ui.chapter_heading(**ui.CHAPTERS["japan"])
 ui.question_box("japan")
+ui.robustness_badge("japan")
 
 j = ui.results().get("japan")
 daily = ui.csv("japan/japan_daily.csv")

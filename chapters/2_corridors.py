@@ -15,6 +15,7 @@ import wording as w  # noqa: E402
 ui.apply_theme()
 ui.chapter_heading(**ui.CHAPTERS["corridors"])
 ui.question_box("corridors")
+ui.robustness_badge("corridors")
 
 c = ui.results().get("corridors")
 if c is None:

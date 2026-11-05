@@ -44,11 +44,11 @@ def daily_spread(long: pd.DataFrame | None = None) -> pd.Series:
     return ((both["oat"] - both["bund"]) * 100).rename("spread")
 
 
-def daily_frame(long: pd.DataFrame | None = None) -> pd.DataFrame:
-    """Daily spread, its 5-day mean and the trailing 250-day baseline (excluding the current day)."""
+def daily_frame(long: pd.DataFrame | None = None, smooth: int = SMOOTH_BD, baseline: int = BASELINE_BD) -> pd.DataFrame:
+    """Daily spread, its `smooth`-day mean and the trailing `baseline`-day mean (excluding the current day)."""
     s = daily_spread(long)
-    return pd.DataFrame({"spread": s, "smoothed": s.rolling(SMOOTH_BD).mean(),
-                         "baseline": s.rolling(BASELINE_BD).mean().shift(1)})
+    return pd.DataFrame({"spread": s, "smoothed": s.rolling(smooth).mean(),
+                         "baseline": s.rolling(baseline).mean().shift(1)})
 
 
 # --------------------------------------------------------------------------- #

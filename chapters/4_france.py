@@ -19,6 +19,7 @@ SRC_DAILY = "Banque de France (Webstat), Deutsche Bundesbank"
 ui.apply_theme()
 ui.chapter_heading(**ui.CHAPTERS["france"])
 ui.question_box("france")
+ui.robustness_badge("france")
 
 f = ui.results().get("france")
 spreads = ui.csv("collateral/yield_spreads_monthly.csv")

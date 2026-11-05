@@ -1,0 +1,336 @@
+{
+ "data_as_of": "2026-11-03",
+ "summary": {
+  "R1": {
+   "chapter": "calendar",
+   "finding": "The winning regression beats the naive baseline on test-period turn days (USD and EUR)",
+   "n": 5,
+   "holds": 3,
+   "not_computable": 0
+  },
+  "R2": {
+   "chapter": "calendar",
+   "finding": "Dollar year-ends push the spread up, euro year-ends push it down",
+   "n": 4,
+   "holds": 4,
+   "not_computable": 0
+  },
+  "R3": {
+   "chapter": "corridors",
+   "finding": "SOFR rises relative to IOR as reserves fall (slope below zero, interval excludes zero)",
+   "n": 5,
+   "holds": 5,
+   "not_computable": 0
+  },
+  "R4": {
+   "chapter": "collateral",
+   "finding": "Italy: too close to call; France: neither clearly credit nor scarcity",
+   "n": 5,
+   "holds": 4,
+   "not_computable": 0
+  },
+  "R5": {
+   "chapter": "france",
+   "finding": "France is in a blowout now (daily rule)",
+   "n": 6,
+   "holds": 5,
+   "not_computable": 0
+  },
+  "R6": {
+   "chapter": "france",
+   "finding": "The widening since June 2024 is mainly France-specific",
+   "n": 4,
+   "holds": 4,
+   "not_computable": 0
+  },
+  "R7": {
+   "chapter": "japan",
+   "finding": "Gaps close faster after the exit than under negative rates",
+   "n": 5,
+   "holds": 5,
+   "not_computable": 0
+  },
+  "R8": {
+   "chapter": "desk_note",
+   "finding": "Client verdict: stay overnight in both currencies",
+   "n": 4,
+   "holds": 4,
+   "not_computable": 1
+  }
+ },
+ "rows": [
+  {
+   "finding": "R1",
+   "chapter": "calendar",
+   "spec": "horizon 20 business days",
+   "holds": false,
+   "value": "USD best 1.32 vs baseline 2.05; EUR best 0.21 vs baseline 0.21"
+  },
+  {
+   "finding": "R1",
+   "chapter": "calendar",
+   "spec": "horizon 60 business days",
+   "holds": true,
+   "value": "USD best 1.58 vs baseline 1.78; EUR best 0.22 vs baseline 0.29"
+  },
+  {
+   "finding": "R1",
+   "chapter": "calendar",
+   "spec": "train end 2021 (test 2022 on)",
+   "holds": false,
+   "value": "USD best 1.55 vs baseline 1.67; EUR best 0.70 vs baseline 0.22"
+  },
+  {
+   "finding": "R1",
+   "chapter": "calendar",
+   "spec": "train end 2023 (test 2024 on)",
+   "holds": true,
+   "value": "USD best 1.74 vs baseline 2.31; EUR best 0.14 vs baseline 0.23"
+  },
+  {
+   "finding": "R1",
+   "chapter": "calendar",
+   "spec": "test without 10-31 Mar 2023",
+   "holds": true,
+   "value": "USD best 1.49 vs baseline 1.91; EUR best 0.18 vs baseline 0.24"
+  },
+  {
+   "finding": "R2",
+   "chapter": "calendar",
+   "spec": "lookback 5 business days",
+   "holds": true,
+   "value": "USD +10.5 bp, EUR -1.1 bp"
+  },
+  {
+   "finding": "R2",
+   "chapter": "calendar",
+   "spec": "lookback 20 business days",
+   "holds": true,
+   "value": "USD +11.0 bp, EUR -1.1 bp"
+  },
+  {
+   "finding": "R2",
+   "chapter": "calendar",
+   "spec": "median instead of mean",
+   "holds": true,
+   "value": "USD +2.9 bp, EUR -1.4 bp"
+  },
+  {
+   "finding": "R2",
+   "chapter": "calendar",
+   "spec": "drop each series' first year-end",
+   "holds": true,
+   "value": "USD +4.7 bp, EUR -1.6 bp"
+  },
+  {
+   "finding": "R3",
+   "chapter": "corridors",
+   "spec": "bootstrap block 4 weeks",
+   "holds": true,
+   "value": "slope -6.41 (-7.77 to -5.31) bp per trillion"
+  },
+  {
+   "finding": "R3",
+   "chapter": "corridors",
+   "spec": "bootstrap block 16 weeks",
+   "holds": true,
+   "value": "slope -6.41 (-8.18 to -4.85) bp per trillion"
+  },
+  {
+   "finding": "R3",
+   "chapter": "corridors",
+   "spec": "train weeks only (to 2022)",
+   "holds": true,
+   "value": "slope -6.43 (-8.12 to -5.00) bp per trillion"
+  },
+  {
+   "finding": "R3",
+   "chapter": "corridors",
+   "spec": "test weeks only (2023 on)",
+   "holds": true,
+   "value": "slope -16.27 (-24.35 to -8.79) bp per trillion"
+  },
+  {
+   "finding": "R3",
+   "chapter": "corridors",
+   "spec": "spread two weeks ahead",
+   "holds": true,
+   "value": "slope -6.31 (-7.84 to -4.99) bp per trillion"
+  },
+  {
+   "finding": "R4",
+   "chapter": "collateral",
+   "spec": "MMSR overnight instead of spot-next",
+   "holds": false,
+   "value": "IT too close to call; FR scarcity"
+  },
+  {
+   "finding": "R4",
+   "chapter": "collateral",
+   "spec": "borrowing side instead of lending",
+   "holds": true,
+   "value": "IT too close to call; FR both / unclear"
+  },
+  {
+   "finding": "R4",
+   "chapter": "collateral",
+   "spec": "bootstrap block 2 periods",
+   "holds": true,
+   "value": "IT too close to call; FR both / unclear"
+  },
+  {
+   "finding": "R4",
+   "chapter": "collateral",
+   "spec": "bootstrap block 8 periods",
+   "holds": true,
+   "value": "IT too close to call; FR both / unclear"
+  },
+  {
+   "finding": "R4",
+   "chapter": "collateral",
+   "spec": "Newey-West lags 6",
+   "holds": true,
+   "value": "IT too close to call; FR both / unclear"
+  },
+  {
+   "finding": "R5",
+   "chapter": "france",
+   "spec": "threshold 20 bp",
+   "holds": true,
+   "value": "in an episode since 2026-09-17"
+  },
+  {
+   "finding": "R5",
+   "chapter": "france",
+   "spec": "threshold 50 bp",
+   "holds": true,
+   "value": "in an episode since 2026-10-05"
+  },
+  {
+   "finding": "R5",
+   "chapter": "france",
+   "spec": "no smoothing (1 day)",
+   "holds": true,
+   "value": "in an episode since 2026-09-24"
+  },
+  {
+   "finding": "R5",
+   "chapter": "france",
+   "spec": "10-day smoothing",
+   "holds": true,
+   "value": "in an episode since 2026-09-30"
+  },
+  {
+   "finding": "R5",
+   "chapter": "france",
+   "spec": "baseline 125 business days",
+   "holds": true,
+   "value": "in an episode since 2026-09-29"
+  },
+  {
+   "finding": "R5",
+   "chapter": "france",
+   "spec": "monthly rule (ECB data to the last month)",
+   "holds": false,
+   "value": "not in an episode at 2026-09 (97 bp)"
+  },
+  {
+   "finding": "R6",
+   "chapter": "france",
+   "spec": "fit window 2015-2023",
+   "holds": true,
+   "value": "France-specific +51 bp, euro-wide -5 bp"
+  },
+  {
+   "finding": "R6",
+   "chapter": "france",
+   "spec": "fit window 2010-2019",
+   "holds": true,
+   "value": "France-specific +57 bp, euro-wide -12 bp"
+  },
+  {
+   "finding": "R6",
+   "chapter": "france",
+   "spec": "regressors IT, ES and PT",
+   "holds": true,
+   "value": "France-specific +54 bp, euro-wide -9 bp"
+  },
+  {
+   "finding": "R6",
+   "chapter": "france",
+   "spec": "cumulate from July 2024",
+   "holds": true,
+   "value": "France-specific +42 bp, euro-wide -12 bp"
+  },
+  {
+   "finding": "R7",
+   "chapter": "japan",
+   "spec": "exit sample from 1 Aug 2024",
+   "holds": true,
+   "value": "exit 0.4 (0.3-0.5) vs negative 13.2 (9.7-17.8) days"
+  },
+  {
+   "finding": "R7",
+   "chapter": "japan",
+   "spec": "negative sample from 1 Oct 2016",
+   "holds": true,
+   "value": "exit 0.4 (0.3-0.6) vs negative 13.2 (9.6-17.2) days"
+  },
+  {
+   "finding": "R7",
+   "chapter": "japan",
+   "spec": "no same-day pass-through term",
+   "holds": true,
+   "value": "exit 0.4 (0.2-10.9) vs negative 13.2 (9.7-17.8) days"
+  },
+  {
+   "finding": "R7",
+   "chapter": "japan",
+   "spec": "bootstrap block 10 days",
+   "holds": true,
+   "value": "exit 0.4 (0.3-0.6) vs negative 13.2 (9.8-17.3) days"
+  },
+  {
+   "finding": "R7",
+   "chapter": "japan",
+   "spec": "bootstrap block 40 days",
+   "holds": true,
+   "value": "exit 0.4 (0.3-0.6) vs negative 13.2 (9.2-17.1) days"
+  },
+  {
+   "finding": "R8",
+   "chapter": "desk_note",
+   "spec": "business-day weights (pre-U0 rule)",
+   "holds": true,
+   "value": "verdict No; USD -5.3 vs -2.0 bp, EUR +0.08 vs +1.0 bp"
+  },
+  {
+   "finding": "R8",
+   "chapter": "desk_note",
+   "spec": "window from 5 business days before",
+   "holds": true,
+   "value": "verdict No; USD -3.3 vs -2.0 bp, EUR -0.02 vs +1.0 bp"
+  },
+  {
+   "finding": "R8",
+   "chapter": "desk_note",
+   "spec": "window from 10 business days before",
+   "holds": null,
+   "value": "not computable: the frozen path starts on 21 December 2026"
+  },
+  {
+   "finding": "R8",
+   "chapter": "desk_note",
+   "spec": "euro hurdle 0 bp",
+   "holds": true,
+   "value": "verdict No; USD -4.1 vs -2.0 bp, EUR -0.04 vs +0.0 bp"
+  },
+  {
+   "finding": "R8",
+   "chapter": "desk_note",
+   "spec": "euro hurdle 2 bp",
+   "holds": true,
+   "value": "verdict No; USD -4.1 vs -2.0 bp, EUR -0.04 vs +2.0 bp"
+  }
+ ]
+}

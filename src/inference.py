@@ -110,13 +110,13 @@ def calibration(pred: pd.DataFrame, model: str) -> dict:
 # --------------------------------------------------------------------------- #
 # Reserves slope
 # --------------------------------------------------------------------------- #
-def slope_interval(pairs: pd.DataFrame) -> dict:
+def slope_interval(pairs: pd.DataFrame, block: int = BLOCK_WEEKS) -> dict:
     x, y = pairs["liq"].to_numpy(), pairs["spread"].to_numpy()
 
     def slope(idx):
         return float(np.polyfit(x[idx], y[idx], 1)[0])
 
-    return {"slope": slope(np.arange(len(x))), **st.block_bootstrap_ci(slope, len(x), BLOCK_WEEKS, N_BOOT, SEED)}
+    return {"slope": slope(np.arange(len(x))), **st.block_bootstrap_ci(slope, len(x), block, N_BOOT, SEED)}
 
 
 # --------------------------------------------------------------------------- #
@@ -133,13 +133,13 @@ def std_effects(df: pd.DataFrame, country: str) -> dict:
     return {k: float(v) for k, v in eff.items()}
 
 
-def credit_scarcity_intervals(panel: pd.DataFrame, country: str) -> dict:
+def credit_scarcity_intervals(panel: pd.DataFrame, country: str, block: int = BLOCK_PERIODS) -> dict:
     df = panel[[f"repo_{country}", f"credit_{country}", "liquidity", "de_holdings"]].dropna()
     point = std_effects(df, country)
     out = {"point": point}
     for k in point:
         out[k] = st.block_bootstrap_ci(lambda i, key=k: std_effects(df.iloc[i], country)[key], len(df),
-                                       BLOCK_PERIODS, N_BOOT, SEED)
+                                       block, N_BOOT, SEED)
     d = out["difference"]
     out["too_close_to_call"] = bool(d["lower"] <= 0 <= d["upper"]) if d["lower"] == d["lower"] else True
     return out
@@ -148,22 +148,27 @@ def credit_scarcity_intervals(panel: pd.DataFrame, country: str) -> dict:
 # --------------------------------------------------------------------------- #
 # France-specific vs euro-wide
 # --------------------------------------------------------------------------- #
-def france_split_intervals(spreads: pd.DataFrame) -> dict:
-    d = spreads[["FR", "IT", "ES"]].dropna().diff().dropna()
-    fit = d.loc[FIT_SPLIT[0]:FIT_SPLIT[1]]
-    post = d.loc[POLITICAL_MONTH:]
+def france_split_intervals(spreads: pd.DataFrame, fit_window: tuple[str, str] = FIT_SPLIT,
+                           regressors: tuple[str, ...] = ("IT", "ES"), since: str = POLITICAL_MONTH,
+                           with_ci: bool = True) -> dict:
+    """Euro-wide vs France-specific split since `since` with bootstrap intervals over the fit sample."""
+    d = spreads[["FR", *regressors]].dropna().diff().dropna()
+    fit = d.loc[fit_window[0]:fit_window[1]]
+    post = d.loc[since:]
 
     def split(idx):
         f = fit.iloc[idx]
-        X = np.column_stack([np.ones(len(f)), f[["IT", "ES"]].to_numpy()])
+        X = np.column_stack([np.ones(len(f)), f[list(regressors)].to_numpy()])
         b, *_ = np.linalg.lstsq(X, f["FR"].to_numpy(), rcond=None)
-        euro = float((b[0] + b[1] * post["IT"] + b[2] * post["ES"]).sum())
+        euro = float((b[0] + post[list(regressors)].to_numpy() @ b[1:]).sum())
         total = float(post["FR"].sum())
         return euro, total - euro, (total - euro) / total if total else float("nan")
 
     e, f_, share = split(np.arange(len(fit)))
     out = {"cum_change": float(post["FR"].sum()), "euro_wide": e, "france_specific": f_, "share_france": share,
-           "since": POLITICAL_MONTH[:7], "n_fit": int(len(fit))}
+           "since": since[:7], "n_fit": int(len(fit))}
+    if not with_ci:
+        return out
     for j, name in enumerate(("euro_wide", "france_specific", "share_france")):
         out[f"ci_{name}"] = st.block_bootstrap_ci(lambda i, jj=j: split(i)[jj], len(fit), BLOCK_MONTHS, N_BOOT, SEED)
     return out
@@ -178,20 +183,26 @@ def ecm_rows(daily: pd.DataFrame, start: str, end: str | None) -> pd.DataFrame:
                          "d_policy": sub["policy"].diff()}).dropna()
 
 
-def half_life(rows: pd.DataFrame) -> float:
-    cols = ["gap_lag", "d_policy"] if rows["d_policy"].abs().sum() > 0 else ["gap_lag"]
+def half_life(rows: pd.DataFrame, same_day: bool = True) -> float:
+    """ln(0.5) / ln(1 + g) from the OLS error-correction coefficient g (NaN outside -1 < g < 0)."""
+    cols = ["gap_lag", "d_policy"] if same_day and rows["d_policy"].abs().sum() > 0 else ["gap_lag"]
     X = np.column_stack([np.ones(len(rows)), rows[cols].to_numpy()])
     b, *_ = np.linalg.lstsq(X, rows["d_tona"].to_numpy(), rcond=None)
     g = b[1]
     return float(np.log(0.5) / np.log(1 + g)) if -1 < g < 0 else float("nan")
 
 
-def japan_intervals(daily: pd.DataFrame) -> dict:
+JAPAN_SAMPLES = {"negative": ("2016-02-16", "2024-03-20"), "exit": ("2024-03-21", None)}
+
+
+def japan_intervals(daily: pd.DataFrame, samples: dict | None = None, block: int = BLOCK_JAPAN_DAYS,
+                    same_day: bool = True) -> dict:
+    """Half-life and its bootstrap interval for each sample (defaults: the Phase 5 sub-samples)."""
     out = {}
-    for name, (start, end) in {"negative": ("2016-02-16", "2024-03-20"), "exit": ("2024-03-21", None)}.items():
+    for name, (start, end) in (samples or JAPAN_SAMPLES).items():
         rows = ecm_rows(daily, start, end)
-        out[name] = {"half_life": half_life(rows), **st.block_bootstrap_ci(
-            lambda i, r=rows: half_life(r.iloc[i]), len(rows), BLOCK_JAPAN_DAYS, N_BOOT, SEED)}
+        out[name] = {"half_life": half_life(rows, same_day), **st.block_bootstrap_ci(
+            lambda i, r=rows: half_life(r.iloc[i], same_day), len(rows), block, N_BOOT, SEED)}
     return out
 
 

@@ -17,6 +17,7 @@ SRC = "New York Fed, ECB Data Portal, FRED, OFR, US Treasury"
 ui.apply_theme()
 ui.chapter_heading(**ui.CHAPTERS["calendar"])
 ui.question_box("calendar")
+ui.robustness_badge("calendar")
 
 fc = ui.results().get("forecast")
 if fc is None:

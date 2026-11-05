@@ -400,6 +400,24 @@ Raw and adjusted p-values are listed in `results/inference/tests.json` and on th
 - **If the 95% bootstrap interval of the difference between the credit and scarcity effects includes zero,
   that country's answer reads "too close to call", whatever the point-estimate decision rule says.**
 
+## Upgrade U3: robustness (fixed 2026-11-05, before any alternative specification was computed)
+
+Code: `src/robustness.py`, output `results/robustness/table.json` and `.csv`. Each headline finding is
+re-derived under each alternative with everything else unchanged; the finding "holds" if the same
+conclusion (the stated test below) is reached. Each chapter shows "Holds in k of n robustness checks",
+linked to the table (Appendix page). The baseline specification is not counted among the n.
+
+| # | Chapter | Finding (as generated) | Holds if | Alternatives |
+|---|---|---|---|---|
+| R1 | V | The winning regression beats the naive baseline on test-period turn days (USD and EUR) | in both currencies a regression has a lower turn-day pinball loss than the baseline | horizon 20 business days; horizon 60; train end 2021 (test 2022 on); train end 2023 (test 2024 on); test period without 2023 Q1 (bank stress, 10-31 Mar 2023 excluded) |
+| R2 | V | Dollar year-ends push the spread up, euro year-ends push it down | mean USD year-end effect > 0 and mean EUR effect < 0 | lookback 5 business days; lookback 20; median instead of mean; dropping each series' first year-end |
+| R3 | II | SOFR rises relative to IOR as reserves fall (negative slope, interval excludes zero) | slope < 0 and its 95% interval below zero | bootstrap block 4 weeks; block 16 weeks; train weeks only (to 2022); test weeks only (2023 on); spread two weeks ahead instead of one |
+| R4 | III | Italy: too close to call; France: neither clearly credit nor scarcity | both countries' final verdicts (after Holm and the U2 rule) are the same | MMSR overnight (O/N) instead of spot-next; borrowing side instead of lending; bootstrap block 2 periods; block 8 periods; Newey-West lags 6 |
+| R5 | IV | France is in a blowout now (daily Rule 1) | the main rule's status at the last day is "in an episode" | threshold 20 bp; threshold 50 bp; no smoothing (1 day); 10-day smoothing; baseline 125 business days; the monthly rule (data to the last month) |
+| R6 | IV | The widening since June 2024 is mainly France-specific | France-specific part larger in size than the euro-wide part | fit window 2015-2023; fit 2010-2019; regressors IT, ES and PT; start the cumulation in July 2024 |
+| R7 | VI | Gaps between TONA and the policy rate close faster after the exit than under negative rates | exit half-life < negative-rate half-life | exit sample from 1 Aug 2024; negative sample from 1 Oct 2016 (after yield-curve control began); no same-day pass-through term; bootstrap block 10 and 40 days (intervals do not overlap) |
+| R8 | VII | Client verdict "No" (stay overnight in both currencies) | the same verdict | business-day weights (the pre-U0 rule); window from 5 business days before; from 10; euro hurdle 0 bp; euro hurdle 2 bp |
+
 ## Corrections log
 
 - **2026-11-04, Phase 2 sample filter.** Wrong: `forecast.dataset` dropped every day on which the
@@ -499,3 +517,10 @@ Raw and adjusted p-values are listed in `results/inference/tests.json` and on th
   scarcity effects are larger in size), but no scarcity coefficient is significant after Holm, so France
   stays "neither clearly credit nor scarcity". Chapter III answer: "Scarcity for Italy; no clear driver for
   France" -> **"Too close to call"**.
+- **2026-11-05, U3: one pre-registered alternative could not be computed.** R8 "window from 10 business
+  days before" needs the frozen medians from 16 December 2026, but the frozen path starts on 21 December
+  (Phase 2 window). It is listed in the table as "not computable" and excluded from n; no substitute
+  alternative was added after seeing the results. Results: R1 3 of 5 (fails at horizon 20 for EUR, a tie
+  at 0.21, and with train end 2021 for EUR); R2 4/4; R3 5/5; R4 4/5 (fails with MMSR overnight: France
+  reads as scarcity); R5 5/6 (fails only under the monthly rule, whose data end in September 2026);
+  R6 4/4; R7 5/5; R8 4/4.

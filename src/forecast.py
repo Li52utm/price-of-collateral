@@ -95,14 +95,15 @@ def predict(model: dict, X: pd.DataFrame) -> pd.DataFrame:
     return predict_baseline(model, X) if model["kind"] == "baseline" else predict_qr(model, X)
 
 
-def dataset(currency: str, long: pd.DataFrame | None = None) -> tuple[pd.DataFrame, pd.Series]:
+def dataset(currency: str, long: pd.DataFrame | None = None,
+            horizon: int = F.HORIZON_BD) -> tuple[pd.DataFrame, pd.Series]:
     """Features and target on every day where the regression inputs exist.
 
     The baseline column may be missing early on (no earlier comparable day yet); only the baseline
     model needs it, so only its fit drops those rows (corrected 2026-11-04, see METHODOLOGY.md).
     """
     y = F.target(currency, long)
-    X = F.build(currency, y.index, long)
+    X = F.build(currency, y.index, long, horizon=horizon)
     keep = X[["level", "liq"]].notna().all(axis=1)
     return X[keep], y[keep]
 
@@ -114,10 +115,19 @@ def is_turn(X: pd.DataFrame) -> pd.Series:
     return X["me"] == 1
 
 
-def evaluate_currency(currency: str, long: pd.DataFrame | None = None) -> dict:
-    X, y = dataset(currency, long)
-    train = X.index <= TRAIN_END
-    test = np.asarray((X.index >= TEST_START) & X["baseline"].notna())  # every model on the same test days
+def evaluate_currency(currency: str, long: pd.DataFrame | None = None, horizon: int = F.HORIZON_BD,
+                      train_end: pd.Timestamp = TRAIN_END, test_start: pd.Timestamp = TEST_START,
+                      exclude: tuple[str, str] | None = None) -> dict:
+    """Fit on days to `train_end`, evaluate on days from `test_start` (defaults: the Phase 2 choices).
+
+    `horizon` and `exclude` (a test-day range left out) exist only for the U3 robustness checks.
+    """
+    X, y = dataset(currency, long, horizon)
+    train = X.index <= train_end
+    test = (X.index >= test_start) & X["baseline"].notna()  # every model on the same test days
+    if exclude is not None:
+        test &= ~((X.index >= exclude[0]) & (X.index <= exclude[1]))
+    test = np.asarray(test)
     preds, rows = {}, []
     for name in MODELS:
         model = fit(name, currency, X[train], y[train])
@@ -141,7 +151,7 @@ def evaluate_currency(currency: str, long: pd.DataFrame | None = None) -> dict:
     for row in rows:
         if row["model"] == "baseline":
             continue
-        dm_all = st.diebold_mariano(losses[row["model"]], losses["baseline"], F.HORIZON_BD)
+        dm_all = st.diebold_mariano(losses[row["model"]], losses["baseline"], horizon)
         dm_turn = st.diebold_mariano(losses[row["model"]][turn], losses["baseline"][turn], 1)
         row.update({"dm_all_stat": dm_all["stat"], "dm_all_p": dm_all["p_value"],
                     "dm_turn_stat": dm_turn["stat"], "dm_turn_p": dm_turn["p_value"]})
@@ -159,7 +169,7 @@ def evaluate_currency(currency: str, long: pd.DataFrame | None = None) -> dict:
 # --------------------------------------------------------------------------- #
 # Turn effects: euro vs dollar
 # --------------------------------------------------------------------------- #
-def turn_effects(currency: str, long: pd.DataFrame | None = None) -> pd.DataFrame:
+def turn_effects(currency: str, long: pd.DataFrame | None = None, lookback: int = TURN_LOOKBACK) -> pd.DataFrame:
     """Target on each month-end minus the mean of the previous TURN_LOOKBACK published days (bp)."""
     y = F.target(currency, long)
     cal = F.calendar_features(y.index, currency, F._settlements_or_none() if currency == "USD" else None,
@@ -169,9 +179,9 @@ def turn_effects(currency: str, long: pd.DataFrame | None = None) -> pd.DataFram
     positions = {d: i for i, d in enumerate(y.index)}
     for day in y.index[cal["me"] == 1]:
         i = positions[day]
-        if i < TURN_LOOKBACK:
+        if i < lookback:
             continue
-        normal = y.iloc[i - TURN_LOOKBACK:i].mean()
+        normal = y.iloc[i - lookback:i].mean()
         rows.append({"date": day, "type": kinds[day], "turn": float(y.iloc[i]), "normal": float(normal),
                      "effect": float(y.iloc[i] - normal), "currency": currency})
     return pd.DataFrame(rows)

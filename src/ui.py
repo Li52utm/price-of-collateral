@@ -234,6 +234,10 @@ CHAPTERS = {
                       subtitle="Euro and dollar funding over 31 December 2026, published before year-end"),
 }
 
+APPENDIX = dict(numeral="A", title="Robustness and Tests",
+                subtitle="Every headline finding under alternative specifications, and every hypothesis test")
+APPENDIX_PAGE = "chapters/8_appendix.py"
+
 QUESTIONS = {
     "story": "What is repo, and why does the bond you hand over matter?",
     "corridors": "Do the ECB, the Fed and the BoJ keep overnight rates where they want them?",
@@ -358,6 +362,18 @@ def answer_box(question: str, answer: str, explanation: str = "",
     with st.container(key=_key("answer", question, answer)):
         st.markdown(escape_dollars(f"**{labels[0]}:** {question}"))
         st.markdown(escape_dollars(f"**{labels[1]}: {answer}.** {explanation}".rstrip()))
+
+
+def robustness_badge(chapter: str) -> None:
+    """'Holds in 4 of 5 robustness checks' for each headline finding of a chapter, linked to the appendix."""
+    import wording as w
+    rob = read_result_json("robustness/table.json")
+    if not rob:
+        return
+    for key, s in rob["summary"].items():
+        if s["chapter"] == chapter and s["n"]:
+            st.page_link(APPENDIX_PAGE, label=f"{key}: {w.robustness_badge_text(s['holds'], s['n'], s['not_computable'])}"
+                         f" ({s['finding'][0].lower() + s['finding'][1:]})", icon=":material/verified:")
 
 
 def verdict_box(label: str, verdict: str, sentence: str) -> None:

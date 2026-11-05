@@ -30,8 +30,9 @@ LABELS = {"credit": "10-year yield spread to Germany (bp)", "liquidity": "euro l
           "de_holdings": "Eurosystem holdings of German bonds (EUR 100 billion)"}
 
 
-def repo_rate(country: str, long: pd.DataFrame | None = None) -> pd.Series:
-    return data.get(f"mmsr_rate_{SIDE}_{TENOR}_{country}", long)
+def repo_rate(country: str, long: pd.DataFrame | None = None, side: str = SIDE, tenor: str = TENOR) -> pd.Series:
+    """MMSR secured rate against `country` collateral (side 'le' lending / 'bo' borrowing; tenor KS = S/N)."""
+    return data.get(f"mmsr_rate_{side}_{tenor}_{country}", long)
 
 
 def monthly_spreads(long: pd.DataFrame | None = None, countries=None) -> pd.DataFrame:
@@ -42,9 +43,9 @@ def monthly_spreads(long: pd.DataFrame | None = None, countries=None) -> pd.Data
     return pd.DataFrame({c: (data.get(f"y10_{c}", long) - de) * 100 for c in countries}).dropna(how="all")
 
 
-def period_panel(long: pd.DataFrame | None = None) -> pd.DataFrame:
+def period_panel(long: pd.DataFrame | None = None, side: str = SIDE, tenor: str = TENOR) -> pd.DataFrame:
     """One row per maintenance period: repo spreads to German collateral and the explanatory variables."""
-    de = repo_rate("DE", long)
+    de = repo_rate("DE", long, side, tenor)
     ends = de.index
     starts = [ends[0] - pd.Timedelta(days=42)] + [e + pd.Timedelta(days=1) for e in ends[:-1]]
     spreads = monthly_spreads(long, list(COUNTRIES))
@@ -54,7 +55,7 @@ def period_panel(long: pd.DataFrame | None = None) -> pd.DataFrame:
     for start, end in zip(starts, ends):
         row = {"end": end, "start": start, "de_rate": float(de[end])}
         for c in COUNTRIES:
-            rate = repo_rate(c, long)
+            rate = repo_rate(c, long, side, tenor)
             row[f"repo_{c}"] = float((rate.get(end, np.nan) - de[end]) * 100)
             months = spreads.loc[start.to_period("M").to_timestamp():end, c]
             row[f"credit_{c}"] = float(months.mean()) if len(months) else np.nan
@@ -66,12 +67,12 @@ def period_panel(long: pd.DataFrame | None = None) -> pd.DataFrame:
     return pd.DataFrame(rows).set_index("end")
 
 
-def regression(panel: pd.DataFrame, country: str) -> dict:
+def regression(panel: pd.DataFrame, country: str, hac_lags: int = HAC_LAGS) -> dict:
     """spread = a + b credit + c liquidity + d de_holdings, Newey-West errors."""
     df = panel[[f"repo_{country}", f"credit_{country}", "liquidity", "de_holdings"]].dropna()
     y = df[f"repo_{country}"]
     X = sm.add_constant(df.drop(columns=f"repo_{country}").rename(columns={f"credit_{country}": "credit"}))
-    res = sm.OLS(y, X).fit(cov_type="HAC", cov_kwds={"maxlags": HAC_LAGS})
+    res = sm.OLS(y, X).fit(cov_type="HAC", cov_kwds={"maxlags": hac_lags})
     std_effect = {k: float(res.params[k] * X[k].std(ddof=1)) for k in ("credit", *SCARCITY)}
     pvals = {k: float(res.pvalues[k]) for k in ("credit", *SCARCITY)}
     verdict = decide(std_effect, pvals)
@@ -89,7 +90,7 @@ def regression(panel: pd.DataFrame, country: str) -> dict:
     for name, part in (("before_qt", before), ("after_qt", after)):
         if len(part) >= 8:
             Xp = sm.add_constant(part.drop(columns=f"repo_{country}").rename(columns={f"credit_{country}": "credit"}))
-            rp = sm.OLS(part[f"repo_{country}"], Xp).fit(cov_type="HAC", cov_kwds={"maxlags": HAC_LAGS})
+            rp = sm.OLS(part[f"repo_{country}"], Xp).fit(cov_type="HAC", cov_kwds={"maxlags": hac_lags})
             eff = {k: float(rp.params[k] * Xp[k].std(ddof=1)) for k in ("credit", *SCARCITY)}
             pv = {k: float(rp.pvalues[k]) for k in eff}
             sub_verdicts[name] = {"n": len(part), "verdict": decide(eff, pv), "pvalues": pv,

@@ -15,6 +15,7 @@ import ui  # noqa: E402
 ui.apply_theme()
 ui.chapter_heading(**ui.CHAPTERS["desk_note"])
 ui.question_box("desk_note")
+ui.robustness_badge("desk_note")
 
 note = desk_note.build(ui.results())
 if note is None:
