@@ -1,0 +1,494 @@
+{
+ "data_as_of": "2026-11-03",
+ "first_day": "2008-01-02",
+ "last_day": "2026-11-03",
+ "n_days": 4781,
+ "rules": {
+  "blowout": {
+   "30": {
+    "n_episodes": 7,
+    "status": {
+     "in_episode": true,
+     "start": "2026-09-28",
+     "confirmed": "2026-09-28",
+     "age_periods": 26,
+     "age_months": 1.2380952380952381,
+     "baseline": 74.1996,
+     "peak": 163.94000000000003,
+     "peak_date": "2026-10-27",
+     "half_retrace_level": 119.06980000000001,
+     "as_of": "2026-11-03",
+     "p_recover_next_12m": 0.59375,
+     "p_recover_12m_unconditional": 0.6111111111111112
+    },
+    "episodes": [
+     {
+      "start": "2009-01-26",
+      "confirmed": "2009-01-26",
+      "baseline": 27.208,
+      "peak": 64.00000000000001,
+      "peak_date": "2009-03-12",
+      "recovery": "2009-04-24",
+      "months": 2.9523809523809526,
+      "observed": true
+     },
+     {
+      "start": "2011-08-05",
+      "confirmed": "2011-08-05",
+      "baseline": 40.0896,
+      "peak": 182.3,
+      "peak_date": "2011-11-21",
+      "recovery": "2011-12-05",
+      "months": 4.095238095238095,
+      "observed": true
+     },
+     {
+      "start": "2011-12-06",
+      "confirmed": "2011-12-06",
+      "baseline": 60.1708,
+      "peak": 144.58,
+      "peak_date": "2012-01-10",
+      "recovery": "2012-02-09",
+      "months": 2.1904761904761907,
+      "observed": true
+     },
+     {
+      "start": "2012-02-17",
+      "confirmed": "2012-02-17",
+      "baseline": 77.308,
+      "peak": 111.72,
+      "peak_date": "2012-02-29",
+      "recovery": "2012-03-14",
+      "months": 0.8571428571428571,
+      "observed": true
+     },
+     {
+      "start": "2012-04-11",
+      "confirmed": "2012-04-11",
+      "baseline": 86.78,
+      "peak": 140.52000000000004,
+      "peak_date": "2012-05-18",
+      "recovery": "2012-06-06",
+      "months": 1.8095238095238095,
+      "observed": true
+     },
+     {
+      "start": "2017-02-06",
+      "confirmed": "2017-02-06",
+      "baseline": 34.432,
+      "peak": 77.88,
+      "peak_date": "2017-02-24",
+      "recovery": "2017-04-26",
+      "months": 2.5714285714285716,
+      "observed": true
+     },
+     {
+      "start": "2026-09-28",
+      "confirmed": "2026-09-28",
+      "baseline": 74.1996,
+      "peak": 163.94000000000003,
+      "peak_date": "2026-10-27",
+      "recovery": null,
+      "months": 1.2380952380952381,
+      "observed": false
+     }
+    ]
+   },
+   "20": {
+    "n_episodes": 12,
+    "status": {
+     "in_episode": true,
+     "start": "2026-09-17",
+     "confirmed": "2026-09-17",
+     "age_periods": 33,
+     "age_months": 1.5714285714285714,
+     "baseline": 73.604,
+     "peak": 163.94000000000003,
+     "peak_date": "2026-10-27",
+     "half_retrace_level": 118.77200000000002,
+     "as_of": "2026-11-03"
+    },
+    "episodes": [
+     {
+      "start": "2008-12-22",
+      "confirmed": "2008-12-22",
+      "baseline": 24.096,
+      "peak": 64.00000000000001,
+      "peak_date": "2009-03-12",
+      "recovery": "2009-04-28",
+      "months": 4.0,
+      "observed": true
+     },
+     {
+      "start": "2010-06-10",
+      "confirmed": "2010-06-10",
+      "baseline": 28.47,
+      "peak": 52.42,
+      "peak_date": "2010-07-01",
+      "recovery": "2010-07-08",
+      "months": 0.9523809523809523,
+      "observed": true
+     },
+     {
+      "start": "2011-07-14",
+      "confirmed": "2011-07-14",
+      "baseline": 38.18639999999999,
+      "peak": 182.3,
+      "peak_date": "2011-11-21",
+      "recovery": "2011-12-05",
+      "months": 4.857142857142857,
+      "observed": true
+     },
+     {
+      "start": "2011-12-06",
+      "confirmed": "2011-12-06",
+      "baseline": 60.1708,
+      "peak": 144.58,
+      "peak_date": "2012-01-10",
+      "recovery": "2012-02-09",
+      "months": 2.1904761904761907,
+      "observed": true
+     },
+     {
+      "start": "2012-02-10",
+      "confirmed": "2012-02-10",
+      "baseline": 75.9504,
+      "peak": 111.72,
+      "peak_date": "2012-02-29",
+      "recovery": "2012-03-14",
+      "months": 1.0952380952380953,
+      "observed": true
+     },
+     {
+      "start": "2012-04-03",
+      "confirmed": "2012-04-03",
+      "baseline": 85.43039999999999,
+      "peak": 140.52000000000004,
+      "peak_date": "2012-05-18",
+      "recovery": "2012-06-06",
+      "months": 2.0,
+      "observed": true
+     },
+     {
+      "start": "2016-11-28",
+      "confirmed": "2016-11-28",
+      "baseline": 31.394399999999997,
+      "peak": 77.88,
+      "peak_date": "2017-02-24",
+      "recovery": "2017-04-27",
+      "months": 4.9523809523809526,
+      "observed": true
+     },
+     {
+      "start": "2020-03-16",
+      "confirmed": "2020-03-16",
+      "baseline": 30.742,
+      "peak": 59.220000000000006,
+      "peak_date": "2020-03-18",
+      "recovery": "2020-05-29",
+      "months": 2.4285714285714284,
+      "observed": true
+     },
+     {
+      "start": "2022-06-16",
+      "confirmed": "2022-06-16",
+      "baseline": 38.108,
+      "peak": 59.000000000000014,
+      "peak_date": "2022-06-16",
+      "recovery": "2022-06-28",
+      "months": 0.38095238095238093,
+      "observed": true
+     },
+     {
+      "start": "2024-06-20",
+      "confirmed": "2024-06-20",
+      "baseline": 53.944,
+      "peak": 75.2,
+      "peak_date": "2024-06-20",
+      "recovery": "2024-07-09",
+      "months": 0.6190476190476191,
+      "observed": true
+     },
+     {
+      "start": "2024-11-27",
+      "confirmed": "2024-11-27",
+      "baseline": 60.832,
+      "peak": 84.4,
+      "peak_date": "2024-12-03",
+      "recovery": "2025-02-10",
+      "months": 2.2857142857142856,
+      "observed": true
+     },
+     {
+      "start": "2026-09-17",
+      "confirmed": "2026-09-17",
+      "baseline": 73.604,
+      "peak": 163.94000000000003,
+      "peak_date": "2026-10-27",
+      "recovery": null,
+      "months": 1.5714285714285714,
+      "observed": false
+     }
+    ]
+   },
+   "50": {
+    "n_episodes": 3,
+    "status": {
+     "in_episode": true,
+     "start": "2026-10-05",
+     "confirmed": "2026-10-05",
+     "age_periods": 21,
+     "age_months": 1.0,
+     "baseline": 75.00319999999999,
+     "peak": 163.94000000000003,
+     "peak_date": "2026-10-27",
+     "half_retrace_level": 119.47160000000001,
+     "as_of": "2026-11-03"
+    },
+    "episodes": [
+     {
+      "start": "2011-10-20",
+      "confirmed": "2011-10-20",
+      "baseline": 48.014399999999995,
+      "peak": 182.3,
+      "peak_date": "2011-11-21",
+      "recovery": "2011-12-02",
+      "months": 1.4761904761904763,
+      "observed": true
+     },
+     {
+      "start": "2011-12-12",
+      "confirmed": "2011-12-12",
+      "baseline": 61.3592,
+      "peak": 144.58,
+      "peak_date": "2012-01-10",
+      "recovery": "2012-02-09",
+      "months": 2.0,
+      "observed": true
+     },
+     {
+      "start": "2026-10-05",
+      "confirmed": "2026-10-05",
+      "baseline": 75.00319999999999,
+      "peak": 163.94000000000003,
+      "peak_date": "2026-10-27",
+      "recovery": null,
+      "months": 1.0,
+      "observed": false
+     }
+    ]
+   }
+  },
+  "gradual": {
+   "15bp_6m": {
+    "n_episodes": 1,
+    "status": {
+     "in_episode": false
+    },
+    "episodes": [
+     {
+      "start": "2011-07-29",
+      "confirmed": "2012-01-23",
+      "baseline": 39.370799999999996,
+      "peak": 182.3,
+      "peak_date": "2011-11-21",
+      "recovery": "2012-02-08",
+      "months": 6.523809523809524,
+      "observed": true
+     }
+    ]
+   },
+   "10bp_6m": {
+    "n_episodes": 2,
+    "status": {
+     "in_episode": false
+    },
+    "episodes": [
+     {
+      "start": "2011-07-11",
+      "confirmed": "2012-01-03",
+      "baseline": 37.8656,
+      "peak": 182.3,
+      "peak_date": "2011-11-21",
+      "recovery": "2012-02-08",
+      "months": 7.190476190476191,
+      "observed": true
+     },
+     {
+      "start": "2024-07-26",
+      "confirmed": "2025-01-24",
+      "baseline": 55.268,
+      "peak": 84.4,
+      "peak_date": "2024-12-03",
+      "recovery": "2025-02-18",
+      "months": 6.761904761904762,
+      "observed": true
+     }
+    ]
+   },
+   "20bp_6m": {
+    "n_episodes": 1,
+    "status": {
+     "in_episode": false
+    },
+    "episodes": [
+     {
+      "start": "2011-08-25",
+      "confirmed": "2012-02-17",
+      "baseline": 41.8488,
+      "peak": 182.3,
+      "peak_date": "2011-11-21",
+      "recovery": "2012-02-20",
+      "months": 6.0,
+      "observed": true
+     }
+    ]
+   },
+   "15bp_3m": {
+    "n_episodes": 4,
+    "status": {
+     "in_episode": false
+    },
+    "episodes": [
+     {
+      "start": "2008-12-22",
+      "confirmed": "2009-03-25",
+      "baseline": 24.096,
+      "peak": 64.00000000000001,
+      "peak_date": "2009-03-12",
+      "recovery": "2009-04-28",
+      "months": 4.0,
+      "observed": true
+     },
+     {
+      "start": "2011-07-29",
+      "confirmed": "2011-10-25",
+      "baseline": 39.370799999999996,
+      "peak": 182.3,
+      "peak_date": "2011-11-21",
+      "recovery": "2011-12-05",
+      "months": 4.333333333333333,
+      "observed": true
+     },
+     {
+      "start": "2011-12-06",
+      "confirmed": "2012-03-02",
+      "baseline": 60.1708,
+      "peak": 144.58,
+      "peak_date": "2012-01-10",
+      "recovery": "2012-03-05",
+      "months": 3.0,
+      "observed": true
+     },
+     {
+      "start": "2017-01-19",
+      "confirmed": "2017-04-20",
+      "baseline": 33.4264,
+      "peak": 77.88,
+      "peak_date": "2017-02-24",
+      "recovery": "2017-04-27",
+      "months": 3.1904761904761907,
+      "observed": true
+     }
+    ]
+   },
+   "15bp_9m": {
+    "n_episodes": 0,
+    "status": {
+     "in_episode": false
+    },
+    "episodes": []
+   }
+  },
+  "now": {
+   "date": "2026-11-03",
+   "spread": 161.79999999999998,
+   "smoothed": 158.14,
+   "baseline": 80.81160000000001,
+   "excess": 77.32839999999997,
+   "gap_to_blowout": -47.328399999999974
+  }
+ },
+ "gradual_panel": {
+  "n_episodes": 27,
+  "n_recovered": 27,
+  "n_countries": 10,
+  "median_months": 13.0,
+  "at": {
+   "6": {
+    "time": 6,
+    "survival": 0.962962962962963,
+    "lower": 0.7649441541431445,
+    "upper": 0.9946984867704928,
+    "at_risk": 27
+   },
+   "12": {
+    "time": 12,
+    "survival": 0.5925925925925927,
+    "lower": 0.3862597802609593,
+    "upper": 0.7498955787163729,
+    "at_risk": 18
+   },
+   "24": {
+    "time": 24,
+    "survival": 0.18518518518518523,
+    "lower": 0.06747516161396418,
+    "upper": 0.3482355742898755,
+    "at_risk": 6
+   }
+  }
+ },
+ "gradual_panel_sensitivity": {
+  "10bp_6m": {
+   "n_episodes": 35,
+   "median_months": 14.0,
+   "france_ongoing": false
+  },
+  "20bp_6m": {
+   "n_episodes": 24,
+   "median_months": 13.0,
+   "france_ongoing": false
+  },
+  "15bp_3m": {
+   "n_episodes": 41,
+   "median_months": 12.0,
+   "france_ongoing": false
+  },
+  "15bp_9m": {
+   "n_episodes": 17,
+   "median_months": 17.0,
+   "france_ongoing": false
+  }
+ },
+ "decomposition": {
+  "base_day": "2024-06-07",
+  "last_day": "2026-11-03",
+  "spread_base": 49.00000000000002,
+  "spread_last": 161.79999999999998,
+  "oat_leg": 186.79999999999998,
+  "bund_contribution": -74.00000000000003,
+  "spread_change": 112.79999999999995
+ },
+ "events": [
+  {
+   "date": "2024-12-04",
+   "kind": "political",
+   "event": "The National Assembly adopts a motion of censure; the Barnier government falls",
+   "event_day": "2024-12-04",
+   "change_bp": -1.0000000000000284,
+   "percentile": 0.2588951310861423,
+   "z": -0.2629508151154516,
+   "n_windows": 4272
+  },
+  {
+   "date": "2025-09-08",
+   "kind": "political",
+   "event": "The National Assembly refuses its confidence to the Bayrou government (article 49, paragraph 1)",
+   "event_day": "2025-09-08",
+   "change_bp": -1.0000000000000142,
+   "percentile": 0.2752808988764045,
+   "z": -0.2629508151154481,
+   "n_windows": 4272
+  }
+ ]
+}

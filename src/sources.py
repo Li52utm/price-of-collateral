@@ -102,7 +102,23 @@ JPY = [
     Series("boj_current_accounts", "boj", "MD01/MABS1AN113", "monthly", 3, "JPY 100 mn", "Current account balances, monthly average"),
 ]
 
-ALL_SERIES: list[Series] = [*EUR, *YIELDS, *USD, *JPY]
+# Daily 10-year yields from Banque de France Webstat (U1, discovered 2026-11-05 in the `series` catalogue).
+# Webstat publishes updates at 09:00, 13:00 and 21:00 Paris time; the TEC10 of day d appears in the 21:00
+# update of day d at the earliest, so it is usable from the next business day (lag 1).
+WEBSTAT_UPDATE_TIMES_PARIS = ("09:00", "13:00", "21:00")
+WEBSTAT_YIELDS: list[Series] = [
+    Series("oat10_daily", "webstat", "FM.D.FR.EUR.FR2.BB.FRMOYTEC10.HSTA", "daily", 1, "%",
+           "French 10-year constant-maturity government yield (TEC10), Banque de France; "
+           "updates 09:00, 13:00 and 21:00 Paris time"),
+]
+# No daily 10-year benchmark on Webstat for these countries (FM has monthly series only, e.g.
+# FM.M.IT.EUR.FR2.BB.IT10YT_RR.YLD); the project keeps the ECB IRS monthly series for them.
+# Germany has a daily series from the Bundesbank (bund10_daily).
+WEBSTAT_NO_DAILY = {"DE": "monthly only on Webstat (FM.M.DE.EUR.FR2.BB.DE10YT_RR.YLD); daily from the Bundesbank",
+                    "IT": "monthly only on Webstat (FM.M.IT.EUR.FR2.BB.IT10YT_RR.YLD); ECB IRS monthly kept",
+                    "ES": "monthly only on Webstat (FM.M.ES.EUR.FR2.BB.ES10YT_RR.YLD); ECB IRS monthly kept"}
+
+ALL_SERIES: list[Series] = [*EUR, *YIELDS, *USD, *JPY, *WEBSTAT_YIELDS]
 BY_NAME: dict[str, Series] = {s.name: s for s in ALL_SERIES}
 
 

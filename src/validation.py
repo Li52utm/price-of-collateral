@@ -32,6 +32,7 @@ NEGATIVE_DFR = ("2014-06-11", "2022-07-26")  # ECB deposit rate below zero (incl
 NEGATIVE_BOJ = ("2016-02-16", "2024-03-20")  # BoJ negative interest rate policy
 EONIA_SPREAD = 0.085                        # EONIA = €STR + 8.5 bp from 2 Oct 2019
 BUND_MONTHLY_PASS, BUND_MONTHLY_WARN = 0.10, 0.25  # mean |daily-average - IRS| in pp
+OAT_MONTHLY_PASS, OAT_MONTHLY_WARN = 0.10, 0.25    # same yardstick for the Webstat TEC10 vs ECB IRS France
 LIQUIDITY_GAP = 25.0                        # EUR bn: |proxy - excess liquidity - reserve requirements|
 TONA_POLICY_PASS = 0.10                     # median |TONA - policy| after 2016, pp
 STALE_EXTRA_BD = 7                          # tolerated business days beyond the publication lag
@@ -73,7 +74,8 @@ def coverage_share(s: pd.Series, currency: str) -> tuple[float, int]:
     return float(present.mean()), gaps
 
 
-def check_calendar(long: pd.DataFrame, names: tuple[str, ...] = ("estr", "sofr", "tona", "dfr", "bund10_daily")) -> dict:
+def check_calendar(long: pd.DataFrame,
+                   names: tuple[str, ...] = ("estr", "sofr", "tona", "dfr", "bund10_daily", "oat10_daily")) -> dict:
     lines, statuses = [], []
     for name in names:
         share, gap = coverage_share(_s(long, name), data.currency_of(name))
@@ -90,7 +92,7 @@ def check_ranges(long: pd.DataFrame) -> dict:
     bad = []
     for name in rate_names:
         s = _s(long, name)
-        low, high = YIELD_RANGE if name.startswith("y10_") or name.startswith("bund") else RATE_RANGE
+        low, high = YIELD_RANGE if name.startswith(("y10_", "bund", "oat")) else RATE_RANGE
         if s.empty:
             bad.append(f"{name} empty")
         elif s.min() < low or s.max() > high:
@@ -160,6 +162,25 @@ def check_bund(long: pd.DataFrame) -> dict:
                   "uses a benchmark basket, the Bundesbank the current 10-year bond).")
 
 
+def check_oat(long: pd.DataFrame) -> dict:
+    """Webstat daily TEC10 averaged by month against the ECB IRS monthly French 10-year yield (U1)."""
+    daily = _s(long, "oat10_daily")
+    if daily.empty:
+        return result("OAT: Webstat daily vs ECB monthly", FAIL, "the daily French 10-year series is missing")
+    both = pd.concat([daily.resample("MS").mean(), _s(long, "y10_FR")], axis=1, sort=True).dropna()
+    diff = both.iloc[:, 0] - both.iloc[:, 1]
+    gap = diff.abs().mean()
+    spread_daily = (daily - _s(long, "bund10_daily")).dropna().resample("MS").mean()
+    spread_monthly = (_s(long, "y10_FR") - _s(long, "y10_DE")).dropna()
+    s = pd.concat([spread_daily, spread_monthly], axis=1, sort=True).dropna()
+    corr = s.diff().corr().iloc[0, 1] if len(s) > 12 else float("nan")
+    status = PASS if gap <= OAT_MONTHLY_PASS else WARN if gap <= OAT_MONTHLY_WARN else FAIL
+    return result("OAT: Webstat daily vs ECB monthly", status,
+                  f"{len(both)} months; mean absolute difference {gap * 100:.1f} bp (mean {diff.mean() * 100:+.1f} bp; "
+                  "TEC10 is a constant-maturity interpolation, the ECB series a benchmark basket). Monthly changes "
+                  f"of the daily-based OAT-Bund spread correlate {corr:.2f} with the ECB-based spread.")
+
+
 def check_liquidity(long: pd.DataFrame) -> dict:
     proxy = _s(long, "eur_liquidity")
     exliq = _s(long, "excess_liquidity") / 1e3
@@ -213,7 +234,7 @@ def check_publication_lags(long: pd.DataFrame, fetched: pd.Timestamp) -> dict:
 
 def run_all(long: pd.DataFrame, fetched: pd.Timestamp) -> dict:
     checks = [check_calendar(long), check_ranges(long), check_negative_rates(long), check_spot_values(long),
-              check_eonia_estr(long), check_bund(long), check_liquidity(long), check_corridors(long),
+              check_eonia_estr(long), check_bund(long), check_oat(long), check_liquidity(long), check_corridors(long),
               check_publication_lags(long, fetched)]
     counts = {k: sum(c["status"] == k for c in checks) for k in (PASS, WARN, FAIL)}
     return {"as_of": str(data.as_of(long).date()), "fetched_at": str(fetched), "counts": counts, "checks": checks}

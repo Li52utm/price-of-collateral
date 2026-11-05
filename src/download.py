@@ -12,7 +12,10 @@ Each source's quirks, as measured on 2026-11-04:
 from __future__ import annotations
 
 import io
+import json
+import os
 import time
+from pathlib import Path
 
 import pandas as pd
 import requests
@@ -237,10 +240,132 @@ def bbk_series(key: str) -> pd.Series:
 
 
 # --------------------------------------------------------------------------- #
+# Banque de France Webstat (needs a free API key; docs/DATA_SOURCES.md)
+# --------------------------------------------------------------------------- #
+WEBSTAT = "https://webstat.banque-france.fr/api/explore/v2.1/catalog/datasets/"
+WEBSTAT_DAILY_QUOTA = 10_000          # requests per day; exceeding it can get the account banned
+WEBSTAT_BUDGET = 200                  # this project's own cap per process (far below the quota)
+WEBSTAT_CACHE = Path(__file__).resolve().parent.parent / "data" / "webstat"
+
+
+class WebstatError(DownloadError):
+    """Webstat refused the request (bad key, quota, HTTP 429): the refresh stops, nothing is retried."""
+
+
+def webstat_key() -> str | None:
+    """WEBSTAT_API_KEY from the environment, else from the project's .env. Never printed or logged."""
+    key = os.environ.get("WEBSTAT_API_KEY")
+    if key:
+        return key.strip()
+    env = Path(__file__).resolve().parent.parent / ".env"
+    if env.exists():
+        for line in env.read_text(encoding="utf-8").splitlines():
+            if line.strip().startswith("WEBSTAT_API_KEY="):
+                return line.split("=", 1)[1].strip().strip('"').strip("'") or None
+    return None
+
+
+class Webstat:
+    """Minimal Webstat client: header authentication only, a request counter, no retries on refusal."""
+
+    def __init__(self, key: str | None = None, budget: int = WEBSTAT_BUDGET) -> None:
+        self._key = key or webstat_key()
+        if not self._key:
+            raise WebstatError("WEBSTAT_API_KEY is not set (environment or .env)")
+        self.budget = budget
+        self.requests = 0
+
+    def get(self, path: str, params: dict) -> requests.Response:
+        """One request; HTTP 429 or any refusal stops cleanly with a clear error (no retry)."""
+        if self.requests >= self.budget:
+            raise WebstatError(f"Webstat request budget of {self.budget} reached; stopping")
+        self.requests += 1
+        # The key travels ONLY in the Authorization header (never in the URL, never logged).
+        r = requests.get(WEBSTAT + path, params=params, timeout=TIMEOUT,
+                         headers={"Authorization": f"Apikey {self._key}"})
+        if r.status_code == 429:
+            raise WebstatError("Webstat HTTP 429 (rate limit or daily quota): stopped without retrying")
+        if r.status_code in (401, 403):
+            raise WebstatError(f"Webstat HTTP {r.status_code}: the API key was refused")
+        if r.status_code == 404 and "NotFoundResource" in r.text:
+            raise WebstatError("Webstat NotFoundResource: often a missing or badly formatted key, else a wrong path")
+        if r.status_code != 200:
+            raise WebstatError(f"Webstat HTTP {r.status_code} on {path}")
+        return r
+
+    def series_catalog(self, where: str | None = None, refine: str | None = None) -> pd.DataFrame:
+        """Series metadata (key, titles, first and last period) from the `series` dataset."""
+        params = {"select": "series_key,dataset_id,title_en,title_long_en,title_fr,title_long_fr,"
+                            "first_time_period_date,last_time_period_date"}
+        if refine:
+            params["refine"] = refine
+        if where:
+            params["where"] = where
+        r = self.get("series/exports/json", params)
+        return pd.DataFrame(r.json())
+
+    def observations(self, series_key: str, use_cache: bool = False) -> pd.DataFrame:
+        """Full history of one series in one request; raw JSON cached in data/webstat/."""
+        cache = WEBSTAT_CACHE / f"{series_key}.json"
+        if use_cache and cache.exists():
+            rows = json.loads(cache.read_text(encoding="utf-8"))
+        else:
+            r = self.get("observations/exports/json",
+                         {"select": "time_period_start,obs_value,obs_status",
+                          "where": f'series_key="{series_key}"', "order_by": "time_period_start"})
+            rows = r.json()
+            cache.parent.mkdir(parents=True, exist_ok=True)
+            cache.write_text(json.dumps(rows), encoding="utf-8")
+        return pd.DataFrame(rows)
+
+
+def webstat_clean(raw: pd.DataFrame) -> tuple[pd.Series, int]:
+    """Drop status M (missing); return the series and the number of U (unreliable) observations kept."""
+    if raw.empty:
+        return pd.Series(dtype=float), 0
+    df = raw.copy()
+    status = df.get("obs_status", pd.Series("", index=df.index)).fillna("").astype(str)
+    df = df[status != "M"]
+    n_unreliable = int((status[df.index] == "U").sum())
+    values = pd.to_numeric(df["obs_value"], errors="coerce")
+    s = pd.Series(values.to_numpy(), index=pd.to_datetime(df["time_period_start"]).dt.tz_localize(None)
+                  .dt.normalize())
+    return s.dropna().sort_index(), n_unreliable
+
+
+def webstat_daily_yields(client: Webstat | None = None, log=print) -> pd.DataFrame:
+    """Every registered Webstat daily yield (sources.WEBSTAT_YIELDS), one request per series."""
+    client = client or Webstat()
+    frames = []
+    for spec in sources.WEBSTAT_YIELDS:
+        s, n_u = webstat_clean(client.observations(spec.key))
+        frames.append(_long(spec.name, s))
+        log(f"   {spec.name}: {len(s)} observations ({n_u} flagged unreliable)")
+    log(f"   Webstat requests used: {client.requests}")
+    return pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(columns=["date", "series", "value"])
+
+
+# --------------------------------------------------------------------------- #
 # Everything
 # --------------------------------------------------------------------------- #
 def _long(name: str, s: pd.Series) -> pd.DataFrame:
     return pd.DataFrame({"date": s.index, "series": name, "value": s.to_numpy(dtype=float)})
+
+
+def download_new(names: list[str], log=print) -> pd.DataFrame:
+    """Only the named registered series (used to add a new source to the snapshot without a full refresh)."""
+    frames = []
+    webstat = [s for s in sources.WEBSTAT_YIELDS if s.name in names]
+    if webstat:
+        client = Webstat()
+        for spec in webstat:
+            s, n_u = webstat_clean(client.observations(spec.key))
+            frames.append(_long(spec.name, s))
+            log(f"   {spec.name}: {len(s)} observations ({n_u} flagged unreliable); Webstat requests {client.requests}")
+    other = [n for n in names if n not in {s.name for s in webstat}]
+    if other:
+        raise DownloadError(f"adding these sources alone is not supported: {other}")
+    return pd.concat(frames, ignore_index=True)
 
 
 def download_all(log=print) -> dict[str, pd.DataFrame]:
@@ -256,9 +381,13 @@ def download_all(log=print) -> dict[str, pd.DataFrame]:
             frames.append(_long(spec.name, boj_series(spec.key, "199801" if spec.freq == "monthly" else "200801")))
         elif spec.source == "bbk":
             frames.append(_long(spec.name, bbk_series(spec.key)))
+        elif spec.source == "webstat":
+            continue  # one client for every Webstat series, below
         else:
             continue  # handled in bulk below
         log(f"   {spec.name}: {len(frames[-1])} observations")
+    if sources.WEBSTAT_YIELDS:
+        frames.append(webstat_daily_yields(log=log))
     frames.append(nyfed_rates())
     log("   NY Fed reference rates")
     frames.append(_long("repo_dvp_on", ofr_series("REPO-DVP_AR_OO")))

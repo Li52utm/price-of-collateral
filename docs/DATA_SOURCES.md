@@ -20,7 +20,8 @@ refresh. Lags are in business days after the observation date, set conservativel
 | ECB Data Portal | 10-year yields for convergence purposes `IRS/M.<cty>.L.L40.CI.0000.EUR.N.Z`, 11 countries | No | **Monthly** average | 1990s → Sep 2026 | about 25 | Chapters III-IV |
 | ECB website | PSPP net purchases by country (`PSPP_breakdown_history.csv`) | No | Monthly | Mar 2015 → | about 25 | Chapter III (scarcity) |
 | Bundesbank | Current 10-year Bund `BBSSY/D.REN.EUR.A630.000000WT1010.A` | No | Daily | Oct 2001 → | Same day (1 used) | Chapter IV |
-| Banque de France Webstat | Daily OAT TEC10 and other euro 10-year benchmarks | **Yes** (free registration) | Daily | — | — | Not used |
+| Banque de France Webstat | French 10-year constant maturity (TEC10) `FM.D.FR.EUR.FR2.BB.FRMOYTEC10.HSTA` | **Yes** (free; header `Authorization: Apikey <key>`) | Daily | 3 Nov 2004 → | Updates 09:00, 13:00, 21:00 Paris; day d usable from d+1 (1) | Chapter IV (daily, U1) |
+| Banque de France Webstat | Germany, Italy, Spain 10-year `FM.M.<cty>.EUR.FR2.BB.<cty>10YT_RR.YLD` | Yes | **Monthly only** (no daily series in any dataset, searched 5 Nov 2026) | — | — | Not used (ECB IRS kept; daily Bund from the Bundesbank) |
 | DBnomics (BdF mirror) | `BDF/FM/M.<cty>.EUR.FR2.BB.<cty>10YT_RR.YLD` | No | Monthly only | — | — | Not used (ECB IRS preferred) |
 | RepoFunds Rate, STOXX/Eurex GC Pooling | Daily euro GC repo | Login / no download | — | — | — | Not used |
 | AFT | Auction results | Blocked (Cloudflare challenge) | — | — | — | Not used |
@@ -50,7 +51,7 @@ pandas 2.3.3, so Kaplan-Meier is implemented in-house (`src/survival.py`).
 | I The Story | Feasible | All of the below, simplified |
 | II Three Corridors | Feasible | €STR/DFR/MRO/MLF, SOFR/EFFR/IORB/target range/ON RRP, TONA/BoJ policy; reserves (weekly), euro liquidity (weekly), BoJ current accounts (monthly) |
 | III The Price of Collateral | Feasible at **maintenance-period frequency** | MMSR repo by collateral country (69 periods) against monthly yield spreads and PSPP holdings |
-| IV Italy Then, France Now | Feasible at **monthly frequency** for spreads | ECB IRS monthly yields for 11 countries since 1999; daily Bund only |
+| IV Italy Then, France Now | **Daily** for France (OAT-Bund), monthly for the cross-country parts | Webstat TEC10 + Bundesbank daily Bund (from Nov 2004); ECB IRS monthly yields for 11 countries since 1999 |
 | V The Calendar | Feasible for USD and EUR unsecured (€STR); no daily euro repo | €STR from Oct 2019, SOFR from Apr 2018, OFR term repo, Treasury settlements |
 | VI Japan | Feasible for TONA; repo only via collateralized call (daily from 2025) | BoJ API |
 | VII Desk note | Feasible | Built on V and IV |
@@ -60,16 +61,41 @@ pandas 2.3.3, so Kaplan-Meier is implemented in-house (`src/survival.py`).
 - **(a) Bund-driven vs France-driven moves; France-specific vs euro-wide stress.** Supported at
   monthly frequency: the OAT-Bund spread change splits exactly into the OAT leg and minus the Bund
   leg, and a regression of French spread changes on Italian (and Spanish) spread changes separates a
-  euro-wide component from a France-specific residual. A daily version needs daily OAT yields, which
-  are not free without a Webstat key.
+  euro-wide component from a France-specific residual. Since U1 the OAT-Bund split is also daily (Webstat
+  TEC10 against the Bundesbank Bund); the euro-wide split stays monthly (no daily Italian or Spanish yield).
 - **(b) Survival analysis of spread blowouts.** Supported: monthly 10-year spreads against Germany for
   IT, ES, PT, FR, BE, GR, IE, NL, AT, FI since 1999 (episodes counted from 2008).
 - **(c) Is French collateral priced more like Italian in repo?** Supported at maintenance-period
   frequency (MMSR by collateral country, 69 periods from 2018), with a break test at a fixed date.
   Small sample; rates are rounded to 1 bp.
-- **(d) Event study.** Only at monthly frequency, so it can measure whether spreads widened in the
-  month of an event more than in a typical month, not the reaction on the day. Events are restricted
+- **(d) Event study.** Daily since U1 (two-day window around each event, against every two-day window
+  since 2010); the monthly version is kept as a robustness check. Events are restricted
   to ones with an official source URL that resolved when checked.
+
+## Webstat (Banque de France), added 5 November 2026 (U1)
+
+- Base URL `https://webstat.banque-france.fr/api/explore/v2.1/catalog/datasets/`. Authentication ONLY with
+  the header `Authorization: Apikey <WEBSTAT_API_KEY>`; a missing or badly formatted key returns a
+  misleading `NotFoundResource`. The key is read from the environment or the git-ignored `.env`
+  (`download.webstat_key`), never printed, logged, written or put in a URL. In GitHub Actions it comes
+  from the repository secret `WEBSTAT_API_KEY`.
+- Discovery: `series/exports/json?select=series_key,title_en,...&refine=dataset_id:FM`, then a search of
+  `title_long_en`/`title_long_fr` and `series_key` for "10-year", "10 ans", "OAT", "TEC10", "benchmark",
+  "10YT", "yield"/"rendement". The only daily 10-year government yield is France's TEC10 (constant
+  maturity, interpolated by the Banque de France). Germany, Italy and Spain have monthly series only.
+- Download: `observations/exports/json?select=time_period_start,obs_value,obs_status&where=series_key="<key>"&order_by=time_period_start`,
+  one request per series (full history). Observations with status `M` (missing) are dropped (2,403 of
+  8,037 rows: weekends and holidays); status `U` (unreliable) would be kept and counted (none so far).
+- Quota: 10,000 requests a day; exceeding it can get the account banned. The client (`download.Webstat`)
+  counts requests, stops at a budget of 200 per process, never loops day by day, caches raw JSON in
+  `data/webstat/`, and stops on HTTP 429 with a clear error (no retries). Discovery and the first
+  download used 6 requests in total.
+- Validation: the monthly mean of the daily TEC10 differs from the ECB IRS French yield by 1.8 bp on
+  average over 263 months (PASS); monthly changes of the daily-based OAT-Bund spread correlate 0.93 with
+  the ECB-based spread.
+- Added to the committed snapshot with `scripts/refresh_snapshots.py --add-new-series`, capped at what
+  was published by the snapshot's fetch time (last observation 3 November 2026), so no other series
+  changed.
 
 ## Coverage of the committed snapshot
 

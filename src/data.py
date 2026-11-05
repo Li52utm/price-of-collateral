@@ -64,7 +64,7 @@ class USRepoCalendar(USFederalHolidayCalendar):
 
 CALENDARS = {"EUR": TargetCalendar(), "USD": USRepoCalendar(), "JPY": JapanCalendar()}
 CURRENCY_OF_SOURCE = {"ecb": "EUR", "bbk": "EUR", "fred": "USD", "nyfed": "USD", "ofr": "USD",
-                      "fiscal": "USD", "boj": "JPY"}
+                      "fiscal": "USD", "boj": "JPY", "webstat": "EUR"}
 
 
 @lru_cache(maxsize=None)
@@ -78,6 +78,7 @@ def business_days(currency: str, start, end) -> pd.DatetimeIndex:
 
 
 def currency_of(name: str) -> str:
+    """The business-day calendar of a series (EUR, USD or JPY)."""
     if name.startswith(("mmsr_", "pspp_", "eur_")):
         return "EUR"
     if name.startswith(("boj_",)) or name in ("tona",):
@@ -250,7 +251,7 @@ def write_snapshot(long: pd.DataFrame, settlements: pd.DataFrame, fetched_at: st
     directory.mkdir(parents=True, exist_ok=True)
     long = long.sort_values(["series", "date"]).reset_index(drop=True)
     long.to_csv(directory / "series.csv", index=False, float_format="%.6g", date_format="%Y-%m-%d")
-    settlements.sort_values("date").to_csv(directory / "settlements.csv", index=False, date_format="%Y-%m-%d")
+    settlements.sort_values("date", kind="mergesort").to_csv(directory / "settlements.csv", index=False, date_format="%Y-%m-%d")
     coverage = long.groupby("series")["date"].agg(["min", "max", "size"])
     manifest = {
         "as_of": str(as_of(long).date()),

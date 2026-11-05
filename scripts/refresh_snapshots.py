@@ -53,10 +53,44 @@ def check_download(new: pd.DataFrame, previous: pd.DataFrame | None, fetched: pd
         pipeline.check_recent(name, data.raw(name, new), fetched.normalize(), days)
 
 
-def main(skip_download: bool = False) -> None:
+def add_new_series(previous: pd.DataFrame) -> None:
+    """Download only registered series missing from the snapshot, capped at what was published by the
+    snapshot's fetch date (observation date + lag <= fetch date), validate the merged frame, write it."""
+    import sources
+    manifest = data.load_manifest()
+    fetched = pd.Timestamp(manifest["fetched_at"])
+    new_names = [s.name for s in sources.ALL_SERIES if s.name not in set(previous["series"])]
+    if not new_names:
+        print("No new series to add.")
+        return
+    print(f"1. Downloading new series only: {new_names}")
+    new = download.download_new(new_names)
+    keep = []
+    for name, part in new.groupby("series"):
+        avail = data.available_dates(pd.DatetimeIndex(part["date"]), sources.lag(name), data.currency_of(name))
+        keep.append(part[avail <= fetched.normalize()])
+    long = pd.concat([previous, *keep], ignore_index=True)
+    long["date"] = pd.to_datetime(long["date"]).dt.normalize()
+    long = long.sort_values(["series", "date"]).reset_index(drop=True)
+    print("2-3. Pipeline checks and validation on the merged snapshot ...")
+    for name in new_names:
+        pipeline.check_growth(name, data.raw(name, long), None)
+    rep = validation.run_all(long, fetched)
+    for c in rep["checks"]:
+        print(f"   {c['status']:4s} {c['name']}")
+    if rep["counts"][validation.FAIL]:
+        raise validation.ValidationFailed("validation FAIL: nothing written")
+    print("4. Writing snapshots and validation reports ...")
+    data.write_snapshot(long, data.load_settlements(), manifest["fetched_at"])
+    validation.write_reports(rep, VALIDATION_JSON, VALIDATION_MD)
+
+
+def main(skip_download: bool = False, add_new: bool = False) -> None:
     fetched = pd.Timestamp.now(tz="UTC").tz_localize(None).floor("s")
     previous = data.load_long() if data.SERIES_PATH.exists() else None
-    if skip_download:  # re-run steps 4-6 on the committed snapshot (no network)
+    if add_new:
+        add_new_series(previous)
+    elif skip_download:  # re-run steps 4-6 on the committed snapshot (no network)
         print("1-3. Skipping download: using the committed snapshot")
         long, settlements = previous, data.load_settlements()
     else:
@@ -86,4 +120,7 @@ def main(skip_download: bool = False) -> None:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--skip-download", action="store_true", help="recompute results from the committed snapshot")
-    main(parser.parse_args().skip_download)
+    parser.add_argument("--add-new-series", action="store_true",
+                        help="download only registered series missing from the snapshot and merge them in")
+    args = parser.parse_args()
+    main(args.skip_download, args.add_new_series)

@@ -29,6 +29,8 @@ jobs:
       - name: Install
         run: pip install -r requirements.txt
       - name: Download, check, validate, write snapshots, recompute results, score the forecast, update README
+        env:
+          WEBSTAT_API_KEY: ${{ secrets.WEBSTAT_API_KEY }}   # header-only auth; never echoed
         run: python scripts/refresh_snapshots.py
       - name: The frozen Year-End 2026 forecast must be untouched
         run: git diff --exit-code -- results/forecasts/yearend_2026.json

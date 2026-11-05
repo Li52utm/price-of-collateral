@@ -289,6 +289,65 @@ Code: `src/desk_note.py`. "Would I advise a client to term out their year-end fu
   "wider", "Yes"/"No", "Term out"/"Stay overnight", "inside"/"outside") against the numbers, on the
   real results and on sign-flipped inputs.
 
+## Upgrade U1: daily France (fixed 2026-11-05, after downloading the series and BEFORE any daily result was computed)
+
+Code: `src/france_daily.py`. Data: `oat10_daily` (Banque de France Webstat TEC10,
+`FM.D.FR.EUR.FR2.BB.FRMOYTEC10.HSTA`, lag 1 business day) minus `bund10_daily` (Bundesbank, lag 1).
+Webstat has no daily 10-year series for Germany, Italy or Spain (monthly only), so:
+
+- **Daily:** the OAT-Bund spread, its decomposition into OAT and Bund legs, France's episode status under
+  both rules below, and the event study.
+- **Monthly, unchanged:** the euro-wide vs France-specific split (needs Italian and Spanish yields) and the
+  survival base rates (need the 10-country panel). They are the comparison base for the daily status.
+- Both daily yields are constant-maturity 10-year yields (TEC10 is interpolated by the Banque de France;
+  the Bundesbank series is read off its fitted yield curve), so the daily spread is like for like.
+
+### Rule 1 (blowout), daily version
+
+- Smoothed spread: the 5-business-day moving average of the daily spread. Why: a single day can move
+  10 bp on noise alone; a week's average removes it and still reacts about four times faster than a
+  monthly average.
+- Baseline: the mean of the daily spread over the previous 250 business days (about 12 months),
+  excluding the current day, the daily counterpart of the monthly rule's trailing 12-month mean.
+- **Start: the first day the smoothed spread is at least 30 bp above the baseline** (the same 30 bp as
+  the monthly rule, so both describe the same economic size of repricing). Peak: running maximum of
+  the smoothed spread. **Recovery: the first day the smoothed spread is at or below
+  peak - 0.5 x (peak - baseline).** Durations in business days, reported also in months (/21).
+- Sensitivity, reported beside it: 20 bp and 50 bp (as monthly).
+
+### Rule 2 (gradual deterioration), new; monthly panel and daily France
+
+France widened gradually (the trailing mean rose with the spread), which Rule 1 is not designed to catch.
+
+- **Monthly: an episode starts in the first month of a run of at least N = 6 consecutive months in which
+  the spread is at least X = 15 bp above its trailing 12-month mean (previous 12 months).** Why X = 15:
+  half the blowout threshold, about one standard deviation of monthly changes in core euro spreads (the
+  same yardstick that set 30 bp at about two). Why N = 6: half a year of persistent excess separates a
+  trend from a temporary move; shorter runs are common noise.
+- Baseline: the trailing mean in the first month of the run. Peak and recovery as in Rule 1 (half
+  retracement), dated from the start month. Episodes from Jan 2008, the 10 countries of IV(b); Kaplan-Meier
+  with Greenwood bands for the base rates.
+- **Daily France:** the same rule on the smoothed daily spread with the 250-day baseline, X = 15 bp and
+  N = 126 consecutive business days (six months).
+- Sensitivity: X = 10 and 20 bp; N = 3 and 9 months.
+
+### Event study, daily
+
+- For each event day E (or the next business day if E is not one): change in the daily FR-DE spread from
+  the close of the business day before E to the close of the business day after E (a two-day window,
+  because some events are announced after the close). Compared with every two-day change since 2010:
+  percentile and z-score. The monthly event study is kept as a robustness check.
+
+### Decomposition, daily
+
+- Base: the last business day before the dissolution (7 June 2024); latest: the last day in the data.
+  Change in spread = change in OAT yield (OAT leg) - change in Bund yield (Bund leg), exactly.
+
+### Validation
+
+- The monthly mean of the daily TEC10 against the ECB IRS French yield: PASS if the mean absolute
+  difference is at most 10 bp, WARN up to 25 bp, FAIL above (the Bund check's yardstick).
+
 ## Corrections log
 
 - **2026-11-04, Phase 2 sample filter.** Wrong: `forecast.dataset` dropped every day on which the
@@ -361,3 +420,13 @@ Code: `src/desk_note.py`. "Would I advise a client to term out their year-end fu
   (collateral cost, the story answer, the repo treatment premium); they now say "more"/"less" or print
   signed values. No current number had the wrong sign, so no displayed conclusion changed.
 
+- **2026-11-05, U1: chapter IV's headline moves to the daily rules.** Not a correction of the monthly rule
+  (unchanged, kept as the robustness check) but a change of which result answers the question. Before
+  (monthly, data to Sep 2026): "France is not in a blowout" (97 bp, 12-month average 69 bp + 30 bp not
+  reached). After (daily, data to 3 Nov 2026): France has been in a blowout since **28 September 2026**
+  (5-day average 158 bp against a trailing-year average of 81 bp; peak 164 bp on 27 October; half
+  retraced at 119 bp). The gradual-deterioration rule (15 bp x 6 months) is NOT met: the excess built up
+  within weeks. Base rate: of past euro blowouts that had lasted about one month, 59% retraced half the
+  widening within the next 12 months. Daily decomposition since 7 June 2024: spread 49 -> 162 bp; OAT
+  yields +187 bp, Bund yields +74 bp. Daily event study: both verified events moved the spread by -1 bp
+  over two days (26th and 28th percentile of two-day windows).

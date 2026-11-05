@@ -83,6 +83,11 @@ Every place where data or tools forced a change to the original plan, with the r
   (formulaic) forces pandas down to 2.3.3. To keep pandas 3.1.0 (the version the framework was
   built and tested on), Kaplan-Meier with Greenwood confidence bands is implemented in
   `src/survival.py` and tested against hand-computed examples.
+- **2026-11-05, daily French yields (U1).** With a free Webstat key, the Banque de France's daily TEC10
+  (`FM.D.FR.EUR.FR2.BB.FRMOYTEC10.HSTA`) gives a daily OAT-Bund spread with the Bundesbank Bund, so
+  chapter IV's France status, decomposition and event study run DAILY. Webstat has no daily German,
+  Italian or Spanish 10-year series, so the euro-wide split and the survival base rates stay monthly.
+  The key is read from the environment or the git-ignored `.env`, header only.
 - **2026-11-04, daily country yields.** No free official source without registration: the ECB
   Data Portal has only monthly country yields (IRS convergence series), DBnomics mirrors only the
   monthly Banque de France series, and Webstat's daily OAT/BTP series need a (free) API key the

@@ -18,7 +18,7 @@ SUMMARIES = {"forecast": "forecast/summary.json", "corridors": "corridors/summar
              "collateral": "collateral/summary.json", "france": "france/summary.json",
              "japan": "japan/summary.json", "frozen": "forecasts/yearend_2026.json",
              "score": "forecasts/yearend_2026_score.json", "validation": "data_validation.json",
-             "tails": "forecast/tail_diagnosis.json"}
+             "tails": "forecast/tail_diagnosis.json", "france_daily": "france/daily_summary.json"}
 
 QUESTIONS = {
     "story": "What is repo, and why does the bond you hand over matter?",
@@ -72,9 +72,23 @@ def france_answer(r: dict) -> tuple[str, str]:
     v, now, e, cs = f["survival"], f["france_now"], f["euro_wide"], f["conditions_share"]
     c = now["conditions"]
     share = e["cum_france_specific"] / e["cum_change"] if e["cum_change"] else float("nan")
-    return w.oat_answer(now["in_episode"], v["median_months"], 1 - v["at"]["12"]["survival"], cs["ecb_cut"][0],
-                        cs["peers_tightening"][0], cs["eurosystem_buying"][0], c["ecb_cut"], c["peers_tightening"],
-                        c["eurosystem_buying"], share)
+    status = None
+    daily = r.get("france_daily")
+    if daily:  # the daily rule (U1) is the headline; the monthly rule is the robustness check
+        b = daily["rules"]["blowout"][str(int(daily_threshold(daily)))]["status"]
+        g = daily["rules"]["gradual"]
+        g_main = next(iter(g.values()))["status"]
+        status = w.daily_status_phrase(b["in_episode"], b.get("start"), daily["rules"]["now"]["spread"],
+                                       daily["rules"]["now"]["date"], g_main["in_episode"], now["in_episode"])
+    return w.oat_answer(now["in_episode"] if not daily else b["in_episode"], v["median_months"],
+                        1 - v["at"]["12"]["survival"], cs["ecb_cut"][0], cs["peers_tightening"][0],
+                        cs["eurosystem_buying"][0], c["ecb_cut"], c["peers_tightening"], c["eurosystem_buying"], share,
+                        status, b.get("p_recover_next_12m") if daily and b["in_episode"] else None)
+
+
+def daily_threshold(daily: dict) -> float:
+    """The main daily blowout threshold (the first key written by france_daily.daily_rules)."""
+    return float(next(iter(daily["rules"]["blowout"])))
 
 
 def model_winner(fc: dict, currency: str) -> tuple[bool, float | None]:

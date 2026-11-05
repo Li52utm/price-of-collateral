@@ -347,9 +347,25 @@ def event_sentence(event: str, month: str, change: float, percentile: float) -> 
             f"({percentile:.0%} of months since 2010 saw a smaller change).")
 
 
+def daily_status_phrase(in_blowout: bool, start: str | None, spread: float, day: str, in_gradual: bool,
+                        monthly_in_episode: bool) -> str:
+    """France's status by the daily rules (U1), with the monthly rule as the robustness check."""
+    if in_blowout:
+        head = (f"By the daily rule France has been in a blowout episode since {pd_day(start)}, with the OAT-Bund "
+                f"spread at {bp(spread, 0)} on {pd_day(day)}")
+    else:
+        head = f"By the daily rule France is not in a blowout (spread {bp(spread, 0)} on {pd_day(day)})"
+    tail = f"; it {'meets' if in_gradual else 'does not meet'} the gradual-deterioration rule"
+    agree = ("the monthly rule agrees" if monthly_in_episode == in_blowout else
+             "the monthly rule, whose data end earlier, does not yet show it" if in_blowout else
+             "the monthly rule disagrees")
+    return f"{head}{tail}; {agree}"
+
+
 def oat_answer(in_episode: bool, median_months: float, p_half_12: float, share_cut: float, share_peers: float,
                share_buying: float | None, now_cut: bool, now_peers: bool, now_buying: bool | None,
-               france_specific_share: float) -> tuple[str, str]:
+               france_specific_share: float, status_text: str | None = None,
+               p_next_12: float | None = None) -> tuple[str, str]:
     """Will French OATs bounce back? Base rates and conditions only; never a political prediction."""
     met = [name for name, ok in (("ECB easing", now_cut), ("other spreads tightening", now_peers),
                                  ("Eurosystem buying", bool(now_buying))) if ok]
@@ -359,8 +375,12 @@ def oat_answer(in_episode: bool, median_months: float, p_half_12: float, share_c
         answer = "Not yet: only one of the three conditions that preceded past recoveries is in place"
     else:
         answer = "Not yet: none of the conditions that preceded past recoveries is in place"
-    status = ("France is in a blowout episode by the main rule" if in_episode else
-              "By the main rule France is not in a blowout: its spread has widened steadily rather than jumped")
+    status = status_text or ("France is in a blowout episode by the main rule" if in_episode else
+                             "By the main rule France is not in a blowout: its spread has widened steadily rather "
+                             "than jumped")
+    if in_episode and p_next_12 is not None:
+        status += (f". For a blowout of its current age, {p_next_12:.0%} of past euro episodes retraced half the "
+                   "widening within the next 12 months")
     buying = f", and the Eurosystem was a net buyer in {share_buying:.0%}" if share_buying is not None else ""
     explanation = (f"{status}. Historically the median euro blowout retraced half its widening in {median_months:.0f} "
                    f"months and {p_half_12:.0%} did so within a year. Before those recoveries the ECB had cut rates in "
@@ -478,3 +498,43 @@ def tail_sentence(currency: str, q90: float, q95: float, raw90: float, raw95: fl
             f"year-end parameters; at the 90th and 95th percentiles {pinned}, and {order}. With {n_year_ends} "
             f"year-ends, any quantile above {(n_year_ends - 1) / n_year_ends:.0%} leaves no year-end above the "
             "fit, so the upper tail rests on the single largest past turns.")
+
+
+def daily_rules_sentence(day: str, spread: float, smoothed: float, baseline: float, in_blowout: bool,
+                         start: str | None, peak: float | None, half_level: float | None, p_next_12: float | None,
+                         in_gradual: bool, monthly_in_episode: bool) -> str:
+    """Chapter IV, daily: where the spread stands against both pre-registered rules (U1)."""
+    excess = smoothed - baseline
+    head = (f"On {pd_day(day)} the OAT-Bund spread was {bp(spread, 0)}; its five-day average, {bp(smoothed, 0)}, "
+            f"was {bp(excess, 0)} {above_or_below(excess)} its trailing one-year average ({bp(baseline, 0)}).")
+    if in_blowout:
+        rule1 = (f" By the daily blowout rule (30 bp) France has been in an episode since {pd_day(start)}; the "
+                 f"peak so far is {bp(peak, 0)}, so half the widening is retraced at {bp(half_level, 0)}.")
+        if p_next_12 is not None:
+            rule1 += (f" Of past euro blowouts that had lasted this long, {p_next_12:.0%} retraced half the widening "
+                      "within the following 12 months (monthly 10-country base rate).")
+    else:
+        rule1 = " By the daily blowout rule (30 bp) France is not in an episode."
+    rule2 = (" It also meets the gradual-deterioration rule (15 bp for six months)." if in_gradual else
+             " It does not meet the gradual-deterioration rule (15 bp above the trailing average for six months): "
+             "the excess built up within weeks, not over half a year.")
+    monthly = (" The monthly rule agrees." if monthly_in_episode == in_blowout else
+               " The monthly rule, whose data end earlier, does not yet show the episode." if in_blowout else
+               " The monthly rule disagrees.")
+    return head + rule1 + rule2 + monthly
+
+
+def gradual_base_rate_sentence(n: int, n_countries: int, median_months: float, s12: float) -> str:
+    """Monthly base rates of gradual-deterioration episodes (Rule 2) in the euro panel."""
+    return (f"Gradual deteriorations are common: {n} episodes in {n_countries} euro countries since 2008 by the "
+            f"same rule on monthly data; the median retraced half its widening in {median_months:.0f} months and "
+            f"{1 - s12:.0%} within a year.")
+
+
+def daily_event_sentence(event: str, day: str, change: float, percentile: float) -> str:
+    """Two-day change in the daily OAT-Bund spread around an event, against every two-day window since 2010."""
+    size = ("an unusually large" if percentile >= 0.9 else "a larger than typical" if percentile >= 0.5
+            else "a smaller than typical")
+    move = "widened" if change > 0 else "narrowed" if change < 0 else "was unchanged"
+    return (f"{event} ({pd_day(day)}): over the two days around it the OAT-Bund spread {move} by {bp(change)}, "
+            f"{size} move ({percentile:.0%} of two-day windows since 2010 saw a smaller change).")

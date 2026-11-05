@@ -13,6 +13,7 @@ import ui  # noqa: E402
 import wording as w  # noqa: E402
 
 SRC = "ECB Data Portal (IRS monthly yields, MMSR), Assemblée nationale"
+SRC_DAILY = "Banque de France (Webstat), Deutsche Bundesbank"
 
 ui.apply_theme()
 ui.chapter_heading(**ui.CHAPTERS["france"])
@@ -25,10 +26,43 @@ if f is None or spreads is None:
     ui.footer()
     st.stop()
 
-ui.note("All yields in this chapter are monthly averages: daily French and Italian 10-year yields are not "
-        "available free without registration (see the plan adjustments in CLAUDE.md).")
+fd = ui.results().get("france_daily")
+ui.note("The daily view uses the Banque de France's daily 10-year OAT yield (TEC10, Webstat) against the "
+        "Bundesbank's daily 10-year Bund. Italian and Spanish yields exist only monthly, so the euro-wide split and "
+        "the cross-country base rates stay monthly; the monthly rules are kept as the robustness check.")
 
-ui.section_heading("i", "Italy then, France now")
+if fd:
+    ui.section_heading("i", "France now, day by day")
+    daily = ui.csv("france/daily_spread.csv")
+    rules, nowd = fd["rules"], fd["rules"]["now"]
+    b = rules["blowout"]["30"]["status"]
+    g = rules["gradual"]["15bp_6m"]["status"]
+    ui.md(w.daily_rules_sentence(nowd["date"], nowd["spread"], nowd["smoothed"], nowd["baseline"], b["in_episode"],
+                                 b.get("start"), b.get("peak"), b.get("half_retrace_level"),
+                                 b.get("p_recover_next_12m"), g["in_episode"], f["france_now"]["in_episode"]))
+    dd = fd["decomposition"]
+    ui.md(w.decomposition_sentence(w.pd_day(dd["base_day"]), w.pd_day(dd["last_day"]), dd["spread_base"],
+                                   dd["spread_last"], dd["oat_leg"], dd["bund_contribution"]))
+    if daily is not None:
+        recent = daily.loc["2023-01-01":]
+        fig = go.Figure()
+        fig.add_scatter(x=recent.index, y=recent["spread"], name="daily spread",
+                        line=dict(color=ui.hex_to_rgba(ui.COUNTRY_COLORS["FR"], 0.45), width=1))
+        fig.add_scatter(x=recent.index, y=recent["smoothed"], name="5-day average",
+                        line=dict(color=ui.COUNTRY_COLORS["FR"], width=2))
+        fig.add_scatter(x=recent.index, y=recent["baseline"] + 30, name="blowout line (trailing year + 30 bp)",
+                        line=ui.ref_line(ui.COLORS["loss"], "dash"))
+        fig.add_scatter(x=recent.index, y=recent["baseline"] + 15, name="gradual line (trailing year + 15 bp)",
+                        line=ui.ref_line(ui.COLORS["slate"], "dot"))
+        fig.update_yaxes(title="OAT-Bund 10-year spread (bp)")
+        ui.show_chart(fig, "The OAT-Bund spread, daily, against the two episode rules", height=340,
+                      sources="Banque de France (Webstat), Deutsche Bundesbank")
+    if fd.get("gradual_panel", {}).get("n_episodes"):
+        gp = fd["gradual_panel"]
+        ui.md(w.gradual_base_rate_sentence(gp["n_episodes"], gp["n_countries"], gp["median_months"],
+                                           gp["at"]["12"]["survival"]))
+
+ui.section_heading("ii", "Italy then, France now")
 fig = go.Figure()
 for cty in ("IT", "ES", "PT", "FR"):
     fig.add_scatter(x=spreads.index, y=spreads[cty], name=cty, line=dict(color=ui.COUNTRY_COLORS[cty],
@@ -37,7 +71,7 @@ fig.update_yaxes(title="10-year spread to Germany (bp)", range=[0, 700])
 ui.show_chart(fig, "Ten-year government bond spreads to Germany, monthly", sources=SRC)
 
 d, e = f["decomposition"], f["euro_wide"]
-ui.section_heading("ii", "Bund leg or OAT leg; France or the euro area?")
+ui.section_heading("iii", "Bund leg or OAT leg; France or the euro area? (monthly)")
 ui.md(w.decomposition_sentence(d["base_month"], d["last_month"], d["spread_base"], d["spread_last"], d["oat_leg"],
                                d["bund_leg"]))
 ui.md(w.france_specific_sentence(e["since"], e["cum_change"], e["cum_euro_wide"], e["cum_france_specific"]))
@@ -56,7 +90,7 @@ if split is not None:
 st.caption(f"Euro-wide beta estimated on {f['euro_wide']['n_fit']} months to December 2023: "
            f"{e['params']['IT']:.2f} on Italy and {e['params']['ES']:.2f} on Spain (R² {e['r2']:.2f}).")
 
-ui.section_heading("iii", "How long do blowouts last?")
+ui.section_heading("iv", "How long do blowouts last? (monthly base rates)")
 v, now = f["survival"], f["france_now"]
 a12 = v["at"]["12"]
 ui.md(w.survival_sentence(v["n_episodes"], v["n_countries"], v["median_months"], a12["survival"], a12["lower"],
@@ -87,7 +121,7 @@ st.caption("Sensitivity (thresholds fixed in advance): " + "; ".join(
     f"{k} bp rule: {s['n_episodes']} episodes, median {s['median_months']:.0f} months"
     for k, s in sens.items()) + ".")
 
-ui.section_heading("iv", "What preceded recoveries, and where France stands")
+ui.section_heading("v", "What preceded recoveries, and where France stands")
 cs, cond = f["conditions_share"], now["conditions"]
 rows = [{"Condition (6 months before recovery)": "The ECB had cut the deposit rate during the episode",
          "Share of past recoveries": f"{cs['ecb_cut'][0]:.0%} of {cs['ecb_cut'][1]}",
@@ -100,7 +134,7 @@ rows = [{"Condition (6 months before recovery)": "The ECB had cut the deposit ra
          "France now": "yes" if cond["eurosystem_buying"] else "no"}]
 ui.table(pd.DataFrame(rows))
 
-ui.section_heading("v", "Is French collateral now priced like Italian?")
+ui.section_heading("vi", "Is French collateral now priced like Italian?")
 r = f["repo"]
 ui.md(w.repo_treatment_sentence(r["fr_de_before"], r["fr_de_after"], r["it_de_before"], r["it_de_after"],
                                 r["position_before"], r["position_after"], r["chow_it_fr"]["p_value"],
@@ -115,10 +149,14 @@ if panel is not None:
     fig.update_yaxes(title="repo premium over German collateral (bp)")
     ui.show_chart(fig, "French and Italian collateral in repo", height=300, sources=SRC)
 
-ui.section_heading("vi", "Events")
+ui.section_heading("vii", "Events")
 for ev in f["events"]:
     ui.md("- " + w.event_sentence(ev["event"], ev["month"], ev["change_bp"], ev["percentile"])
           + f" Source: [{ev['source']}]({ev['url']}).")
+if fd and fd.get("events"):
+    ui.md("**Daily (two-day window around each event):**")
+    for ev in fd["events"]:
+        ui.md("- " + w.daily_event_sentence(ev["event"], ev["event_day"], ev["change_bp"], ev["percentile"]))
 st.caption(f"Only events with an official source that loaded when checked ({f['events_checked_on']}) are included. "
            "Excluded: " + "; ".join(f"{x['event']} ({x['reason']})" for x in f["excluded_events"]) + ".")
 ui.footer()
