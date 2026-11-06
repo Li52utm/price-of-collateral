@@ -299,8 +299,8 @@ Webstat has no daily 10-year series for Germany, Italy or Spain (monthly only), 
   both rules below, and the event study.
 - **Monthly, unchanged:** the euro-wide vs France-specific split (needs Italian and Spanish yields) and the
   survival base rates (need the 10-country panel). They are the comparison base for the daily status.
-- Both daily yields are constant-maturity 10-year yields (TEC10 is interpolated by the Banque de France;
-  the Bundesbank series is read off its fitted yield curve), so the daily spread is like for like.
+- ~~Both daily yields are constant-maturity 10-year yields~~ (corrected 2026-11-06, D0: TEC10 is a constant-maturity
+  yield, but `bund10_daily` is the current 10-year Bund, a single bond; the size of the difference is measured in D0).
 
 ### Rule 1 (blowout), daily version
 
@@ -477,6 +477,29 @@ the challenger shown beside it.
 - **Method unchanged:** the monthly event study (Phase 4 IV(d)) and the daily two-day study (U1) are re-run
   on the extended list with no other change. A table on the chapter IV page lists every event with its
   sources.
+
+## Desk upgrade D0: two constructions in the daily OAT-Bund spread (fixed 2026-11-06, before the difference was measured)
+
+Code: `src/construction.py`, output `results/france/construction.json`.
+
+- **The issue.** The French daily yield (Webstat TEC10) is a constant-maturity 10-year yield interpolated by the
+  Banque de France. The German daily yield used since U1 (`bund10_daily`, Bundesbank `BBSSY...WT1010`) is the
+  yield of the **current 10-year Bund**, a single bond whose residual maturity falls from about 10 years to about
+  9.5 years until the next new 10-year issue. The daily spread therefore mixes two constructions. (U1 described
+  both as constant-maturity; that sentence was wrong and is corrected below.)
+- **Daily measurement (Germany).** The Bundesbank also publishes a constant-maturity 10-year yield from its
+  fitted (Svensson) term structure of listed Federal securities, `BBSIS/D.I.ZST.ZI.EUR.S1311.B.A604.R10XX.R.A.A._Z._Z.A`
+  (`bund10_cm`, lag 1). The construction gap is `current Bund - constant-maturity Bund` (bp) on common days:
+  mean, median, standard deviation, 5th and 95th percentiles, the mean over the last 250 common days, and the
+  latest value. Its effect on the spread is the negative of the gap (`spread with the current Bund - spread with
+  the constant-maturity Bund`).
+- **Monthly measurement (both countries).** Monthly means of the daily TEC10, the current Bund and the
+  constant-maturity Bund against the ECB IRS monthly 10-year yields (`y10_FR`, `y10_DE`): mean difference and
+  mean absolute difference (bp) over common months since January 2010, and the same for the spread (daily-based
+  monthly mean minus the IRS spread).
+- **No result changes.** The daily France rules (U1) keep the current Bund (that is the pre-registered input);
+  the measured gap is reported as a caveat next to them. Generated wording: the gap is "small" if the absolute
+  mean daily gap is at most 3 bp (about one tenth of the 30 bp blowout threshold), otherwise "material".
 
 ## Corrections log
 

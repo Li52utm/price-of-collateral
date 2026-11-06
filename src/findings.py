@@ -22,7 +22,7 @@ SUMMARIES = {"forecast": "forecast/summary.json", "corridors": "corridors/summar
              "bootstrap": "inference/bootstrap.json", "tests": "inference/tests.json",
              "calibration": "inference/calibration.json", "frozen_v2": "forecasts/yearend_2026_v2.json",
              "v2": "forecast/v2_summary.json", "score_v2": "forecasts/yearend_2026_v2_score.json",
-             "robustness": "robustness/table.json"}
+             "robustness": "robustness/table.json", "construction": "france/construction.json"}
 
 QUESTIONS = {
     "story": "What is repo, and why does the bond you hand over matter?",
@@ -166,6 +166,18 @@ def desk_note_answer(r: dict) -> tuple[str, str]:
     if note is None:
         return NOT_AVAILABLE
     return note["client"]["verdict"], note["client"]["sentence"]
+
+
+def construction_lines(r: dict) -> list[str]:
+    """D0 caveat sentences on the daily OAT-Bund spread (empty if the result file is missing)."""
+    c = r.get("construction")
+    if not c:
+        return []
+    g, m = c["gap"], c["monthly"]
+    return [w.construction_sentence(g["mean_bp"], g["recent_mean_bp"], c["latest_spread_current_bp"],
+                                    c["latest_spread_cm_bp"], c["small"], c["small_gap_bp"], g["n_days"]),
+            w.construction_monthly_sentence(m["oat_tec10_vs_irs_fr"]["mean_bp"], m["bund_current_vs_irs_de"]["mean_bp"],
+                                            m["bund_cm_vs_irs_de"]["mean_bp"], m["oat_tec10_vs_irs_fr"]["n_months"])]
 
 
 ANSWERS = {"story": story_answer, "corridors": corridors_answer, "collateral": collateral_answer,

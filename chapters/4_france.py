@@ -33,6 +33,8 @@ fd = ui.results().get("france_daily")
 ui.note("The daily view uses the Banque de France's daily 10-year OAT yield (TEC10, Webstat) against the "
         "Bundesbank's daily 10-year Bund. Italian and Spanish yields exist only monthly, so the euro-wide split and "
         "the cross-country base rates stay monthly; the monthly rules are kept as the robustness check.")
+for line in findings.construction_lines(ui.results()):
+    ui.note(line)
 
 if fd:
     ui.section_heading("i", "France now, day by day")

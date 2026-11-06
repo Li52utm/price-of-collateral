@@ -19,7 +19,8 @@ refresh. Lags are in business days after the observation date, set conservativel
 | ECB Data Portal | MMSR secured: rate and volume by collateral country (DE, FR, IT, ES, BE, NL, all), tenor (S/N, T/N, O/N, 1W, 1M), lending/borrowing `MMSR/B.U2._X.<cty>.S1ZV._Z.T.<LE/BO>.<WR/TT>._X.<tenor>._Z._Z.EUR._Z` | No | **Maintenance period** (69 periods), dated at the period end, rates to 1 bp | Mar 2018 → Sep 2026 | > 6 business days after the period end (10 used) | Chapter III (not daily) |
 | ECB Data Portal | 10-year yields for convergence purposes `IRS/M.<cty>.L.L40.CI.0000.EUR.N.Z`, 11 countries | No | **Monthly** average | 1990s → Sep 2026 | about 25 | Chapters III-IV |
 | ECB website | PSPP net purchases by country (`PSPP_breakdown_history.csv`) | No | Monthly | Mar 2015 → | about 25 | Chapter III (scarcity) |
-| Bundesbank | Current 10-year Bund `BBSSY/D.REN.EUR.A630.000000WT1010.A` | No | Daily | Oct 2001 → | Same day (1 used) | Chapter IV |
+| Bundesbank | Current 10-year Bund `BBSSY/D.REN.EUR.A630.000000WT1010.A` (one bond, **not** constant maturity) | No | Daily | Oct 2001 → | Same day (1 used) | Chapter IV |
+| Bundesbank | German 10-year constant maturity, Svensson term structure `BBSIS/D.I.ZST.ZI.EUR.S1311.B.A604.R10XX.R.A.A._Z._Z.A` (`bund10_cm`) | No | Daily | 1997 → | 1 | D0 check (construction gap) |
 | Banque de France Webstat | French 10-year constant maturity (TEC10) `FM.D.FR.EUR.FR2.BB.FRMOYTEC10.HSTA` | **Yes** (free; header `Authorization: Apikey <key>`) | Daily | 3 Nov 2004 → | Updates 09:00, 13:00, 21:00 Paris; day d usable from d+1 (1) | Chapter IV (daily, U1) |
 | Banque de France Webstat | Germany, Italy, Spain 10-year `FM.M.<cty>.EUR.FR2.BB.<cty>10YT_RR.YLD` | Yes | **Monthly only** (no daily series in any dataset, searched 5 Nov 2026) | — | — | Not used (ECB IRS kept; daily Bund from the Bundesbank) |
 | DBnomics (BdF mirror) | `BDF/FM/M.<cty>.EUR.FR2.BB.<cty>10YT_RR.YLD` | No | Monthly only | — | — | Not used (ECB IRS preferred) |
@@ -102,3 +103,12 @@ pandas 2.3.3, so Kaplan-Meier is implemented in-house (`src/survival.py`).
 `results/snapshots/manifest.json` lists the first and last date, number of observations and
 publication lag of every series in the snapshot. `docs/DATA_VALIDATION.md` holds the validation
 report from the latest refresh.
+
+## Construction of the daily OAT-Bund spread (D0, 6 November 2026)
+
+The daily spread in chapter IV mixes two constructions: Webstat's TEC10 is a **constant-maturity** 10-year
+yield interpolated by the Banque de France, while the Bundesbank series `BBSSY...WT1010` is the yield of the
+**current 10-year Bund**, a single bond whose residual maturity drifts from about 10 to about 9.5 years until
+the next new issue. The size of the difference is measured daily against the Bundesbank's constant-maturity
+10-year yield (`bund10_cm`) and monthly against the ECB IRS yields; the numbers are in
+`results/france/construction.json` and shown as a caveat on the chapter IV page.

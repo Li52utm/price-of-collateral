@@ -249,6 +249,46 @@ def bbk_series(key: str) -> pd.Series:
 
 
 # --------------------------------------------------------------------------- #
+# Bank of England, Eurostat
+# --------------------------------------------------------------------------- #
+BOE_IADB = "https://www.bankofengland.co.uk/boeapps/database/_iadb-fromshowcolumns.asp"
+
+
+def boe_series(code: str, start: str = "01/Jan/2008") -> pd.Series:
+    """One Bank of England database (IADB) series by its code. The site refuses requests without a
+    browser-like User-Agent, so one is sent (no key, no login)."""
+    params = {"csv.x": "yes", "Datefrom": start, "Dateto": "now", "SeriesCodes": code, "CSVF": "TN",
+              "UsingCodes": "Y", "VPD": "Y", "VFD": "N"}
+    r = _get(BOE_IADB, params=params, headers={"User-Agent": "Mozilla/5.0"})
+    df = pd.read_csv(io.StringIO(r.text))
+    if df.shape[1] < 2:
+        raise DownloadError(f"BoE {code}: unexpected response")
+    s = pd.Series(pd.to_numeric(df.iloc[:, 1], errors="coerce").to_numpy(),
+                  index=pd.to_datetime(df.iloc[:, 0], format="%d %b %Y"))
+    return s.dropna().sort_index()
+
+
+EUROSTAT = "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/"
+
+
+def eurostat_series(key: str) -> pd.Series:
+    """One Eurostat series written as 'dataset?dim=value&dim=value' (JSON-stat API, no key).
+
+    Annual periods are dated 31 December, quarterly periods the last day of the quarter.
+    """
+    dataset, query = key.split("?", 1)
+    params = dict(part.split("=", 1) for part in query.split("&"))
+    j = _get(EUROSTAT + dataset, params={**params, "lang": "en"}).json()
+    times = j["dimension"]["time"]["category"]["index"]          # {period: position}
+    if any(n != 1 for d, n in zip(j["id"], j["size"], strict=True) if d != "time"):
+        raise DownloadError(f"Eurostat {key}: the query does not select a single series")
+    by_pos = {pos: period for period, pos in times.items()}
+    values = {by_pos[int(i)]: v for i, v in j["value"].items()}
+    index = [pd.Period(p.replace("-Q", "Q"), freq="Q" if "Q" in p else "Y").end_time.normalize() for p in values]
+    return pd.Series(list(values.values()), index=pd.DatetimeIndex(index), dtype=float).sort_index()
+
+
+# --------------------------------------------------------------------------- #
 # Banque de France Webstat (needs a free API key; docs/DATA_SOURCES.md)
 # --------------------------------------------------------------------------- #
 WEBSTAT = "https://webstat.banque-france.fr/api/explore/v2.1/catalog/datasets/"
@@ -361,6 +401,27 @@ def _long(name: str, s: pd.Series) -> pd.DataFrame:
     return pd.DataFrame({"date": s.index, "series": name, "value": s.to_numpy(dtype=float)})
 
 
+def download_series(spec: sources.Series) -> pd.Series:
+    """One registered series from its source (the dispatcher shared by the full and the add-new refresh)."""
+    if spec.source == "ecb":
+        start = "1999-01-01" if spec.name == "eonia" else ("1999-01" if spec.freq == "monthly" else START)
+        return ecb_series(spec.key, start)
+    if spec.source == "fred":
+        return fred_series(spec.key)
+    if spec.source == "boj":
+        return boj_series(spec.key, "199801" if spec.freq == "monthly" else "200801")
+    if spec.source == "bbk":
+        return bbk_series(spec.key)
+    if spec.source == "boe":
+        return boe_series(spec.key)
+    if spec.source == "eurostat":
+        return eurostat_series(spec.key)
+    raise DownloadError(f"{spec.name}: no single-series downloader for source {spec.source!r}")
+
+
+SINGLE_SOURCES = ("ecb", "fred", "boj", "bbk", "boe", "eurostat")
+
+
 def download_new(names: list[str], log: Callable[..., None] = print) -> pd.DataFrame:
     """Only the named registered series (used to add a new source to the snapshot without a full refresh)."""
     frames = []
@@ -372,8 +433,12 @@ def download_new(names: list[str], log: Callable[..., None] = print) -> pd.DataF
             frames.append(_long(spec.name, s))
             log(f"   {spec.name}: {len(s)} observations ({n_u} flagged unreliable); Webstat requests {client.requests}")
     other = [n for n in names if n not in {s.name for s in webstat}]
-    if other:
-        raise DownloadError(f"adding these sources alone is not supported: {other}")
+    for name in other:
+        spec = sources.BY_NAME.get(name)
+        if spec is None or spec.source not in SINGLE_SOURCES:
+            raise DownloadError(f"adding this source alone is not supported: {name}")
+        frames.append(_long(name, download_series(spec)))
+        log(f"   {name}: {len(frames[-1])} observations")
     return pd.concat(frames, ignore_index=True)
 
 
@@ -381,19 +446,10 @@ def download_all(log: Callable[..., None] = print) -> dict[str, pd.DataFrame]:
     """Every series, as {"series": long frame (date, series, value), "settlements": Treasury issues}."""
     frames = []
     for spec in sources.ALL_SERIES:
-        if spec.source == "ecb":
-            start = "1999-01-01" if spec.name == "eonia" else ("1999-01" if spec.freq == "monthly" else START)
-            frames.append(_long(spec.name, ecb_series(spec.key, start)))
-        elif spec.source == "fred":
-            frames.append(_long(spec.name, fred_series(spec.key)))
-        elif spec.source == "boj":
-            frames.append(_long(spec.name, boj_series(spec.key, "199801" if spec.freq == "monthly" else "200801")))
-        elif spec.source == "bbk":
-            frames.append(_long(spec.name, bbk_series(spec.key)))
-        elif spec.source == "webstat":
-            continue  # one client for every Webstat series, below
+        if spec.source in SINGLE_SOURCES:
+            frames.append(_long(spec.name, download_series(spec)))
         else:
-            continue  # handled in bulk below
+            continue  # Webstat (one client, below) and the bulk sources below
         log(f"   {spec.name}: {len(frames[-1])} observations")
     if sources.WEBSTAT_YIELDS:
         frames.append(webstat_daily_yields(log=log))

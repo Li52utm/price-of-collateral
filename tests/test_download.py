@@ -140,7 +140,8 @@ def test_download_all_and_new(monkeypatch) -> None:
     original_webstat_yields = D.webstat_daily_yields
     one = pd.Series([1.0], index=pd.DatetimeIndex(["2026-11-03"]))
     long = lambda name: pd.DataFrame({"date": [pd.Timestamp("2026-11-03")], "series": [name], "value": [1.0]})  # noqa: E731
-    for f in ("ecb_series", "fred_series", "boj_series", "bbk_series", "ofr_series", "ofr_term_repo",
+    for f in ("ecb_series", "fred_series", "boj_series", "bbk_series", "boe_series", "eurostat_series",
+              "ofr_series", "ofr_term_repo",
               "treasury_tga_daily"):
         monkeypatch.setattr(D, f, lambda *a, **k: one)
     monkeypatch.setattr(D, "webstat_daily_yields", lambda **k: long("oat10_daily"))
@@ -162,8 +163,12 @@ def test_download_all_and_new(monkeypatch) -> None:
     monkeypatch.setattr(D, "Webstat", Client)
     new = D.download_new(["oat10_daily"], log=lambda *a: None)
     assert new["series"].tolist() == ["oat10_daily"]
+    # D0: single registered series from the other sources can now be added on their own (one dispatcher)
+    assert D.download_new(["estr"], log=lambda *a: None)["series"].tolist() == ["estr"]
     with pytest.raises(D.DownloadError):
-        D.download_new(["estr"], log=lambda *a: None)
+        D.download_new(["sofr"], log=lambda *a: None)      # NY Fed rates come in bulk only
+    with pytest.raises(D.DownloadError):
+        D.download_new(["no_such_series"], log=lambda *a: None)
     assert len(original_webstat_yields(Client(), log=lambda *a: None)) == len(sources.WEBSTAT_YIELDS)
 
 
@@ -192,3 +197,35 @@ def test_webstat_errors_and_catalog(monkeypatch, tmp_path) -> None:
     (tmp_path / "K.json").write_text(json.dumps([{"time_period_start": "2026-11-03", "obs_value": "1"}]))
     assert len(c.observations("K", use_cache=True)) == 1
     assert D.webstat_clean(pd.DataFrame())[0].empty
+
+
+class _Resp:
+    def __init__(self, text: str = "", payload: dict | None = None) -> None:
+        self.text, self._payload = text, payload
+
+    def json(self) -> dict:
+        return self._payload
+
+
+def test_boe_series_parses_iadb_csv(monkeypatch) -> None:
+    text = "\n".join(["DATE,IUDBEDR", "01 Oct 2026,3.75", "02 Oct 2026,3.5", ""])
+    monkeypatch.setattr(D, "_get", lambda *a, **k: _Resp(text))
+    s = D.boe_series("IUDBEDR")
+    assert s.index[0] == pd.Timestamp("2026-10-01") and s.tolist() == [3.75, 3.5]
+
+
+def test_eurostat_series_parses_json_stat(monkeypatch) -> None:
+    payload = {"id": ["freq", "geo", "time"], "size": [1, 1, 2],
+               "dimension": {"time": {"category": {"index": {"2024": 0, "2025": 1}}}},
+               "value": {"0": 10.0, "1": 12.0}}
+    monkeypatch.setattr(D, "_get", lambda *a, **k: _Resp(payload=payload))
+    s = D.eurostat_series("gov_10dd_ggd?geo=FR&unit=MIO_EUR")
+    assert s.index.tolist() == [pd.Timestamp("2024-12-31"), pd.Timestamp("2025-12-31")] and s.tolist() == [10.0, 12.0]
+    q = {"id": ["geo", "time"], "size": [1, 1], "dimension": {"time": {"category": {"index": {"2026-Q2": 0}}}},
+         "value": {"0": 5.0}}
+    monkeypatch.setattr(D, "_get", lambda *a, **k: _Resp(payload=q))
+    assert D.eurostat_series("x?geo=FR").index[0] == pd.Timestamp("2026-06-30")
+    bad = {**payload, "size": [1, 2, 2]}
+    monkeypatch.setattr(D, "_get", lambda *a, **k: _Resp(payload=bad))
+    with pytest.raises(D.DownloadError):
+        D.eurostat_series("x?geo=FR")

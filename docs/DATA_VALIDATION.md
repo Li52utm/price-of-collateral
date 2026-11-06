@@ -7,7 +7,7 @@ Summary: 10 passed, 0 warnings, 0 failed.
 | Check | Status | Detail |
 |---|---|---|
 | Calendar coverage | PASS | estr 100.0% of business days (longest gap 0); sofr 100.0% of business days (longest gap 1); tona 96.7% of business days (longest gap 4); dfr 100.0% of business days (longest gap 0); bund10_daily 99.2% of business days (longest gap 1); oat10_daily 99.9% of business days (longest gap 1). The Japanese calendar omits moving holidays, so a few count as gaps. |
-| Ranges | PASS | 35 rate series within -1.5%..12.0% (yields -1.5%..40.0%); MMSR collateral-specific rates -2.66%..4.02% (specials allowed down to -5.0%); no negative volumes. |
+| Ranges | PASS | 36 rate series within -1.5%..12.0% (yields -1.5%..40.0%); MMSR collateral-specific rates -2.66%..4.02% (specials allowed down to -5.0%); no negative volumes. |
 | Negative-rate periods | PASS | DFR negative on 100% of days 2014-06-11..2022-07-26 and non-negative on 100% of other days; BoJ policy rate negative on 100% of days 2016-02-16..2024-03-20; median TONA in that window -0.041%. |
 | Spot checks | PASS | 5 published values match (e.g. SOFR 5.25% on 17 Sep 2019). |
 | EONIA vs €STR + 8.5 bp | PASS | 578 common days; largest deviation 0.00 bp. |

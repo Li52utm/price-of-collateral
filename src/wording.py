@@ -693,3 +693,29 @@ def event_study_summary_sentence(n: int, n_unusual: int, mean_change: float, n_w
     return (f"Across the {n} verified events, the spread widened in {share_words(n_widened, n)} two-day windows "
             f"(average change {signed_bp(mean_change)}); {share_words(n_unusual, n)} "
             f"{'was' if n_unusual == 1 else 'were'} unusually large (90th percentile of all two-day changes or above).")
+
+
+# --------------------------------------------------------------------------- #
+# Desk upgrade D0: the two constructions in the daily OAT-Bund spread
+# --------------------------------------------------------------------------- #
+def construction_sentence(mean_gap: float, recent_gap: float, latest_spread: float, latest_spread_cm: float,
+                          small: bool, threshold: float, n_days: int) -> str:
+    """Caveat on the daily spread: current Bund vs constant-maturity Bund (gap = current - constant maturity)."""
+    side = "below" if mean_gap < 0 else "above" if mean_gap > 0 else "level with"
+    effect = "wider" if mean_gap < 0 else "narrower" if mean_gap > 0 else "the same"
+    size = (f"small (at most {threshold:.0f} bp)" if small else
+            f"material (more than {threshold:.0f} bp)")
+    return (f"The French leg is a constant-maturity 10-year yield (TEC10) but the German leg is the current 10-year "
+            f"Bund, a single bond. Over {n_days:,} common days the current Bund yielded on average {bp(mean_gap)} "
+            f"{side} the Bundesbank's constant-maturity 10-year yield ({signed_bp(recent_gap)} over the last 250 "
+            f"days), so the daily spread reads {effect} than a like-for-like spread by about that much: "
+            f"{latest_spread:.1f} bp against {latest_spread_cm:.1f} bp on the latest day. The difference is {size}; "
+            "the episode rules compare the spread with its own trailing average, so a steady gap largely cancels "
+            "out of them.")
+
+
+def construction_monthly_sentence(oat_irs: float, bund_irs: float, bund_cm_irs: float, n_months: int) -> str:
+    """How each daily series compares with the ECB monthly 10-year yields (mean differences, bp)."""
+    return (f"Against the ECB's monthly 10-year yields ({n_months} months since 2010), the monthly mean of the "
+            f"TEC10 differs by {signed_bp(oat_irs)}, the current Bund by {signed_bp(bund_irs)} and the "
+            f"constant-maturity Bund by {signed_bp(bund_cm_irs)} on average.")

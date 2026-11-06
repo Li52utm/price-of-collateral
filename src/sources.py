@@ -51,7 +51,9 @@ EUR = [
     Series("mp_securities", "ecb", "ILM/W.U2.C.A070100.U2.EUR", "weekly", 2, "EUR mn",
            "Securities held for monetary policy purposes (APP + PEPP), weekly financial statement"),
     Series("bund10_daily", "bbk", "BBSSY/D.REN.EUR.A630.000000WT1010.A", "daily", 1, "%",
-           "Daily yield of the current 10-year Bund (Bundesbank)"),
+           "Daily yield of the current 10-year Bund (Bundesbank): one bond, residual maturity about 9.5 to 10 years"),
+    Series("bund10_cm", "bbk", "BBSIS/D.I.ZST.ZI.EUR.S1311.B.A604.R10XX.R.A.A._Z._Z.A", "daily", 1, "%",
+           "German 10-year constant-maturity yield from the Bundesbank's fitted (Svensson) term structure (D0)"),
 ]
 
 # Monthly 10-year yields for convergence purposes (ECB IRS): the only free official source with
