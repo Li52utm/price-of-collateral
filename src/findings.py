@@ -27,7 +27,8 @@ SUMMARIES = {"forecast": "forecast/summary.json", "corridors": "corridors/summar
              "toolkit": "desk/toolkit.json", "holders": "desk/holders.json",
              "curve": "france/curve.json",
              "facilities": "desk/facilities.json",
-             "uk": "desk/uk.json"}
+             "uk": "desk/uk.json",
+             "overview": "desk/overview.json"}
 
 QUESTIONS = {
     "story": "What is repo, and why does the bond you hand over matter?",

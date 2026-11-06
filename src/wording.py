@@ -1029,3 +1029,54 @@ def uk_spread_sentence(sp: dict, rho: float) -> str:
     return (f"SONIA sits {bp(last)} {side} Bank Rate (median of the last 250 days; it was above Bank Rate on "
             f"{sp['recent_share_above']:.0%} of them), {moved} Bank Rate than in {first} (median {signed_bp(f)}). "
             f"Weekly, SONIA minus Bank Rate {link} since 2023 (rank correlation {rho:+.2f}, descriptive).")
+
+
+# --------------------------------------------------------------------------- #
+# Desk upgrade D9: the regional funding overview and the ranked risks
+# --------------------------------------------------------------------------- #
+def level_change_phrase(label: str, x: dict, unit: str = "bp", decimals: int = 1) -> str:
+    """'SOFR minus IORB: +7.0 bp (3 November 2026), up 9.0 bp over the last month'. `unit` is 'bp' or a
+    currency and a scale, e.g. 'USD tn' -> 'USD 2.89 tn'."""
+    if unit == "bp":
+        value = signed_bp(x["value"], decimals)
+        move = bp(x["change_1m"], decimals) if x.get("change_1m") is not None else None
+    else:
+        cur, scale = unit.split()
+        value = f"{cur} {x['value']:,.{decimals}f} {scale}"
+        move = f"{cur} {abs(x['change_1m']):,.{decimals}f} {scale}" if x.get("change_1m") is not None else None
+    if move is None:
+        return f"{label}: {value} ({pd_day(x['date'])})"
+    c = x["change_1m"]
+    tail = (f"{'up' if c > 0 else 'down'} {move} over the last month" if round(c, decimals) != 0
+            else "unchanged over the last month")
+    return f"{label}: {value} ({pd_day(x['date'])}), {tail}"
+
+
+def year_end_view_sentence(currency: str, v1: dict, v2: dict | None) -> str:
+    """The frozen v1 and v2 31 December 2026 views for one currency."""
+    text = (f"Year-end view: the pre-registered v1 forecast for 31 December 2026 is {signed_bp(v1['q50'])} (median), "
+            f"5-95% range {signed_bp(v1['q05'])} to {signed_bp(v1['q95'])}")
+    if v2:
+        text += (f"; the v2 challenger says {signed_bp(v2['q50'])}, range {signed_bp(v2['q05'])} to "
+                 f"{signed_bp(v2['q95'])}")
+    rel = v1["q50"] - v1["latest_level"]
+    return text + (f". The v1 median is {bp(rel)} {above_or_below(rel)} the latest level at freezing "
+                   f"({signed_bp(v1['latest_level'])}).")
+
+
+def no_forecast_sentence(currency_name: str) -> str:
+    """Regions without a frozen year-end forecast."""
+    return f"Year-end view: no forecast was frozen for {currency_name}; the project's year-end test covers USD and EUR."
+
+
+RISK_TITLES = {"euro_liquidity": "Euro liquidity below the pressure band",
+               "us_reserves": "Dollar reserves: SOFR at or above IORB",
+               "us_backstop": "Use of the Fed's standing repo facility",
+               "france": "France: OAT-Bund blowout",
+               "euro_drift": "Euro overnight rate drifting up",
+               "calibration": "Forecast ranges may understate the tails"}
+
+
+def risk_line(key: str, severity: float, number: str, explanation: str) -> str:
+    """One ranked risk: title, severity, current number and explanation."""
+    return f"{RISK_TITLES[key]} (severity {severity:.2f}): {number}. {explanation}"

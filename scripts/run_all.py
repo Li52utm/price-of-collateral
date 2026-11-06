@@ -34,6 +34,7 @@ STEPS: list[tuple[str, str]] = [  # (module, function); filled in phase by phase
     ("uk", "run"),
     ("inference", "run"),
     ("robustness", "run"),
+    ("overview", "run"),
     ("desk_note", "run"),
 ]
 

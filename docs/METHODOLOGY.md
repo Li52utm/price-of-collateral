@@ -699,6 +699,42 @@ Code: `src/uk.py`, output `results/desk/uk.json`, `results/desk/uk_daily.csv` an
 - **Descriptive link:** Spearman correlation, since 1 January 2023, of the weekly mean of SONIA minus Bank Rate
   (Thursday to Wednesday) with the repo share (no test).
 
+## Desk upgrade D9: the desk note as a funding outlook (fixed 2026-11-06, before the new sections were generated)
+
+Code: `src/overview.py` (numbers from the snapshot, `results/desk/overview.json`) and `src/desk_note.py` (pure:
+the regional text and the ranked risks from the results files). The recommendation, the client rule (Phase 6,
+U0), the frozen forecasts, the scoring, the disclosures and the downloadable note are unchanged.
+
+### Funding overview by region
+
+- **Current level** of the overnight spread to policy = the latest published day (bp): SOFR minus IOR, €STR minus
+  DFR, SONIA minus Bank Rate, TONA minus the BoJ policy rate; for the France sub-section, the daily OAT-Bund spread.
+- **Change over the last month** = latest value minus the value on the last published day on or before the latest
+  date minus one calendar month.
+- **State variables** (latest value and change over the last month, same rule; weekly and monthly series use their
+  own latest observation): US reserve balances, TGA (Daily Treasury Statement), ON RRP, the D3 backstop line and the
+  D6 headroom; euro liquidity proxy with the D1 distance to the pressure band, government deposits (the short
+  `gov_deposits` item, latest level only) and the D1 trend test; UK reserves and the D7 repo share; Japan BoJ
+  current account balances (monthly average).
+- **Year-end view**: the frozen v1 and v2 31 December 2026 median and 5-95% range (USD, EUR); no forecast exists for
+  sterling or yen, and the text says so.
+- **France sub-section**: the daily blowout status (U1 rule), the D5 steepness reading and the D4 absorption line.
+
+### Year-end: the main risks (ranked)
+
+Each risk has a severity from 0 to 1 computed by a fixed rule; risks are listed by severity (ties in the order below);
+risks with severity 0 are listed under "Watched, not flagged". Every item shows its current number and a generated
+one-line explanation.
+
+| # | Risk | Severity rule |
+|---|---|---|
+| 1 | Euro liquidity against the pressure band (D1) | 1 if below the band's lower end; 0.67 if below the kink; 0.33 if below the band's upper end; else 0 (0 if the kink is not identified) |
+| 2 | Dollar reserves: SOFR against IORB | 1 if the 20-day mean of SOFR minus IORB is at or above 0 bp; 0.5 if within 5 bp below; else 0 |
+| 3 | Dollar backstop usage (D3) | 1 if the standing repo facility lent at least USD 1 bn on any day of the last 30; 0.5 if it did at the last quarter-end; else 0 |
+| 4 | France (U1 daily rule, D5) | 1 if France is in a blowout episode; 0.5 if the D5 steepness is "unusual"; else 0 |
+| 5 | Euro overnight drift (D1 trend test) | 1 if "drifting up"; else 0 |
+| 6 | Forecast calibration (U2, U0) | 1 if the v1 winner of either currency is "too narrow" on the test period or its 90th and 95th year-end percentiles coincide (U0 tail diagnosis); 0.5 if "too wide"; else 0 |
+
 ## Corrections log
 
 - **2026-11-04, Phase 2 sample filter.** Wrong: `forecast.dataset` dropped every day on which the

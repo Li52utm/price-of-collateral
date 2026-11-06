@@ -54,6 +54,179 @@ def usd_hurdle(tvo: dict) -> tuple[float | None, bool]:
     return (None if stale else tvo.get("latest_premium_bp")), stale
 
 
+# --------------------------------------------------------------------------- #
+# D9: severity rules for the ranked risks (METHODOLOGY.md, "Desk upgrade D9")
+# --------------------------------------------------------------------------- #
+RISK_ORDER = ("euro_liquidity", "us_reserves", "us_backstop", "france", "euro_drift", "calibration")
+NEAR_IORB_BP = 5.0
+USAGE_MIN_BN = 1.0
+
+
+def severity_euro_liquidity(distance: dict | None) -> float:
+    """1 below the band's lower end, 0.67 below the kink, 0.33 below the upper end, else 0 (0 if not identified)."""
+    if not distance:
+        return 0.0
+    if distance["lower"] <= 0:
+        return 1.0
+    if distance["kink"] <= 0:
+        return 0.67
+    return 0.33 if distance["upper"] <= 0 else 0.0
+
+
+def severity_us_reserves(mean_20d_bp: float, near_bp: float = NEAR_IORB_BP) -> float:
+    """1 if the 20-day mean of SOFR minus IORB is at or above zero, 0.5 if within `near_bp` below, else 0."""
+    if mean_20d_bp >= 0:
+        return 1.0
+    return 0.5 if mean_20d_bp >= -near_bp else 0.0
+
+
+def severity_backstop(days_used_30d: int, last_turn_bn: float, min_bn: float = USAGE_MIN_BN) -> float:
+    """1 if the facility was used in the last 30 days, 0.5 if only at the last quarter-end, else 0."""
+    if days_used_30d > 0:
+        return 1.0
+    return 0.5 if last_turn_bn >= min_bn else 0.0
+
+
+def severity_france(in_blowout: bool, steepness: str | None) -> float:
+    """1 in a blowout episode, 0.5 if the curve steepness is unusual, else 0."""
+    if in_blowout:
+        return 1.0
+    return 0.5 if steepness == "unusual" else 0.0
+
+
+def severity_drift(verdict: str | None) -> float:
+    """1 if €STR minus the DFR is drifting up, else 0."""
+    return 1.0 if verdict == "drifting up" else 0.0
+
+
+def severity_calibration(verdicts: list[str], tails_pinned: bool) -> float:
+    """1 if a winner is too narrow or the 90th and 95th percentiles coincide; 0.5 if too wide; else 0."""
+    if "too narrow" in verdicts or tails_pinned:
+        return 1.0
+    return 0.5 if "too wide" in verdicts else 0.0
+
+
+def rank_risks(items: list[dict]) -> list[dict]:
+    """Sort by severity (highest first), ties in RISK_ORDER."""
+    return sorted(items, key=lambda x: (-x["severity"], RISK_ORDER.index(x["key"])))
+
+
+def ranked_risks(r: dict) -> list[dict]:
+    """Every pre-registered risk with its severity, current number and explanation (unsorted inputs skipped)."""
+    out = []
+    rw, ov, tk = r.get("runway"), r.get("overview"), r.get("toolkit")
+    if rw:
+        d = rw["distance_bn"]
+        sev = severity_euro_liquidity(d)
+        number = (f"liquidity {w.eur_bn(rw['latest_bn'])}, {w.eur_bn(d['lower'])} "
+                  f"{'below' if d['lower'] <= 0 else 'above'} the band's lower end" if d else
+                  f"liquidity {w.eur_bn(rw['latest_bn'])}; pressure point not identified")
+        out.append({"key": "euro_liquidity", "severity": sev, "number": number,
+                    "explanation": ("Chapter II places the start of euro funding pressure above today's liquidity, so "
+                                    "the floor system has less cushion into the turn." if sev >= 0.67 else
+                                    "Liquidity is still at or above the pressure point identified in chapter II.")})
+    if ov:
+        m = ov["US"]["spread_20d_mean"]
+        sev = severity_us_reserves(m)
+        out.append({"key": "us_reserves", "severity": sev,
+                    "number": f"SOFR minus IORB {w.signed_bp(m)} on average over the last 20 days, reserves "
+                              f"USD {ov['US']['reserves_tn']['value']:.2f} trillion",
+                    "explanation": ("Repo trading at or above the rate on reserves means reserves are no longer "
+                                    "abundant; turns then add to an already firm base." if sev == 1 else
+                                    "Repo trades close to the rate on reserves; a turn could push it above."
+                                    if sev == 0.5 else "Repo trades comfortably below the rate on reserves.")})
+    if tk:
+        s = tk["latest"]
+        sev = severity_backstop(s["repo_30d_days_used"], s["last_turn_repo_bn"])
+        out.append({"key": "us_backstop", "severity": sev,
+                    "number": f"{s['repo_30d_days_used']} days of use in the last 30; "
+                              f"{w.usd_bn(s['last_turn_repo_bn'])} at the last quarter-end",
+                    "explanation": ("Banks are already borrowing from the Fed's facility, a sign that market repo is "
+                                    "tight." if sev == 1 else
+                                    "The facility was needed at the last quarter-end, so the year-end may need it "
+                                    "too." if sev == 0.5 else "The facility has not been needed recently.")})
+    daily, curve = r.get("france_daily"), r.get("curve")
+    if daily:
+        b = daily["rules"]["blowout"][next(iter(daily["rules"]["blowout"]))]["status"]
+        steep = curve["main"]["verdict"] if curve else None
+        sev = severity_france(b["in_episode"], steep)
+        out.append({"key": "france", "severity": sev,
+                    "number": f"OAT-Bund {daily['rules']['now']['spread']:.0f} bp, "
+                              f"{'in' if b['in_episode'] else 'not in'} a blowout episode"
+                              + (f", 2s10s excess over Germany {curve['main']['latest']['excess']:+.0f} bp"
+                                 if curve else ""),
+                    "explanation": ("French collateral is repricing; political news can move it further into the "
+                                    "turn, and no model here forecasts politics." if sev > 0 else
+                                    "The OAT-Bund spread is not in an episode by the pre-registered rules.")})
+    if rw:
+        v = rw["trend"]["main"]
+        sev = severity_drift(v["verdict"])
+        out.append({"key": "euro_drift", "severity": sev,
+                    "number": f"slope {v['slope_bp_per_year']:+.2f} bp a year over 12 months",
+                    "explanation": ("€STR is creeping up towards the deposit rate as liquidity drains." if sev == 1
+                                    else "No significant upward drift in €STR against the deposit rate.")})
+    cal, tails = r.get("calibration") or {}, (r.get("tails") or {}).get("currencies", {})
+    if cal or tails:
+        verdicts = [cal[c]["verdict"] for c in ("USD", "EUR") if c in cal]
+        pinned = any(tails.get(c, {}).get("same_pins") for c in ("USD", "EUR"))
+        sev = severity_calibration(verdicts, pinned)
+        out.append({"key": "calibration", "severity": sev,
+                    "number": "test-period verdicts: " + ", ".join(f"{c} {cal[c]['verdict']}" for c in ("USD", "EUR")
+                                                                   if c in cal)
+                              + ("; 90th and 95th year-end percentiles coincide" if pinned else ""),
+                    "explanation": ("Treat the frozen ranges as a floor on uncertainty: the tails rest on seven or "
+                                    "eight past year-ends." if sev == 1 else
+                                    "The ranges were too wide on the test period, so they overstate risk."
+                                    if sev == 0.5 else "The ranges were well calibrated on the test period.")})
+    return rank_risks(out)
+
+
+def regional_overview(r: dict, frozen: dict, v2f: dict | None) -> list[dict]:
+    """The funding overview by region: a title and generated lines for each."""
+    ov = r.get("overview")
+    if not ov:
+        return []
+    v2 = (v2f or {}).get("currencies", {})
+    us, eu = ov["US"], ov["EUR"]
+    us_lines = [w.level_change_phrase("SOFR minus IORB", us["spread"]) + ".",
+                f"State: {w.level_change_phrase('reserve balances', us['reserves_tn'], 'USD tn', 2)}; "
+                f"{w.level_change_phrase('the Treasury General Account', us['tga_bn'], 'USD bn', 0)}; "
+                f"{w.level_change_phrase('ON RRP take-up', us['onrrp_bn'], 'USD bn', 1)}."]
+    tk, fac = r.get("toolkit"), r.get("facilities")
+    if tk:
+        us_lines.append(w.backstop_line(tk["latest"]))
+    if fac:
+        fed = next(x for x in fac["rows"] if x["bank"] == "Federal Reserve")
+        us_lines.append(f"SOFR is {w.bp(fed['headroom_bp'], 0)} {'below' if fed['headroom_bp'] > 0 else 'above'} the "
+                        f"standing repo facility rate ({fed['backstop']:.2f}%).")
+    us_lines.append(w.year_end_view_sentence("USD", frozen["currencies"]["USD"], v2.get("USD")))
+    eu_lines = [w.level_change_phrase("€STR minus the DFR", eu["spread"]) + "."]
+    state = [w.level_change_phrase("the liquidity proxy", eu["liquidity_bn"], "EUR bn", 0)]
+    if eu.get("gov_deposits_bn"):
+        state.append(w.level_change_phrase("government deposits at the Eurosystem", eu["gov_deposits_bn"], "EUR bn", 0))
+    eu_lines.append("State: " + "; ".join(state) + ".")
+    eu_lines += findings.runway_lines(r)[:1] + findings.runway_lines(r)[3:4]
+    eu_lines.append(w.year_end_view_sentence("EUR", frozen["currencies"]["EUR"], v2.get("EUR")))
+    fr_lines = [w.level_change_phrase("The OAT-Bund 10-year spread", ov["FR"]["spread"]) + "."]
+    q, a, e = findings.answer("france", r)
+    fr_lines.append(f"{a}.")
+    for line in (findings.steepness_line(r), findings.france_absorption_line(r)):
+        if line:
+            fr_lines.append(line)
+    regions = [{"region": "United States", "lines": us_lines}, {"region": "Euro area", "lines": eu_lines},
+               {"region": "Euro area: France", "lines": fr_lines}]
+    if r.get("uk"):
+        uk_lines = [w.level_change_phrase("SONIA minus Bank Rate", ov["UK"]["spread"], decimals=2) + ".",
+                    findings.uk_lines(r)[0], w.no_forecast_sentence("sterling")]
+        regions.append({"region": "United Kingdom", "lines": uk_lines})
+    jp_lines = [w.level_change_phrase("TONA minus the BoJ policy rate", ov["JP"]["spread"]) + ".",
+                "State: " + w.level_change_phrase("BoJ current account balances", ov["JP"]["current_accounts_tn"],
+                                                  "JPY tn", 1) + " (monthly average).",
+                w.no_forecast_sentence("the yen")]
+    regions.append({"region": "Japan", "lines": jp_lines})
+    return regions
+
+
 def build(r: dict) -> dict | None:
     """Every line of the Year-End 2026 desk note from the results (None without the frozen forecast)."""
     frozen, fcs = r.get("frozen"), r.get("forecast")
@@ -132,17 +305,11 @@ def build(r: dict) -> dict | None:
                                           m["baseline"]["pinball_turn"], m["cqr"]["coverage"], m["cqr"]["verdict"],
                                           m["v1_state"]["coverage"], sum(a["inside"] for a in e["analogue_test"]),
                                           len(e["analogue_test"])))
-    risks = [
-        (f"The dollar upper tail: the 95th percentile ({w.signed_bp(usd['q95'])}) is far above the median; a "
-         "reserve drain or heavy Treasury settlement near the turn would push SOFR towards it."),
-        ("The euro forecast rests on four training year-ends; €STR measures unsecured deposits, not repo, so euro "
-         "repo can behave differently at the turn."),
-        ("The models beat the naive baseline on the test period, but not always significantly; treat the ranges, not "
-         "the medians, as the message." if any("not statistically" in m for m in models) else
-         "The models beat the naive baseline significantly on the test period, but a single turn can still land in "
-         "the tails; treat the ranges, not the medians, as the message."),
-        "French spreads are driven by domestic politics, which no model here forecasts.",
-    ]
+    ranked = ranked_risks(r)
+    risks = [w.risk_line(x["key"], x["severity"], x["number"], x["explanation"]) for x in ranked if x["severity"] > 0]
+    watched = [w.risk_line(x["key"], x["severity"], x["number"], x["explanation"]) for x in ranked
+               if x["severity"] == 0]
+    overview = regional_overview(r, frozen, r.get("frozen_v2"))
     tails = []
     diag = (r.get("tails") or {}).get("currencies", {})
     for c in ("USD", "EUR"):
@@ -155,7 +322,8 @@ def build(r: dict) -> dict | None:
         "Educational project. Not investment advice. No position is held in any instrument discussed.",
         "Forecasts are statistical estimates from public data with publication lags respected; they are not a view "
         "on central bank decisions.",
-        f"Data: ECB Data Portal, New York Fed, FRED, OFR, US Treasury Fiscal Data, Bank of Japan, Bundesbank. "
+        f"Data: ECB Data Portal, New York Fed, FRED, OFR, US Treasury Fiscal Data, Bank of Japan, Bundesbank, Banque "
+        f"de France (Webstat), Bank of England, Eurostat. "
         f"Data as of {pd.Timestamp(frozen['data_as_of']).day} {pd.Timestamp(frozen['data_as_of']):%B %Y} at freezing.",
     ]
     created = pd.Timestamp(frozen["created_at"])
@@ -167,6 +335,7 @@ def build(r: dict) -> dict | None:
                            "EUR": "Term out" if eur_lock else "Stay overnight", "lines": [usd_line, eur_line]},
         "key_points": key_points, "forecasts": {"USD": usd, "EUR": eur}, "models": models,
         "funding": [usd_line, eur_line, term_backtest] + ([backstop] if backstop else []),
+        "overview": overview, "ranked_risks": ranked, "watched": watched,
         "france": france_lines, "risks": risks, "tails": tails,
         "disclosures": disclosures, "scoring": scoring, "scored": bool(score),
         "v2": {"frozen": v2f, "lines": challenger, "test": v2_test, "caveat": v2s.get("caveat")},
@@ -180,33 +349,40 @@ def build(r: dict) -> dict | None:
 
 
 def markdown(note: dict) -> str:
-    """The downloadable desk note."""
+    """The downloadable desk note: recommendation and client line first, then the regional funding overview, the
+    ranked year-end risks, the frozen forecasts, scoring and disclosures (D9 structure)."""
     f = note["forecasts"]
-    lines = [f"# {note['title']}", "", "The Price of Collateral, desk note", "", note["frozen_line"], "",
+    c = note["client"]
+    lines = [f"# {note['title']}", "", "The Price of Collateral, funding outlook", "", note["frozen_line"], "",
              "## Recommendation", "",
              f"- USD: **{note['recommendation']['USD']}**", f"- EUR: **{note['recommendation']['EUR']}**", "",
-             "## Key points", "", *[f"- {p}" for p in note["key_points"]], "",
-             "## The year-end forecast (bp)", "",
-             "| Currency | Target | Model | 5% | Median | 90% | 95% |", "|---|---|---|---|---|---|---|"]
-    for c in ("USD", "EUR"):
-        x = f[c]
-        lines.append(f"| {c} | {x['target']} | {x['model_label']} | {x['q05']:+.1f} | {x['q50']:+.1f} | "
+             f"**{c['question']} {c['verdict']}.** {c['sentence']}", "",
+             "## Funding overview", ""]
+    for region in note.get("overview", []):
+        lines += [f"### {region['region']}", "", *[f"- {x}" for x in region["lines"]], ""]
+    lines += ["## Year-end: the main risks", "", *[f"{i}. {x}" for i, x in enumerate(note["risks"], 1)], ""]
+    if note.get("watched"):
+        lines += ["Watched, not flagged:", "", *[f"- {x}" for x in note["watched"]], ""]
+    lines += ["## Key points", "", *[f"- {p}" for p in note["key_points"]], "",
+              "## The year-end forecast (bp)", "",
+              "| Currency | Target | Model | 5% | Median | 90% | 95% |", "|---|---|---|---|---|---|---|"]
+    for cur in ("USD", "EUR"):
+        x = f[cur]
+        lines.append(f"| {cur} | {x['target']} | {x['model_label']} | {x['q05']:+.1f} | {x['q50']:+.1f} | "
                      f"{x['q90']:+.1f} | {x['q95']:+.1f} |")
     v2f = (note.get("v2") or {}).get("frozen")
     if v2f:
-        for c in ("USD", "EUR"):
-            x = v2f["currencies"][c]
-            lines.append(f"| {c} | {x['target']} | v2 challenger: CQR + year-end analogue | {x['q05']:+.1f} | "
+        for cur in ("USD", "EUR"):
+            x = v2f["currencies"][cur]
+            lines.append(f"| {cur} | {x['target']} | v2 challenger: CQR + year-end analogue | {x['q05']:+.1f} | "
                          f"{x['q50']:+.1f} | {x['q90']:+.1f} | {x['q95']:+.1f} |")
         lines += ["", "v1 is the pre-registered headline; v2 was designed after seeing v1's test-period "
                       "calibration.", "",
                   *[f"- {x}" for x in note["v2"]["lines"]]]
     lines += ["", *note["models"], "", "## What the turn means for funding", "", *[f"- {x}" for x in note["funding"]],
-              "", "## France", "", *note["france"], "", "## Risks", "", *[f"- {x}" for x in note["risks"]], "",
-              "## Why the 90th and 95th percentiles coincide", "", *[f"- {x}" for x in note.get("tails", [])], "",
+              "", "## Why the 90th and 95th percentiles coincide", "", *[f"- {x}" for x in note.get("tails", [])], "",
               "## Scoring", "", *note["scoring"], "",
-              "## Disclosures", "", *[f"- {x}" for x in note["disclosures"]], "",
-              f"**{note['client']['question']} {note['client']['verdict']}.** {note['client']['sentence']}", ""]
+              "## Disclosures", "", *[f"- {x}" for x in note["disclosures"]], ""]
     return "\n".join(lines)
 
 

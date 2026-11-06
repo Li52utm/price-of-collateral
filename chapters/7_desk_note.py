@@ -28,12 +28,27 @@ st.html(f'<p class="desk-title">{note["title"]}</p><p class="desk-meta">The Pric
         f'{note["frozen_line"]}</p>')
 rec = note["recommendation"]
 ui.verdict_box("Recommendation", f"USD: {rec['USD']}; EUR: {rec['EUR']}", " ".join(rec["lines"]))
+c = note["client"]
+ui.verdict_box(c["question"], c["verdict"], c["sentence"])
 
-ui.section_heading("i", "Key points")
+ui.section_heading("i", "Funding overview")
+for region in note.get("overview", []):
+    st.markdown(f"**{region['region']}**")
+    for line in region["lines"]:
+        ui.md(f"- {line}")
+
+ui.section_heading("ii", "Year-end: the main risks")
+for i, line in enumerate(note["risks"], 1):
+    ui.md(f"{i}. {line}")
+if note.get("watched"):
+    st.caption("Watched, not flagged: " + " ".join(note["watched"]))
+st.caption("Severity rules are fixed in docs/METHODOLOGY.md (Desk upgrade D9); risks are ranked by severity.")
+
+ui.section_heading("iii", "Key points")
 for p in note["key_points"]:
     ui.md(f"- {p}")
 
-ui.section_heading("ii", "The year-end forecast")
+ui.section_heading("iv", "The year-end forecast")
 rows = []
 for cur in ("USD", "EUR"):
     x = note["forecasts"][cur]
@@ -95,7 +110,7 @@ if turns is not None:
 for m in note["models"]:
     ui.md(m)
 
-ui.section_heading("iii", "What the turn means for funding")
+ui.section_heading("v", "What the turn means for funding")
 for line in note["funding"]:
     ui.md(f"- {line}")
 ru = note["rule"]["USD"]
@@ -103,13 +118,9 @@ if ru.get("term_date"):
     ui.note(w.term_freshness_sentence(ru["term_date"], ru["term_age_bd"], ru["stale"], 20),
             "warning" if ru["stale"] else "info")
 
-ui.section_heading("iv", "The France view")
+ui.section_heading("vi", "The France view")
 for line in note["france"]:
     ui.md(line)
-
-ui.section_heading("v", "Risks")
-for line in note["risks"]:
-    ui.md(f"- {line}")
 
 if note.get("tails"):
     ui.md("**Why the 90th and 95th percentiles coincide.** The diagnosis below refits the frozen model on the "
@@ -117,16 +128,14 @@ if note.get("tails"):
     for line in note["tails"]:
         ui.md(f"- {line}")
 
-ui.section_heading("vi", "Scoring")
+ui.section_heading("vii", "Scoring")
 for line in note["scoring"]:
     ui.note(line, "info" if note["scored"] else "warning")
 
-ui.section_heading("vii", "Disclosures")
+ui.section_heading("viii", "Disclosures")
 for line in note["disclosures"]:
     st.caption(line)
 
-c = note["client"]
-ui.verdict_box(c["question"], c["verdict"], c["sentence"])
 st.download_button("Download the desk note (Markdown)", desk_note.markdown(note), file_name="yearend_2026_desk_note.md",
                    mime="text/markdown")
 ui.footer()
