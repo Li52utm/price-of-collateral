@@ -79,7 +79,7 @@ def link(spread: pd.Series, weekly: pd.DataFrame, start: str = LINK_FROM) -> flo
         if len(days):
             rows[end] = float(days.mean())
     s = pd.Series(rows)
-    both = pd.concat([s, weekly["repo_share"]], axis=1, keys=["spread", "share"]).dropna()
+    both = pd.concat([s, weekly["repo_share"]], axis=1, keys=["spread", "share"], sort=True).dropna()
     return float(both["spread"].rank().corr(both["share"].rank())) if len(both) > 3 else float("nan")
 
 

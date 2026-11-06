@@ -5,9 +5,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
+import pandas as pd  # noqa: E402
 import plotly.graph_objects as go  # noqa: E402
 import streamlit as st  # noqa: E402
 
+import desk_gaps  # noqa: E402
 import ui  # noqa: E402
 import wording as w  # noqa: E402
 
@@ -114,4 +116,10 @@ with st.expander("Glossary"):
         "- **Spread**: the difference between two rates or yields.\n"
         "- **OAT, BTP, Bund**: French, Italian and German government bonds.\n"
         "- **Quantitative tightening (QT)**: a central bank shrinking its bond holdings.")
+
+ui.section_heading("vii", "What a desk sees that this project can't")
+st.markdown("Everything here comes from free public data. A repo desk works with market information that is not "
+            "public; the table lists the main items, why they matter, and the public proxy this project uses instead.")
+ui.table(pd.DataFrame([{"Market information": g["item"], "Why it matters": g["why"], "Public proxy used here":
+                        g["proxy"]} for g in desk_gaps.GAPS]))
 ui.footer()
