@@ -95,6 +95,11 @@ USD = [
     Series("fed_securities", "fred", "WSHOSHO", "weekly", 1, "USD mn", "Fed securities held outright"),
     Series("fed_repo_ops", "fred", "RPONTSYD", "daily", 1, "USD bn",
            "Fed overnight repo operations accepted, Treasury collateral (standing repo facility from Jul 2021)"),
+    Series("fed_bills", "fred", "WSHOBL", "weekly", 1, "USD mn",
+           "Fed holdings of Treasury bills (Wednesday level, D3)"),
+    Series("fed_repo_total", "fred", "RPONTTLD", "daily", 1, "USD bn",
+           "Fed repo operations accepted, all collateral (standing repo facility from Jul 2021; D3)"),
+    Series("onrrp_rate", "fred", "RRPONTSYAWARD", "daily", 1, "%", "ON RRP award rate (D6)"),
     Series("repo_dvp_on", "ofr", "REPO-DVP_AR_OO", "daily", 1, "%", "DVP overnight/open average rate (preliminary "
                                                                     "where final is missing)"),
     Series("repo_dvp_term", "ofr", "REPO-DVP_AR_LE30|REPO-DVP_AR_B830", "daily", 1, "%",

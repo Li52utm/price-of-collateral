@@ -591,6 +591,25 @@ Code: `src/autonomous.py`, output `results/desk/autonomous.json` and `results/de
 
 - Government deposits (EUR) and the TGA (USD) against the weekly spreads, with every quarter-end and year-end marked.
 
+## Desk upgrade D3: the Fed's year-end toolkit (fixed 2026-11-06, before any D3 number was computed)
+
+Code: `src/toolkit.py`, output `results/desk/toolkit.json` and `results/desk/toolkit_turns.csv`.
+
+- Data (FRED, no key): Fed holdings of Treasury bills `WSHOBL` (Wednesday level, USD mn, lag 1); Fed repo
+  operations, all collateral `RPONTTLD` (USD bn, daily, lag 1; the standing repo facility from July 2021, scheduled
+  operations from September 2019, none before); ON RRP take-up `RRPONTSYD` (already in the snapshot); ON RRP award
+  rate `RRPONTSYAWARD` (daily, lag 1, for D6).
+- Turns: the last US business day (`data.USRepoCalendar`) of every March, June, September and December from June 2018
+  to the as-of date.
+- Per turn D: repo operations and ON RRP **before** (mean of the 5 business days D-5 to D-1), **at** D, and **after**
+  (mean of D+1 to D+5, only where all five days are published); SOFR minus IOR at D (bp); Fed bill holdings on the
+  last Wednesday on or before D and their change over the 13 weeks to that Wednesday (USD bn).
+- Pattern (generated wording): the number of turns with repo usage at D of at least USD 1 bn, overall, in 2018-2022
+  and from 2023; usage at D against before and after (mean over turns with usage); the Spearman correlation of
+  SOFR minus IOR at D with repo usage at D (descriptive, no test).
+- Chapter VII backstop line: the latest repo usage and ON RRP take-up, the usage at the latest turn, and the latest
+  bill holdings with their 13-week change.
+
 ## Corrections log
 
 - **2026-11-04, Phase 2 sample filter.** Wrong: `forecast.dataset` dropped every day on which the

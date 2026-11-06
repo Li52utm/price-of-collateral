@@ -114,3 +114,12 @@ yield interpolated by the Banque de France, while the Bundesbank series `BBSSY..
 the next new issue. The size of the difference is measured daily against the Bundesbank's constant-maturity
 10-year yield (`bund10_cm`) and monthly against the ECB IRS yields; the numbers are in
 `results/france/construction.json` and shown as a caveat on the chapter IV page.
+
+## Desk upgrade series (6 November 2026)
+
+| Source | Series (key) | Key needed | Frequency | Coverage | Lag | Use |
+|---|---|---|---|---|---|---|
+| FRED | Fed holdings of Treasury bills `WSHOBL` (`fed_bills`) | No | Weekly (Wednesday) | 2002 → | 1 | D3 |
+| FRED | Fed overnight repo operations, all collateral `RPONTTLD` (`fed_repo_total`) | No | Daily | 2000 → | 1 | D3 |
+| FRED | ON RRP award rate `RRPONTSYAWARD` (`onrrp_rate`) | No | Daily | 2013 → | 1 | D6 |
+| NY Fed Markets API | Repo operation results (`/api/rp/repo/all/results/...`) | No | — | Empty responses to scripts on 6 Nov 2026 | — | Not used (FRED instead) |

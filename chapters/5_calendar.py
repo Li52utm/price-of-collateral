@@ -177,4 +177,28 @@ else:
     st.caption("Weekly changes regressed on weekly changes, train to 2022, tested from 2023; 95% intervals from a "
                "moving-block bootstrap (8 weeks, 1,000 resamples). The euro series is the Eurosystem's liabilities "
                "to other euro area residents, mostly government deposits (docs/METHODOLOGY.md, D2).")
+
+ui.section_heading("vi", "The Fed's year-end toolkit")
+tk, turns_tk = ui.results().get("toolkit"), ui.csv("desk/toolkit_turns.csv")
+if tk is None or turns_tk is None:
+    ui.missing_results("Fed toolkit")
+else:
+    ui.md(w.toolkit_pattern_sentence(tk["pattern"]))
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+    colors = [ui.COLORS["loss"] if k == "year-end" else ui.CURRENCY_COLORS["USD"] for k in turns_tk["kind"]]
+    fig.add_bar(x=turns_tk.index, y=turns_tk["repo_at"], name="Fed repo operations on the turn (USD bn)",
+                marker=dict(color=colors), secondary_y=False)
+    fig.add_scatter(x=turns_tk.index, y=turns_tk["spread_at_bp"], mode="markers+lines", name="SOFR minus IOR (bp)",
+                    line=dict(color=ui.COLORS["ink"], width=1), secondary_y=True)
+    fig.update_yaxes(title="repo operations (USD bn)", secondary_y=False)
+    fig.update_yaxes(title="SOFR minus IOR on the turn (bp)", secondary_y=True)
+    ui.show_chart(fig, "Fed repo operations and SOFR minus IOR on every quarter-end (year-ends in red)", height=340,
+                  sources="FRED (RPONTTLD, WSHOBL, RRPONTSYD), New York Fed")
+    recent = turns_tk[turns_tk.index >= "2024-01-01"][["kind", "repo_before", "repo_at", "repo_after", "rrp_at",
+                                                        "spread_at_bp", "bills_bn", "bills_13w_change_bn"]]
+    recent.columns = ["Turn", "Repo, week before (bn)", "Repo on the day (bn)", "Repo, week after (bn)",
+                      "ON RRP on the day (bn)", "SOFR - IOR (bp)", "Fed bills (bn)", "Bills, 13-week change (bn)"]
+    recent.index = recent.index.strftime("%d %b %Y")
+    ui.table(recent.round(1))
+    st.caption("Before and after: daily averages over the five business days either side of the turn (USD bn).")
 ui.footer()

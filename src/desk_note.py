@@ -91,6 +91,8 @@ def build(r: dict) -> dict | None:
         models.append(w.model_comparison_sentence(c, win["label"], win["pinball_turn"], base["pinball_turn"],
                                                   win.get("dm_turn_p_holm", win.get("dm_turn_p")),
                                                   cur["winner"] == "baseline", ci, "dm_turn_p_holm" in win))
+    tk = r.get("toolkit")
+    backstop = w.backstop_line(tk["latest"]) if tk else None
     term_backtest = w.term_rule_sentence(tvo["saving_vs_on"], tvo["saving_vs_term"], tvo["n_locked"], tvo["n_windows"])
     france_q, france_a, france_e = findings.answer("france", r)
     fr = r.get("france") or {}
@@ -164,7 +166,8 @@ def build(r: dict) -> dict | None:
         "recommendation": {"USD": "Term out" if usd_lock else "Stay overnight",
                            "EUR": "Term out" if eur_lock else "Stay overnight", "lines": [usd_line, eur_line]},
         "key_points": key_points, "forecasts": {"USD": usd, "EUR": eur}, "models": models,
-        "funding": [usd_line, eur_line, term_backtest], "france": france_lines, "risks": risks, "tails": tails,
+        "funding": [usd_line, eur_line, term_backtest] + ([backstop] if backstop else []),
+        "france": france_lines, "risks": risks, "tails": tails,
         "disclosures": disclosures, "scoring": scoring, "scored": bool(score),
         "v2": {"frozen": v2f, "lines": challenger, "test": v2_test, "caveat": v2s.get("caveat")},
         "client": {"question": findings.QUESTIONS["desk_note"], "verdict": verdict, "sentence": sentence},

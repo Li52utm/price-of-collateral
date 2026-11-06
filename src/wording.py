@@ -835,3 +835,53 @@ def treasury_cash_answer(eur_verdict: str, usd_verdict: str) -> str:
         return f"Treasury cash swings {words[eur_verdict]} for overnight funding in both currencies."
     return (f"Treasury cash swings {words[eur_verdict]} for euro overnight funding and {words[usd_verdict]} for "
             "dollar overnight funding.")
+
+
+# --------------------------------------------------------------------------- #
+# Desk upgrade D3: the Fed's year-end toolkit
+# --------------------------------------------------------------------------- #
+def usd_bn(x: float, decimals: int = 1) -> str:
+    """74.6 -> 'USD 74.6 bn' (absolute value)."""
+    return f"USD {abs(x):,.{decimals}f} bn"
+
+
+def toolkit_pattern_sentence(p: dict) -> str:
+    """How the Fed's repo backstop has been used around quarter-ends and year-ends since 2018."""
+    if p["n_used"] == 0:
+        return (f"Fed repo operations were not used (at least {usd_bn(p['min_bn'], 0)}) on any of the "
+                f"{p['n_turns']} quarter-end turns since mid-2018.")
+    early = f"{share_words(p['n_used_early'], p['n_early'])} turns before {p['split_year']}"
+    late = f"{share_words(p['n_used_late'], p['n_late'])} from {p['split_year']}"
+    trend = ("more often" if p["n_used_late"] / max(p["n_late"], 1) > p["n_used_early"] / max(p["n_early"], 1)
+             else "less often" if p["n_used_late"] / max(p["n_late"], 1) < p["n_used_early"] / max(p["n_early"], 1)
+             else "as often")
+    shape = ""
+    if p["mean_at_used"] is not None and p["mean_before_used"] is not None:
+        peak = "peaks on the turn itself" if p["mean_at_used"] > max(p["mean_before_used"],
+                                                                     p["mean_after_used"] or 0) else \
+            "does not peak on the turn itself"
+        shape = (f" When it is used, take-up {peak}: {usd_bn(p['mean_before_used'])} a day in the week before, "
+                 f"{usd_bn(p['mean_at_used'])} on the day and {usd_bn(p['mean_after_used'] or 0)} a day in the week "
+                 "after, on average.")
+    rho = p["spearman_spread_usage"]
+    link = ("Turns with more take-up also had a higher SOFR minus IOR" if rho > 0 else
+            "Turns with more take-up did not have a higher SOFR minus IOR")
+    return (f"The Fed's repo operations (the standing repo facility from July 2021) were used, at least "
+            f"{usd_bn(p['min_bn'], 0)}, on {p['n_used']} of {p['n_turns']} quarter-end turns since mid-2018: {early} "
+            f"and {late}, so the backstop has been used {trend} since {p['split_year']}. The largest take-up was "
+            f"{usd_bn(p['max_at'])} on {pd_day(p['max_at_date'])}.{shape} {link} (rank correlation {rho:+.2f}, "
+            "descriptive).")
+
+
+def backstop_line(s: dict) -> str:
+    """Chapter VII: the latest state of the Fed's backstop and reserve-management purchases."""
+    used = ("was used" if s["repo_30d_days_used"] else "was not used (at least USD 1 bn)")
+    bills = ""
+    if s.get("bills_13w_change_bn") is not None:
+        bills = (f" Fed bill holdings are {usd_bn(s['bills_bn'], 0)} ({pd_day(s['bills_date'])}), "
+                 f"{'up' if s['bills_13w_change_bn'] > 0 else 'down' if s['bills_13w_change_bn'] < 0 else 'unchanged'}"
+                 f" {usd_bn(s['bills_13w_change_bn'], 0)} over 13 weeks.")
+    return (f"Backstop: the standing repo facility {used} in the last 30 days (latest {usd_bn(s['repo_bn'], 2)} on "
+            f"{pd_day(s['repo_date'])}); at the last quarter-end ({pd_day(s['last_turn'])}) it lent "
+            f"{usd_bn(s['last_turn_repo_bn'])} with SOFR minus IOR at {signed_bp(s['last_turn_spread_bp'], 0)}. "
+            f"ON RRP take-up is {usd_bn(s['rrp_bn'])}.{bills}")
