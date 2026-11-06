@@ -16,6 +16,8 @@ refresh. Lags are in business days after the observation date, set conservativel
 | ECB Data Portal | Excess liquidity `ILM/D.U2.C.EXLIQ.U2.EUR`, reserve requirements `ILM/D.U2.C.MRR.U2.EUR` | No | Daily | 27 Sep 2024 → | 1 | Check only (short) |
 | ECB Data Portal | Current accounts `ILM/W...L020100`, deposit facility `...L020200`, MLF `...A050500` | No | Weekly (Friday) | 1999 → | 2 | Yes (liquidity proxy) |
 | ECB Data Portal | Monetary policy securities (APP + PEPP) `ILM/W.U2.C.A070100.U2.EUR` | No | Weekly | Jul 2009 → | 2 | Yes |
+| ECB Data Portal | General government deposits `ILM/W.U2.C.L050100.U2.EUR` (`gov_deposits`) | No | Weekly | **Nov 2025 →** only | 2 | D2 check and latest level |
+| ECB Data Portal | Liabilities to other euro area residents in euro `ILM/W.U2.C.L050000.U2.EUR` (`ea_resident_liab`) | No | Weekly | 1999 → | 2 | D2 (euro Treasury-cash proxy) |
 | ECB Data Portal | MMSR secured: rate and volume by collateral country (DE, FR, IT, ES, BE, NL, all), tenor (S/N, T/N, O/N, 1W, 1M), lending/borrowing `MMSR/B.U2._X.<cty>.S1ZV._Z.T.<LE/BO>.<WR/TT>._X.<tenor>._Z._Z.EUR._Z` | No | **Maintenance period** (69 periods), dated at the period end, rates to 1 bp | Mar 2018 → Sep 2026 | > 6 business days after the period end (10 used) | Chapter III (not daily) |
 | ECB Data Portal | 10-year yields for convergence purposes `IRS/M.<cty>.L.L40.CI.0000.EUR.N.Z`, 11 countries | No | **Monthly** average | 1990s → Sep 2026 | about 25 | Chapters III-IV |
 | ECB website | PSPP net purchases by country (`PSPP_breakdown_history.csv`) | No | Monthly | Mar 2015 → | about 25 | Chapter III (scarcity) |

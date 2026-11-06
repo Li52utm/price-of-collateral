@@ -23,7 +23,7 @@ SUMMARIES = {"forecast": "forecast/summary.json", "corridors": "corridors/summar
              "calibration": "inference/calibration.json", "frozen_v2": "forecasts/yearend_2026_v2.json",
              "v2": "forecast/v2_summary.json", "score_v2": "forecasts/yearend_2026_v2_score.json",
              "robustness": "robustness/table.json", "construction": "france/construction.json",
-             "runway": "desk/runway.json"}
+             "runway": "desk/runway.json", "autonomous": "desk/autonomous.json"}
 
 QUESTIONS = {
     "story": "What is repo, and why does the bond you hand over matter?",
@@ -193,6 +193,22 @@ def runway_lines(r: dict) -> list[str]:
             w.runway_scenario_sentence(rw["scenarios"]),
             w.spread_trend_sentence(tr["slope_bp_per_year"], tr["ci"][0], tr["ci"][1], tr["p_value"], tr["verdict"],
                                     tr["first_bp"], tr["last_bp"], sens["verdict"])]
+
+
+def treasury_cash_lines(r: dict) -> list[str]:
+    """D2 sentences: one per currency, then the one-line answer (empty if the result file is missing)."""
+    a = r.get("autonomous")
+    if not a:
+        return []
+    lines = []
+    for cur in ("EUR", "USD"):
+        v = a["currencies"][cur]
+        f = v["full"]
+        lines.append(w.treasury_cash_sentence(cur, f["coef"]["cash"], *f["ci"]["cash"],
+                                              f.get("p_cash_holm", f["p"]["cash"]), v["oos"]["r2_oos"],
+                                              f["coef"]["liq"], *f["ci"]["liq"], v["verdict"]))
+    lines.append(w.treasury_cash_answer(a["currencies"]["EUR"]["verdict"], a["currencies"]["USD"]["verdict"]))
+    return lines
 
 
 ANSWERS = {"story": story_answer, "corridors": corridors_answer, "collateral": collateral_answer,

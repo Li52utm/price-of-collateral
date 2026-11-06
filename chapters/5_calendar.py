@@ -8,7 +8,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 import pandas as pd  # noqa: E402
 import plotly.graph_objects as go  # noqa: E402
 import streamlit as st  # noqa: E402
+from plotly.subplots import make_subplots  # noqa: E402
 
+import findings  # noqa: E402
 import ui  # noqa: E402
 import wording as w  # noqa: E402
 
@@ -146,4 +148,33 @@ ui.kpi_row([("Always overnight", w.money(totals["on"]), None), ("Always term", w
             ("The rule", w.money(totals["rule"]), None)])
 st.caption("Total interest per USD 100m over every test-period month-end window (OFR DVP rates, ACT/360). "
            f"Euro: skipped. {fc['term_vs_overnight']['EUR']['reason'].capitalize()}.")
+
+ui.section_heading("v", "Treasury cash and the overnight spread")
+cash_lines = findings.treasury_cash_lines(ui.results())
+if not cash_lines:
+    ui.missing_results("Treasury cash")
+else:
+    ui.md(f"**{cash_lines[-1]}**")
+    labels = {"EUR": ("government and other non-bank deposits at the Eurosystem (EUR bn)", "€STR minus DFR (bp)"),
+              "USD": ("Treasury General Account (USD bn)", "SOFR minus IORB (bp)")}
+    for i, cur in enumerate(("EUR", "USD")):
+        ui.md(cash_lines[i])
+        wk = ui.csv(f"desk/autonomous_weekly_{cur}.csv")
+        if wk is None:
+            continue
+        fig = make_subplots(specs=[[{"secondary_y": True}]])
+        fig.add_scatter(x=wk.index, y=wk["cash"] * 100, name=labels[cur][0],
+                        line=dict(color=ui.COLORS["slate"], width=1.5), secondary_y=False)
+        fig.add_scatter(x=wk.index, y=wk["spread"], name=labels[cur][1],
+                        line=dict(color=ui.CURRENCY_COLORS[cur], width=1.5), secondary_y=True)
+        for q in pd.date_range(wk.index.min(), wk.index.max(), freq="QE"):
+            fig.add_vline(x=q, line=ui.ref_line(ui.COLORS["loss"] if q.month == 12 else ui.COLORS["rule"],
+                                                "dot" if q.month != 12 else "dash", 1))
+        fig.update_yaxes(title=labels[cur][0], secondary_y=False)
+        fig.update_yaxes(title=labels[cur][1], secondary_y=True)
+        ui.show_chart(fig, f"{cur}: Treasury cash and the weekly overnight spread (dotted: quarter-ends; dashed: "
+                           "year-ends)", height=360, sources="ECB Data Portal, FRED, New York Fed")
+    st.caption("Weekly changes regressed on weekly changes, train to 2022, tested from 2023; 95% intervals from a "
+               "moving-block bootstrap (8 weeks, 1,000 resamples). The euro series is the Eurosystem's liabilities "
+               "to other euro area residents, mostly government deposits (docs/METHODOLOGY.md, D2).")
 ui.footer()

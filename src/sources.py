@@ -50,6 +50,11 @@ EUR = [
     Series("ilm_mlf", "ecb", "ILM/W.U2.C.A050500.U2.EUR", "weekly", 2, "EUR mn", "Marginal lending facility (weekly)"),
     Series("mp_securities", "ecb", "ILM/W.U2.C.A070100.U2.EUR", "weekly", 2, "EUR mn",
            "Securities held for monetary policy purposes (APP + PEPP), weekly financial statement"),
+    Series("gov_deposits", "ecb", "ILM/W.U2.C.L050100.U2.EUR", "weekly", 2, "EUR mn",
+           "General government deposits with the Eurosystem, weekly financial statement (D2; only from Nov 2025)"),
+    Series("ea_resident_liab", "ecb", "ILM/W.U2.C.L050000.U2.EUR", "weekly", 2, "EUR mn",
+           "Liabilities to other euro area residents (government deposits + other), weekly; D2 euro Treasury-cash "
+           "proxy with full history"),
     Series("bund10_daily", "bbk", "BBSSY/D.REN.EUR.A630.000000WT1010.A", "daily", 1, "%",
            "Daily yield of the current 10-year Bund (Bundesbank): one bond, residual maturity about 9.5 to 10 years"),
     Series("bund10_cm", "bbk", "BBSIS/D.I.ZST.ZI.EUR.S1311.B.A604.R10XX.R.A.A._Z._Z.A", "daily", 1, "%",

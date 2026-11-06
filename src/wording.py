@@ -799,3 +799,39 @@ def spread_trend_sentence(slope: float, lo: float, hi: float, p_value: float, ve
             f"without month-end turn days the result reads '{sens_verdict}'")
     return (f"{head} over the last 12 months: a slope of {slope:+.2f} bp a year ({ci_text(lo, hi, ' bp', 2)}), "
             f"{sig}, from {first:+.1f} bp to {last:+.1f} bp (20-day averages); {same}.")
+
+
+# --------------------------------------------------------------------------- #
+# Desk upgrade D2: Treasury cash and overnight funding
+# --------------------------------------------------------------------------- #
+CASH_LABEL = {"EUR": ("euro", "government and other non-bank deposits at the Eurosystem", "€STR minus the DFR",
+                     "liquidity"),
+              "USD": ("dollar", "the Treasury General Account", "SOFR minus IORB", "reserves")}
+
+
+def treasury_cash_sentence(currency: str, coef: float, lo: float, hi: float, p_holm: float, r2_oos: float,
+                           liq_coef: float, liq_lo: float, liq_hi: float, verdict: str) -> str:
+    """What the weekly regression says about Treasury cash and the overnight spread in one currency."""
+    name, cash, spread, liq = CASH_LABEL[currency]
+    unit = f"{currency} 100 bn"
+    direction = ("rises" if coef > 0 else "falls") + " when Treasury cash rises"
+    ci_side = "excludes zero" if excludes_zero(lo, hi) else "includes zero"
+    oos = ("beats" if r2_oos > 0 else "does not beat") + f" a no-change rule out of sample (R² {r2_oos:+.2f}, 2023 on)"
+    head = {"matters": f"In the {name} market, swings in {cash} matter for overnight funding",
+            "some evidence": f"In the {name} market there is some evidence that changes in {cash} move overnight "
+                             "funding",
+            "no clear effect": f"In the {name} market changes in {cash} have no clear effect on overnight "
+                               "funding"}[verdict]
+    liq_part = (f"; the {liq} term is {liq_coef:+.2f} bp per {unit} ({ci_text(liq_lo, liq_hi, ' bp', 2)})")
+    return (f"{head}: holding {liq} fixed, {spread} {direction} ({coef:+.2f} bp per {unit} in a week, "
+            f"{ci_text(lo, hi, ' bp', 2)}, which {ci_side}){liq_part}. The Treasury-cash coefficient is "
+            f"{significance_phrase(p_holm, adjusted=True)}, and the weekly model {oos}.")
+
+
+def treasury_cash_answer(eur_verdict: str, usd_verdict: str) -> str:
+    """One line: do Treasury cash swings matter for overnight funding, by currency."""
+    words = {"matters": "matter", "some evidence": "matter only partly", "no clear effect": "do not clearly matter"}
+    if eur_verdict == usd_verdict:
+        return f"Treasury cash swings {words[eur_verdict]} for overnight funding in both currencies."
+    return (f"Treasury cash swings {words[eur_verdict]} for euro overnight funding and {words[usd_verdict]} for "
+            "dollar overnight funding.")

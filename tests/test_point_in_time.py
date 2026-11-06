@@ -73,3 +73,29 @@ def test_point_in_time_never_sees_the_future(values: list, lag: int, cut: int, b
     first_known = a.first_valid_index()
     if first_known is not None:
         assert first_known >= avail[0]
+
+
+# --------------------------------------------------------------------------- #
+# Desk upgrade: new model inputs
+# --------------------------------------------------------------------------- #
+@SETTINGS
+@given(i=hs.integers(0, len(CUTOFFS) - 1), seed=hs.integers(0, 10_000), mode=hs.sampled_from(["shift", "delete"]),
+       currency=hs.sampled_from(["USD", "EUR"]))
+def test_treasury_cash_rows_ignore_data_after_t(i: int, seed: int, mode: str, currency: str) -> None:
+    """D2: every row of the weekly data set dated at or before t is unchanged by data after t."""
+    import autonomous as A
+    t = CUTOFFS[i]
+    before = A.weekly_dataset(currency, LONG).loc[:t]
+    after = A.weekly_dataset(currency, perturb_after(LONG, t, seed, mode)).loc[:t]
+    pd.testing.assert_frame_equal(before, after)
+
+
+@SETTINGS
+@given(i=hs.integers(0, len(CUTOFFS) - 1), seed=hs.integers(0, 10_000), mode=hs.sampled_from(["shift", "delete"]))
+def test_runway_liquidity_published_by_t_ignores_later_data(i: int, seed: int, mode: str) -> None:
+    """D1: the liquidity history the runway sees on day t is the same whatever is published after t."""
+    import runway as R
+    t = CUTOFFS[i]
+    def seen(long: pd.DataFrame) -> pd.Series:
+        return R.published_by(data.get("eur_liquidity", long).dropna(), data.DERIVED_LAGS["eur_liquidity"], t)
+    pd.testing.assert_series_equal(seen(LONG), seen(perturb_after(LONG, t, seed, mode)))

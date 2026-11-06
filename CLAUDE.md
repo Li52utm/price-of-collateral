@@ -131,6 +131,18 @@ Every place where data or tools forced a change to the original plan, with the r
   12-month average) France is NOT in an episode: the spread rose steadily (51 bp in May 2024 to 97 bp
   in Sep 2026) and the trailing average rose with it. The rule was not changed. France appears as an
   ongoing, censored episode only under the pre-set 20 bp sensitivity (from Sep 2026), reported beside it.
+- **2026-11-06, euro government deposits (D2).** The ECB's weekly government-deposit item
+  (`ILM/W.U2.C.L050100.U2.EUR`) exists only from Nov 2025. D2 uses its parent, liabilities to other euro area
+  residents (`ILM/W.U2.C.L050000.U2.EUR`, from 1999), whose weekly changes correlate 0.93 with it on the 45 common weeks.
+- **2026-11-06, securities holdings statistics (D4).** ECB SHS sector holdings by issuer country end in 2022-Q1 on the
+  Data Portal (the public release no longer carries them), and the Eurosystem's own holdings are never in SHS. D4 uses
+  the closest public alternative: Eurostat `gov_10dd_ggd`, annual general government debt by holder sector (domestic
+  central bank, domestic banks, other domestic financial corporations incl. insurers, pension and investment funds,
+  rest of the world), to 2025. Holders are domestic sectors, not euro-area-wide; the ECB's own share is inside "rest
+  of the world".
+- **2026-11-06, Fed standing repo facility rate (D6).** No data series gives the SRF minimum bid rate and the NY Fed
+  operations API returned no data to scripts; the rate is taken as the top of the target range, the rule the FOMC's
+  implementation notes state (checked against the 17 June 2026 note: SRF 3.75% with the range 3.50-3.75%).
 
 ## Data pipeline
 

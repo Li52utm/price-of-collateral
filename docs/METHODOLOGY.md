@@ -541,6 +541,56 @@ boundary that has already been crossed is reported instead of moving the boundar
 - Sensitivity (reported, not used for the wording): the same regression without month-end turn days (the last
   business day of each month and the first business day after it).
 
+## Desk upgrade D2: autonomous factors, Treasury cash (fixed 2026-11-06, before any D2 number was computed)
+
+Code: `src/autonomous.py`, output `results/desk/autonomous.json` and `results/desk/autonomous_weekly_<CUR>.csv`.
+
+### Data
+
+- Euro: government deposits with the Eurosystem, weekly financial statement, `ILM/W.U2.C.L050100.U2.EUR`
+  ("General government liabilities denominated in euro", titled "Central government deposits with the Eurosystem"
+  by the ECB; EUR mn, Friday of each ISO week, lag 2 business days as the other weekly ILM items). Liquidity: the
+  existing weekly proxy (current accounts + deposit facility - marginal lending).
+- **Adjustment (6 November 2026, after downloading and BEFORE any D2 result):** the government-deposit item
+  `L050100` starts only in week 45 of 2025 (45 weeks), too short for the train/test design. The model input is
+  therefore its parent item, liabilities to other euro area residents denominated in euro,
+  `ILM/W.U2.C.L050000.U2.EUR` (`ea_resident_liab`, weekly from 1999) = government deposits + other liabilities.
+  On the 45 common weeks the government item is 46% to 56% of the parent and their weekly changes correlate 0.93,
+  so the parent's swings are mostly Treasury cash. `gov_deposits` is kept in the snapshot for this check and for
+  the latest level.
+- Dollar: Treasury General Account `WTREGEN` and reserve balances `WRESBAL` (both Wednesday levels, H.4.1,
+  already in the snapshot).
+
+### Weekly data set (one row per statement week)
+
+- EUR: week w ends on the Friday of the weekly financial statement; the spread for w is the mean of €STR minus
+  DFR (bp) over the business days from the previous statement date (exclusive) to w (inclusive). USD: week w ends on
+  the Wednesday of the H.4.1; the spread is the mean of SOFR minus IOR over Thursday to Wednesday.
+- Changes from week w-1 to w: d spread (bp), d Treasury cash (government deposits or TGA, in 100 bn of the
+  currency), d liquidity (euro proxy or reserve balances, 100 bn). Weeks with fewer than three spread days are dropped.
+- Every input of week w is dated on or before the end of week w (a contemporaneous, explanatory regression: it asks
+  whether the spread moves in the weeks Treasury cash moves, not whether it can be predicted a week ahead).
+
+### Model, sample split and inference
+
+- OLS: d spread = a + b d Treasury cash + c d liquidity + e, Newey-West errors with 4 lags.
+- Train: from the first week of the target (EUR Oct 2019, USD Apr 2018) to 31 December 2022; test: 2023 onward
+  (the Phase 2 split). Coefficients are reported on train (the model that is tested) and on the full sample.
+- 95% confidence intervals: moving-block bootstrap of weeks (blocks of 8 weeks, 1,000 resamples, seed 42, as U2).
+- Holm family **F9**: the two HAC t-tests of b (EUR, USD) on the full sample.
+- Out of sample: the train-fitted model's weekly predictions of d spread on test weeks (using the realised changes
+  of the regressors, i.e. explanatory power out of sample, not a forecast) against the no-change baseline (d spread = 0):
+  RMSE of each and the out-of-sample R^2 = 1 - SSE(model) / SSE(baseline).
+- **Verdict per currency** (generated wording): "Treasury cash swings matter for overnight funding" iff the full-sample
+  b has a bootstrap interval that excludes zero AND the model beats the no-change baseline out of sample (R^2 > 0);
+  "some evidence" if exactly one of the two holds; otherwise "no clear effect". The direction is stated from the sign
+  of b (a positive b: the spread rises when Treasury cash rises, i.e. when reserves are drained).
+- Sensitivity (reported): the same full-sample regression without weeks that contain a policy-rate change.
+
+### Chart
+
+- Government deposits (EUR) and the TGA (USD) against the weekly spreads, with every quarter-end and year-end marked.
+
 ## Corrections log
 
 - **2026-11-04, Phase 2 sample filter.** Wrong: `forecast.dataset` dropped every day on which the
