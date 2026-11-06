@@ -19,8 +19,17 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from pandas.tseries.holiday import AbstractHolidayCalendar, EasterMonday, GoodFriday, Holiday, USFederalHolidayCalendar
-from pandas.tseries.offsets import CustomBusinessDay
+from dateutil.relativedelta import MO
+from pandas.tseries.holiday import (
+    AbstractHolidayCalendar,
+    EasterMonday,
+    GoodFriday,
+    Holiday,
+    USFederalHolidayCalendar,
+    next_monday,
+    next_monday_or_tuesday,
+)
+from pandas.tseries.offsets import CustomBusinessDay, DateOffset
 
 import sources
 
@@ -62,9 +71,20 @@ class USRepoCalendar(USFederalHolidayCalendar):
     rules = USFederalHolidayCalendar.rules + [GoodFriday]
 
 
-CALENDARS = {"EUR": TargetCalendar(), "USD": USRepoCalendar(), "JPY": JapanCalendar()}
+class UKCalendar(AbstractHolidayCalendar):
+    """England and Wales bank holidays (D7): fixed rules with weekend substitution. One-off holidays (royal events)
+    are not modelled; UK publication lags are set conservatively to absorb them."""
+    rules = [Holiday("New Year", month=1, day=1, observance=next_monday), GoodFriday, EasterMonday,
+             Holiday("Early May", month=5, day=1, offset=DateOffset(weekday=MO(1))),
+             Holiday("Spring", month=5, day=31, offset=DateOffset(weekday=MO(-1))),
+             Holiday("Summer", month=8, day=31, offset=DateOffset(weekday=MO(-1))),
+             Holiday("Christmas", month=12, day=25, observance=next_monday),
+             Holiday("Boxing Day", month=12, day=26, observance=next_monday_or_tuesday)]
+
+
+CALENDARS = {"EUR": TargetCalendar(), "USD": USRepoCalendar(), "JPY": JapanCalendar(), "GBP": UKCalendar()}
 CURRENCY_OF_SOURCE = {"ecb": "EUR", "bbk": "EUR", "fred": "USD", "nyfed": "USD", "ofr": "USD",
-                      "fiscal": "USD", "boj": "JPY", "webstat": "EUR"}
+                      "fiscal": "USD", "boj": "JPY", "webstat": "EUR", "eurostat": "EUR", "boe": "GBP"}
 
 
 @cache
@@ -79,7 +99,7 @@ def business_days(currency: str, start: str | pd.Timestamp, end: str | pd.Timest
 
 
 def currency_of(name: str) -> str:
-    """The business-day calendar of a series (EUR, USD or JPY)."""
+    """The business-day calendar of a series (EUR, USD, JPY or GBP)."""
     if name.startswith(("mmsr_", "pspp_", "eur_")):
         return "EUR"
     if name.startswith(("boj_",)) or name in ("tona",):

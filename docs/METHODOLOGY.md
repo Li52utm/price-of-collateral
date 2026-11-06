@@ -610,6 +610,28 @@ Code: `src/toolkit.py`, output `results/desk/toolkit.json` and `results/desk/too
 - Chapter VII backstop line: the latest repo usage and ON RRP take-up, the usage at the latest turn, and the latest
   bill holdings with their 13-week change.
 
+## Desk upgrade D4: who holds the collateral (fixed 2026-11-06, before any D4 number was computed)
+
+Code: `src/holders.py`, output `results/desk/holders.json` and `results/desk/holders_shares.csv`.
+
+- **Data (plan adjustment, see CLAUDE.md).** ECB securities holdings statistics by sector and issuer country end in
+  2022-Q1 on the Data Portal, and never include the Eurosystem. The closest public alternative is Eurostat
+  `gov_10dd_ggd`: consolidated general government gross debt at face value, by holder sector, ANNUAL (31 December),
+  to 2025. Key per series: `gov_10dd_ggd?freq=A&unit=MIO_EUR&sector=S13&maturity=TOTAL&na_item=GD&geo=<C>&sector2=<H>`,
+  named `hold_<C>_<H>`; lag 80 business days (the April fiscal notification; later revisions replace values).
+- Issuers: FR, IT, DE, ES. Holders (sector2): total `S1_S2`; **domestic central bank** `S121` (the national central
+  bank, the part of the Eurosystem that holds most of a country's PSPP and PEPP bonds; the ECB's own share is
+  counted under the rest of the world); **domestic banks** `S122_S123`; **domestic other financial corporations**
+  `S124-S129` (insurers, pension funds, investment funds and other financial intermediaries; Eurostat does not
+  split them in this table); **non-residents** `S2` (rest of the world, including other euro-area investors);
+  **other domestic** = total minus the four (non-financial corporations, households, and residual sectors).
+- Shares = holder / total. **"Since QT began"**: change in each holder's share from 31 December 2022 (the last
+  year-end before the ECB's portfolio started to shrink in March 2023) to the latest year-end (pp).
+- **France, who absorbed the new supply**: change in holdings (EUR bn) by holder from end-2022 to the latest year-end,
+  and each holder's share of the change in total debt. The holders with a positive change are listed, largest first.
+- Generated wording: for each country the holder whose share rose most and the one whose share fell most; for France,
+  the largest absorber and the central bank's change.
+
 ## Corrections log
 
 - **2026-11-04, Phase 2 sample filter.** Wrong: `forecast.dataset` dropped every day on which the

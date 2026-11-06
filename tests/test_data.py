@@ -48,7 +48,7 @@ def test_calendars() -> None:
 
 def test_every_registered_series_has_a_lag() -> None:
     for spec in sources.ALL_SERIES:
-        assert spec.lag_bd >= 0 and spec.freq in ("daily", "weekly", "monthly", "maintenance_period")
+        assert spec.lag_bd >= 0 and spec.freq in ("daily", "weekly", "monthly", "maintenance_period", "annual")
     assert sources.lag("mmsr_rate_le_KS_IT") == sources.MMSR_LAG_BD
 
 

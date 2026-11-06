@@ -24,7 +24,7 @@ SUMMARIES = {"forecast": "forecast/summary.json", "corridors": "corridors/summar
              "v2": "forecast/v2_summary.json", "score_v2": "forecasts/yearend_2026_v2_score.json",
              "robustness": "robustness/table.json", "construction": "france/construction.json",
              "runway": "desk/runway.json", "autonomous": "desk/autonomous.json",
-             "toolkit": "desk/toolkit.json"}
+             "toolkit": "desk/toolkit.json", "holders": "desk/holders.json"}
 
 QUESTIONS = {
     "story": "What is repo, and why does the bond you hand over matter?",
@@ -210,6 +210,21 @@ def treasury_cash_lines(r: dict) -> list[str]:
                                               f["coef"]["liq"], *f["ci"]["liq"], v["verdict"]))
     lines.append(w.treasury_cash_answer(a["currencies"]["EUR"]["verdict"], a["currencies"]["USD"]["verdict"]))
     return lines
+
+
+def holder_lines(r: dict) -> list[str]:
+    """D4 sentences: the cross-country summary then one line per country (empty if the result is missing)."""
+    h = r.get("holders")
+    if not h:
+        return []
+    shifts = {c: v["shift"] for c, v in h["countries"].items() if v["shift"]}
+    return [w.holder_summary_sentence(shifts), *[w.holder_shift_sentence(c, s) for c, s in shifts.items()]]
+
+
+def france_absorption_line(r: dict) -> str | None:
+    """D4: who absorbed France's new supply (None if the result is missing)."""
+    h = r.get("holders")
+    return w.france_absorption_sentence(h["france_absorption"]) if h else None
 
 
 ANSWERS = {"story": story_answer, "corridors": corridors_answer, "collateral": collateral_answer,

@@ -74,15 +74,15 @@ Out of sample, the best description of the link between liquidity (EUR trillion)
 
 ### 4.2 The price of collateral: credit or scarcity?
 
-Italian collateral cost 11.0 bp more than German collateral in repo on average (latest +3.0 bp). The regression explains 51% of the variation and reads as too close to call between credit and scarcity: a one-standard-deviation move in the yield spread is worth +4.8 bp, the two scarcity measures together 7.0 bp.
+Italy collateral cost 11.0 bp more than German collateral in repo on average (latest +3.0 bp). The regression explains 51% of the variation and reads as too close to call between credit and scarcity: a one-standard-deviation move in the yield spread is worth +4.8 bp, the two scarcity measures together 7.0 bp.
 
-For Italian collateral the credit effect minus the scarcity effects is -2.2 bp (95% CI -12.7 to +1.5 bp); it includes zero, so the data cannot say which channel is larger: too close to call.
- The relationship for Italian collateral changed at the start of quantitative tightening; the break is statistically significant (Holm-adjusted p = 0.035): neither clearly credit nor scarcity before, mainly scarcity of German collateral after.
+For Italy collateral the credit effect minus the scarcity effects is -2.2 bp (95% CI -12.7 to +1.5 bp); it includes zero, so the data cannot say which channel is larger: too close to call.
+ The relationship for Italy collateral changed at the start of quantitative tightening; the break is statistically significant (Holm-adjusted p = 0.035): neither clearly credit nor scarcity before, mainly scarcity of German collateral after.
 
-French collateral cost 6.2 bp more than German collateral in repo on average (latest +4.0 bp). The regression explains 37% of the variation and reads as neither clearly credit nor scarcity: a one-standard-deviation move in the yield spread is worth -0.2 bp, the two scarcity measures together 3.2 bp.
+France collateral cost 6.2 bp more than German collateral in repo on average (latest +4.0 bp). The regression explains 37% of the variation and reads as neither clearly credit nor scarcity: a one-standard-deviation move in the yield spread is worth -0.2 bp, the two scarcity measures together 3.2 bp.
 
-For French collateral the credit effect minus the scarcity effects is -3.0 bp (95% CI -9.1 to -0.7 bp); it lies below zero, so the scarcity effects are larger than the credit effect.
- The relationship for French collateral changed at the start of quantitative tightening; the break is statistically significant (Holm-adjusted p < 0.001); it reads as neither clearly credit nor scarcity both before and after.
+For France collateral the credit effect minus the scarcity effects is -3.0 bp (95% CI -9.1 to -0.7 bp); it lies below zero, so the scarcity effects are larger than the credit effect.
+ The relationship for France collateral changed at the start of quantitative tightening; the break is statistically significant (Holm-adjusted p < 0.001); it reads as neither clearly credit nor scarcity both before and after.
 
 ![Credit and scarcity](figures/fig3_credit_scarcity.png)
 

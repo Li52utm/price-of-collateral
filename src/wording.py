@@ -885,3 +885,61 @@ def backstop_line(s: dict) -> str:
             f"{pd_day(s['repo_date'])}); at the last quarter-end ({pd_day(s['last_turn'])}) it lent "
             f"{usd_bn(s['last_turn_repo_bn'])} with SOFR minus IOR at {signed_bp(s['last_turn_spread_bp'], 0)}. "
             f"ON RRP take-up is {usd_bn(s['rrp_bn'])}.{bills}")
+
+
+# --------------------------------------------------------------------------- #
+# Desk upgrade D4: who holds the collateral
+# --------------------------------------------------------------------------- #
+COUNTRY_NAMES = {"FR": "France", "IT": "Italy", "DE": "Germany", "ES": "Spain"}
+
+
+def holder_phrase(label: str) -> str:
+    """'Domestic central bank' -> 'the domestic central bank'; plural holders keep no article."""
+    return f"the {label.lower()}" if label.lower().endswith("central bank") else label.lower()
+
+
+def and_list(items: list[str]) -> str:
+    """['a', 'b', 'c'] -> 'a, b and c'."""
+    return items[0] if len(items) == 1 else ", ".join(items[:-1]) + " and " + items[-1]
+
+
+def holder_shift_sentence(country: str, shift: dict) -> str:
+    """How the holder base of one country's government debt shifted since the base year-end."""
+    ch = shift["change_pp"]
+    up, down = shift["largest_rise"], shift["largest_fall"]
+    base, last = shift["base"][:4], shift["latest"][:4]
+    def pp(x: float) -> str:
+        return f"{'+' if x > 0 else '-' if x < 0 else '±'}{abs(x):.1f} pp"
+    return (f"{COUNTRY_NAMES.get(country, country)}: from end-{base} to end-{last} the largest gain in share was "
+            f"{holder_phrase(up)} ({pp(ch[up])}, to {shift['latest_shares'][up]:.0f}%) and the largest loss "
+            f"{holder_phrase(down)} ({pp(ch[down])}, to {shift['latest_shares'][down]:.0f}%).")
+
+
+def holder_summary_sentence(shifts: dict) -> str:
+    """One line across countries: is the pattern common to all?"""
+    rises = {s["largest_rise"] for s in shifts.values()}
+    falls = {s["largest_fall"] for s in shifts.values()}
+    names = and_list([COUNTRY_NAMES.get(c, c) for c in shifts])
+    if len(rises) == 1 and len(falls) == 1:
+        return (f"Since quantitative tightening began the pattern is the same for {names}: "
+                f"{holder_phrase(next(iter(falls)))} lost the most share and "
+                f"{holder_phrase(next(iter(rises)))} gained the most.")
+    return (f"Since quantitative tightening began the holder base has shifted differently across {names}; the country "
+            "lines below give each one.")
+
+
+def france_absorption_sentence(a: dict) -> str:
+    """Who absorbed France's new debt between the base year-end and the latest."""
+    if not a:
+        return "France's holder breakdown is not available for the base year."
+    ch, share = a["change_bn"], a["share_of_increase"]
+    top = a["largest_absorber"]
+    cb = ch["Domestic central bank"]
+    cb_part = (f"while the Banque de France {'reduced' if cb < 0 else 'increased'} its holdings by {eur_bn(cb)}")
+    others = [h for h in a["absorbers"] if h != top]
+    other_part = (f"; {and_list([f'{holder_phrase(h)} took {eur_bn(ch[h])}' for h in others])}" if others else "")
+    total = a["total_change_bn"]
+    grew = "grew" if total > 0 else "shrank"
+    return (f"French government debt {grew} by {eur_bn(total)} from end-{a['base'][:4]} to end-{a['latest'][:4]}. "
+            f"{top} absorbed the most, {eur_bn(ch[top])} ({share[top]:.0%} of the increase){other_part}, "
+            f"{cb_part}.")

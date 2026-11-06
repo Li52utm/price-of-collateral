@@ -181,4 +181,19 @@ with st.expander("Source links"):
         ui.md(f"- {ev['date']}, {ev['event']}: " + ", ".join(f"[{s['outlet']}]({s['url']})" for s in ev["sources"]))
 st.caption(f"Sources checked on {events.CHECKED_ON}. Excluded: "
            + "; ".join(f"{x['event']} ({x['reason']})" for x in events.EXCLUDED) + ".")
+ui.section_heading("viii", "Who absorbed France's new debt")
+absorb = findings.france_absorption_line(ui.results())
+hold = ui.results().get("holders")
+if absorb is None or not hold["france_absorption"]:
+    ui.missing_results("holders")
+else:
+    ui.md(absorb)
+    a = hold["france_absorption"]
+    ch = pd.Series(a["change_bn"]).sort_values()
+    fig = go.Figure(go.Bar(x=ch.values, y=ch.index, orientation="h",
+                           marker=dict(color=[ui.COUNTRY_COLORS["FR"] if v > 0 else ui.COLORS["slate"] for v in ch])))
+    fig.add_vline(x=0, line=ui.ref_line())
+    fig.update_xaxes(title=f"change in holdings, end-{a['base'][:4]} to end-{a['latest'][:4]} (EUR bn)")
+    ui.show_chart(fig, "Change in holdings of French government debt by holder", height=300,
+                  sources="Eurostat (gov_10dd_ggd)")
 ui.footer()

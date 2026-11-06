@@ -1,0 +1,159 @@
+{
+ "data_as_of": "2026-11-03",
+ "base_year": 2022,
+ "countries": {
+  "FR": {
+   "first": "2020-12-31",
+   "last": "2025-12-31",
+   "total_bn": 3460.47,
+   "shift": {
+    "base": "2022-12-31",
+    "latest": "2025-12-31",
+    "base_shares": {
+     "Domestic central bank": 22.591283106196965,
+     "Domestic banks": 14.769965219038856,
+     "Domestic insurers, pension and investment funds": 12.708279763435332,
+     "Non-residents": 48.54752270235888,
+     "Other domestic": 1.382949208969954
+    },
+    "latest_shares": {
+     "Domestic central bank": 16.51723609798669,
+     "Domestic banks": 16.74992125347135,
+     "Domestic insurers, pension and investment funds": 11.28459428921505,
+     "Non-residents": 54.332503966224245,
+     "Other domestic": 1.115744393102675
+    },
+    "change_pp": {
+     "Domestic central bank": -6.074047008210275,
+     "Domestic banks": 1.9799560344324938,
+     "Domestic insurers, pension and investment funds": -1.4236854742202816,
+     "Non-residents": 5.784981263865362,
+     "Other domestic": -0.26720481586727907
+    },
+    "largest_rise": "Non-residents",
+    "largest_fall": "Domestic central bank"
+   }
+  },
+  "IT": {
+   "first": "2020-12-31",
+   "last": "2025-12-31",
+   "total_bn": 3095.89,
+   "shift": {
+    "base": "2022-12-31",
+    "latest": "2025-12-31",
+    "base_shares": {
+     "Domestic central bank": 26.08269909711772,
+     "Domestic banks": 24.102254311841648,
+     "Domestic insurers, pension and investment funds": 13.85150190994328,
+     "Non-residents": 26.45611471235097,
+     "Other domestic": 9.50742996874637
+    },
+    "latest_shares": {
+     "Domestic central bank": 18.543068390672797,
+     "Domestic banks": 19.964081411161253,
+     "Domestic insurers, pension and investment funds": 12.685043719253592,
+     "Non-residents": 34.34327447034617,
+     "Other domestic": 14.464532008566197
+    },
+    "change_pp": {
+     "Domestic central bank": -7.539630706444925,
+     "Domestic banks": -4.138172900680395,
+     "Domestic insurers, pension and investment funds": -1.1664581906896885,
+     "Non-residents": 7.887159757995196,
+     "Other domestic": 4.9571020398198264
+    },
+    "largest_rise": "Non-residents",
+    "largest_fall": "Domestic central bank"
+   }
+  },
+  "DE": {
+   "first": "1995-12-31",
+   "last": "2025-12-31",
+   "total_bn": 2838.24,
+   "shift": {
+    "base": "2022-12-31",
+    "latest": "2025-12-31",
+    "base_shares": {
+     "Domestic central bank": 28.902504057951834,
+     "Domestic banks": 19.696850562274474,
+     "Domestic insurers, pension and investment funds": 8.183438885493747,
+     "Non-residents": 40.76129901168923,
+     "Other domestic": 2.455907482590717
+    },
+    "latest_shares": {
+     "Domestic central bank": 19.525304414003045,
+     "Domestic banks": 17.584242347370203,
+     "Domestic insurers, pension and investment funds": 8.80288488640848,
+     "Non-residents": 51.326526297987485,
+     "Other domestic": 2.761042054230783
+    },
+    "change_pp": {
+     "Domestic central bank": -9.377199643948789,
+     "Domestic banks": -2.11260821490427,
+     "Domestic insurers, pension and investment funds": 0.6194460009147331,
+     "Non-residents": 10.565227286298253,
+     "Other domestic": 0.3051345716400662
+    },
+    "largest_rise": "Non-residents",
+    "largest_fall": "Domestic central bank"
+   }
+  },
+  "ES": {
+   "first": "2020-12-31",
+   "last": "2025-12-31",
+   "total_bn": 1698.22,
+   "shift": {
+    "base": "2022-12-31",
+    "latest": "2025-12-31",
+    "base_shares": {
+     "Domestic central bank": 28.31249044285325,
+     "Domestic banks": 20.316931607395734,
+     "Domestic insurers, pension and investment funds": 9.35184261789364,
+     "Non-residents": 41.587317416944245,
+     "Other domestic": 0.43141791491312514
+    },
+    "latest_shares": {
+     "Domestic central bank": 20.410841940384636,
+     "Domestic banks": 20.172121397698767,
+     "Domestic insurers, pension and investment funds": 8.827242642296051,
+     "Non-residents": 48.935120302434306,
+     "Other domestic": 1.6546737171862385
+    },
+    "change_pp": {
+     "Domestic central bank": -7.901648502468614,
+     "Domestic banks": -0.144810209696967,
+     "Domestic insurers, pension and investment funds": -0.5245999755975888,
+     "Non-residents": 7.347802885490061,
+     "Other domestic": 1.2232558022731133
+    },
+    "largest_rise": "Non-residents",
+    "largest_fall": "Domestic central bank"
+   }
+  }
+ },
+ "france_absorption": {
+  "base": "2022-12-31",
+  "latest": "2025-12-31",
+  "total_change_bn": 504.8299999999999,
+  "change_bn": {
+   "Domestic central bank": -96.14300000000003,
+   "Domestic banks": 143.07899999999995,
+   "Domestic insurers, pension and investment funds": 14.88900000000001,
+   "Non-residents": 445.27,
+   "Other domestic": -2.264999999999418
+  },
+  "share_of_increase": {
+   "Domestic central bank": -0.19044628884971188,
+   "Domestic banks": 0.2834201612423984,
+   "Domestic insurers, pension and investment funds": 0.02949309668601314,
+   "Non-residents": 0.8820196897965653,
+   "Other domestic": -0.004486658875263789
+  },
+  "absorbers": [
+   "Non-residents",
+   "Domestic banks",
+   "Domestic insurers, pension and investment funds"
+  ],
+  "largest_absorber": "Non-residents"
+ }
+}

@@ -28,6 +28,7 @@ STEPS: list[tuple[str, str]] = [  # (module, function); filled in phase by phase
     ("runway", "run"),
     ("autonomous", "run"),
     ("toolkit", "run"),
+    ("holders", "run"),
     ("inference", "run"),
     ("robustness", "run"),
     ("desk_note", "run"),

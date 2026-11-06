@@ -138,7 +138,19 @@ WEBSTAT_NO_DAILY = {"DE": "monthly only on Webstat (FM.M.DE.EUR.FR2.BB.DE10YT_RR
                     "IT": "monthly only on Webstat (FM.M.IT.EUR.FR2.BB.IT10YT_RR.YLD); ECB IRS monthly kept",
                     "ES": "monthly only on Webstat (FM.M.ES.EUR.FR2.BB.ES10YT_RR.YLD); ECB IRS monthly kept"}
 
-ALL_SERIES: list[Series] = [*EUR, *YIELDS, *USD, *JPY, *WEBSTAT_YIELDS]
+# D4: government debt by holder sector (Eurostat gov_10dd_ggd, annual, consolidated, face value). See
+# docs/METHODOLOGY.md "Desk upgrade D4" for why this replaces the ECB securities holdings statistics.
+HOLDER_COUNTRIES = ("FR", "IT", "DE", "ES")
+HOLDER_SECTORS = {"S1_S2": "total", "S121": "domestic central bank", "S122_S123": "domestic banks",
+                  "S124-S129": "domestic insurers, pension and investment funds, other financials",
+                  "S2": "non-residents"}
+HOLDER_LAG_BD = 80
+HOLDERS = [Series(f"hold_{c}_{h}", "eurostat",
+                  f"gov_10dd_ggd?freq=A&unit=MIO_EUR&sector=S13&maturity=TOTAL&na_item=GD&geo={c}&sector2={h}",
+                  "annual", HOLDER_LAG_BD, "EUR mn", f"General government debt of {c} held by {label}")
+           for c in HOLDER_COUNTRIES for h, label in HOLDER_SECTORS.items()]
+
+ALL_SERIES: list[Series] = [*EUR, *YIELDS, *USD, *JPY, *WEBSTAT_YIELDS, *HOLDERS]
 BY_NAME: dict[str, Series] = {s.name: s for s in ALL_SERIES}
 
 

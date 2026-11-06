@@ -87,4 +87,33 @@ for cty in ("IT", "FR"):
     fig.update_yaxes(title="coefficient (bp)")
     ui.show_chart(fig, f"{w.COUNTRY_NAMES[cty]} collateral: coefficients over rolling 24-period windows", height=300,
                   sources=SRC)
+ui.section_heading("iv", "Who holds the collateral")
+hold_lines = findings.holder_lines(ui.results())
+hs = ui.csv("desk/holders_shares.csv", None, True)
+if not hold_lines or hs is None:
+    ui.missing_results("holders")
+else:
+    ui.md(hold_lines[0])
+    holder_order = ["Domestic central bank", "Domestic banks", "Domestic insurers, pension and investment funds",
+                    "Non-residents", "Other domestic"]
+    holder_colors = dict(zip(holder_order, [ui.COLORS["ink"], ui.COLORS["slate"], ui.COLORS["amber_light"],
+                                            ui.COLORS["amber"], ui.COLORS["mist"]], strict=True))
+    base_year = ui.results()["holders"]["base_year"]
+    hs["year"] = pd.to_datetime(hs["date"]).dt.year
+    last_year = int(hs["year"].max())
+    sub = hs[hs["year"].isin([base_year, last_year])].copy()
+    sub["bar"] = sub["country"] + " " + sub["year"].astype(str)
+    fig = go.Figure()
+    for holder in holder_order:
+        part = sub[sub["holder"] == holder]
+        fig.add_bar(x=part["bar"], y=part["share_pct"], name=holder, marker=dict(color=holder_colors[holder]))
+    fig.update_layout(barmode="stack")
+    fig.update_yaxes(title="share of general government debt (%)", range=[0, 100])
+    ui.show_chart(fig, f"Who holds the debt: end-{base_year} against end-{last_year}", height=380,
+                  sources="Eurostat (gov_10dd_ggd)")
+    for line in hold_lines[1:]:
+        ui.md(f"- {line}")
+    st.caption("Annual, consolidated debt at face value. Holders are DOMESTIC sectors plus the rest of the world: the "
+               "ECB's own holdings and other euro-area investors count as non-residents. The ECB's securities holdings "
+               "statistics, which would give euro-area-wide holders, end in 2022 on the public Data Portal.")
 ui.footer()
