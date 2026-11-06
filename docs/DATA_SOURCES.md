@@ -131,3 +131,4 @@ the next new issue. The size of the difference is measured daily against the Bun
 | Bundesbank | Current 2-year Federal Treasury note `BBSSY/D.REN.EUR.A610.000000WT0202.A` (`bund2_daily`) | No | Daily | 2013 → | 1 | D5 sensitivity |
 
 | Bank of England IADB | Bank Rate `IUDBEDR` (`bank_rate`), SONIA `IUDSOIA` (`sonia`) | No (browser-like User-Agent required) | Daily | 2008 → | 0 and 1 | D6, D7 |
+| Bank of England IADB | Weekly report: reserve balances `RPWB56A`, Short-Term Repo `RPWB67A`, Indexed Long-Term Repo `RPWZ4TJ`, loan to the APF `RPWZ4TM` (`boe_*`) | No (User-Agent) | Weekly (Wednesday) | 2008 → (ILTR, APF 2013 →) | 1 | D7 |

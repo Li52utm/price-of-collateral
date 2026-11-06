@@ -680,6 +680,25 @@ Code: `src/facilities.py`, output `results/desk/facilities.json`.
 - Generated wording: the central banks ordered by backstop minus floor, the closest and the furthest named; the
   market rate with the least headroom named.
 
+## Desk upgrade D7: the UK, from QE to repo-led reserves (fixed 2026-11-06, before any D7 number was computed)
+
+Code: `src/uk.py`, output `results/desk/uk.json`, `results/desk/uk_daily.csv` and `results/desk/uk_weekly.csv`.
+
+- **Availability check (done first):** the Bank of England database (IADB, no key; a browser-like User-Agent is
+  required) has SONIA (`IUDSOIA`), Bank Rate (`IUDBEDR`) and the weekly report's balance sheet: reserve balances
+  (`RPWB56A`), Short-Term Repo (`RPWB67A`), Indexed Long-Term Repo (`RPWZ4TJ`) and the loan to the Asset Purchase
+  Facility (`RPWZ4TM`, the QE portfolio), all Wednesday levels in GBP mn, published on Thursday (lag 1). The rule
+  "SONIA, Bank Rate and one of reserves / repo usage" is met, so the section runs.
+- **SONIA minus Bank Rate** (bp, daily): median and 95th percentile per calendar year and over the last 250 days;
+  share of days with SONIA above Bank Rate in the last 250 days.
+- **Reserves supplied through repo:** repo = STR + ILTR (GBP bn); repo share = repo / reserve balances (%), weekly.
+  **Test:** OLS of the weekly repo share on time (years) over the latest 104 weeks, Newey-West errors with 8 lags;
+  **"increasingly supplied through repo" iff slope > 0 and p < 0.05**; "decreasingly" iff slope < 0 and p < 0.05;
+  otherwise "no significant change". Reported beside it: the share now, 52 and 104 weeks earlier, and the APF loan
+  (QE portfolio) now and 104 weeks earlier.
+- **Descriptive link:** Spearman correlation, since 1 January 2023, of the weekly mean of SONIA minus Bank Rate
+  (Thursday to Wednesday) with the repo share (no test).
+
 ## Corrections log
 
 - **2026-11-04, Phase 2 sample filter.** Wrong: `forecast.dataset` dropped every day on which the

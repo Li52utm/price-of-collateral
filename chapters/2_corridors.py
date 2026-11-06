@@ -155,4 +155,29 @@ else:
         if x["extra"] or x["note"]:
             extra = "; ".join(f"{k} {v:.2f}%" for k, v in x["extra"].items())
             st.caption(f"{x['bank']}: " + "; ".join(p for p in (extra, x["note"]) if p))
+
+ui.section_heading("vii", "The UK: from QE to repo-led reserves")
+uk_lines = findings.uk_lines(ui.results())
+uk_wk, uk_d = ui.csv("desk/uk_weekly.csv"), ui.csv("desk/uk_daily.csv")
+if not uk_lines or uk_wk is None or uk_d is None:
+    ui.missing_results("UK")
+else:
+    ui.md(uk_lines[0])
+    fig = go.Figure()
+    fig.add_scatter(x=uk_wk.index, y=uk_wk["reserves"], name="reserve balances", line=dict(color=ui.COLORS["ink"]))
+    fig.add_scatter(x=uk_wk.index, y=uk_wk["apf"], name="QE portfolio (loan to the APF)",
+                    line=dict(color=ui.COLORS["slate"], dash="dash"))
+    fig.add_scatter(x=uk_wk.index, y=uk_wk["repo"], name="repo (STR + ILTR)", fill="tozeroy",
+                    line=dict(color=ui.COLORS["amber"]), fillcolor=ui.hex_to_rgba(ui.COLORS["amber"], 0.25))
+    fig.update_yaxes(title="GBP bn (Wednesday levels)")
+    ui.show_chart(fig, "Bank of England: reserves, the QE portfolio and repo lending", height=340,
+                  sources="Bank of England (weekly report, IADB)")
+    ui.md(uk_lines[1])
+    fig = go.Figure()
+    fig.add_scatter(x=uk_d.index, y=uk_d.iloc[:, 0], name="SONIA minus Bank Rate", line=dict(color=ui.COLORS["ink"],
+                                                                                           width=1))
+    fig.add_hline(y=0, line=ui.ref_line())
+    fig.update_yaxes(title="bp")
+    ui.show_chart(fig, "SONIA minus Bank Rate (the Short-Term Repo is priced at Bank Rate, the zero line)",
+                  height=300, sources="Bank of England (IADB)")
 ui.footer()

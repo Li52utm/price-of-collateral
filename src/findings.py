@@ -26,7 +26,8 @@ SUMMARIES = {"forecast": "forecast/summary.json", "corridors": "corridors/summar
              "runway": "desk/runway.json", "autonomous": "desk/autonomous.json",
              "toolkit": "desk/toolkit.json", "holders": "desk/holders.json",
              "curve": "france/curve.json",
-             "facilities": "desk/facilities.json"}
+             "facilities": "desk/facilities.json",
+             "uk": "desk/uk.json"}
 
 QUESTIONS = {
     "story": "What is repo, and why does the bond you hand over matter?",
@@ -239,6 +240,14 @@ def facility_line(r: dict) -> str | None:
     """D6: the facility-pricing comparison (None if the result is missing)."""
     f = r.get("facilities")
     return w.facility_sentence(f["rows"]) if f else None
+
+
+def uk_lines(r: dict) -> list[str]:
+    """D7 sentences: reserves supplied through repo, then SONIA against Bank Rate (empty if missing)."""
+    u = r.get("uk")
+    if not u:
+        return []
+    return [w.uk_repo_sentence(u["weekly"], u["trend"]), w.uk_spread_sentence(u["spread"], u["spearman_spread_share"])]
 
 
 ANSWERS = {"story": story_answer, "corridors": corridors_answer, "collateral": collateral_answer,

@@ -162,6 +162,10 @@ HOLDERS = [Series(f"hold_{c}_{h}", "eurostat",
 GBP = [
     Series("bank_rate", "boe", "IUDBEDR", "daily", 0, "%", "Bank Rate (announced in advance)"),
     Series("sonia", "boe", "IUDSOIA", "daily", 1, "%", "SONIA (published 09:00 London on T+1)"),
+    Series("boe_reserves", "boe", "RPWB56A", "weekly", 1, "GBP mn", "Reserve balances (weekly report, Wednesday)"),
+    Series("boe_str", "boe", "RPWB67A", "weekly", 1, "GBP mn", "Short-Term Repo outstanding (weekly report)"),
+    Series("boe_iltr", "boe", "RPWZ4TJ", "weekly", 1, "GBP mn", "Indexed Long-Term Repo outstanding (weekly report)"),
+    Series("boe_apf", "boe", "RPWZ4TM", "weekly", 1, "GBP mn", "Loan to the Asset Purchase Facility (weekly report)"),
 ]
 
 ALL_SERIES: list[Series] = [*EUR, *YIELDS, *USD, *JPY, *WEBSTAT_YIELDS, *HOLDERS, *GBP]

@@ -986,3 +986,46 @@ def facility_sentence(rows: list[dict]) -> str:
             f"{tight['bank']}'s backstop rate, the least headroom of the four")
     return (f"Repo backstop minus floor: {and_list(parts)}. So {closest} and the {hi['bank']}'s furthest from it. "
             f"{head}.")
+
+
+# --------------------------------------------------------------------------- #
+# Desk upgrade D7: the UK
+# --------------------------------------------------------------------------- #
+def gbp_bn(x: float) -> str:
+    """227.2 -> 'GBP 227 bn' (absolute value)."""
+    return f"GBP {abs(x):,.0f} bn"
+
+
+def uk_repo_sentence(wk: dict, trend: dict) -> str:
+    """Are UK reserves increasingly supplied through repo? From the D7 summary."""
+    head = {"increasingly": "UK reserves are increasingly supplied through repo",
+            "decreasingly": "UK reserves are decreasingly supplied through repo",
+            "no significant change": "The share of UK reserves supplied through repo shows no significant change"}[
+        trend["verdict"]]
+    hist = ""
+    if wk.get("repo_share_52w_ago") is not None and wk.get("repo_share_104w_ago") is not None:
+        hist = (f", against {wk['repo_share_52w_ago']:.0f}% a year earlier and {wk['repo_share_104w_ago']:.0f}% two "
+                "years earlier")
+    qe = ""
+    if wk.get("apf_104w_ago") is not None:
+        moved = "shrank" if wk["apf_bn"] < wk["apf_104w_ago"] else "grew"
+        qe = (f" Over the same two years the QE portfolio (the loan to the Asset Purchase Facility) {moved} from "
+              f"{gbp_bn(wk['apf_104w_ago'])} to {gbp_bn(wk['apf_bn'])}.")
+    return (f"{head}: the Short-Term Repo ({gbp_bn(wk['str_bn'])}) and the Indexed Long-Term Repo "
+            f"({gbp_bn(wk['iltr_bn'])}) together equal {wk['repo_share_pct']:.0f}% of reserve balances "
+            f"({gbp_bn(wk['reserves_bn'])}, {pd_day(wk['latest_date'])}){hist}. Over the last {trend['n']} weeks the "
+            f"share moved {trend['slope_pp_per_year']:+.1f} percentage points a year "
+            f"({ci_text(trend['ci'][0], trend['ci'][1], ' pp')}), {significance_phrase(trend['p_value'])}.{qe}")
+
+
+def uk_spread_sentence(sp: dict, rho: float) -> str:
+    """Where SONIA sits against Bank Rate and how that moved with the repo share."""
+    years = sorted(sp["by_year"], key=int)            # JSON turns the year keys into strings
+    first = next((y for y in years if int(y) >= 2023), years[0])
+    f, last = sp["by_year"][first]["median"], sp["recent_median_bp"]
+    moved = "closer to" if abs(last) < abs(f) else "further from"
+    side = "below" if last < 0 else "above" if last > 0 else "at"
+    link = ("rose together with" if rho > 0 else "fell as") + " the repo share"
+    return (f"SONIA sits {bp(last)} {side} Bank Rate (median of the last 250 days; it was above Bank Rate on "
+            f"{sp['recent_share_above']:.0%} of them), {moved} Bank Rate than in {first} (median {signed_bp(f)}). "
+            f"Weekly, SONIA minus Bank Rate {link} since 2023 (rank correlation {rho:+.2f}, descriptive).")
