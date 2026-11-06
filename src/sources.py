@@ -156,7 +156,15 @@ HOLDERS = [Series(f"hold_{c}_{h}", "eurostat",
                   "annual", HOLDER_LAG_BD, "EUR mn", f"General government debt of {c} held by {label}")
            for c in HOLDER_COUNTRIES for h, label in HOLDER_SECTORS.items()]
 
-ALL_SERIES: list[Series] = [*EUR, *YIELDS, *USD, *JPY, *WEBSTAT_YIELDS, *HOLDERS]
+# --------------------------------------------------------------------------- #
+# United Kingdom (Bank of England database, IADB; D6 and D7)
+# --------------------------------------------------------------------------- #
+GBP = [
+    Series("bank_rate", "boe", "IUDBEDR", "daily", 0, "%", "Bank Rate (announced in advance)"),
+    Series("sonia", "boe", "IUDSOIA", "daily", 1, "%", "SONIA (published 09:00 London on T+1)"),
+]
+
+ALL_SERIES: list[Series] = [*EUR, *YIELDS, *USD, *JPY, *WEBSTAT_YIELDS, *HOLDERS, *GBP]
 BY_NAME: dict[str, Series] = {s.name: s for s in ALL_SERIES}
 
 

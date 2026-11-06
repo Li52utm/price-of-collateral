@@ -129,3 +129,5 @@ the next new issue. The size of the difference is measured daily against the Bun
 | Banque de France Webstat | French 2-year constant maturity (TEC2) `FM.D.FR.EUR.FR2.BB.FRMOYTEC2.HSTA` (`oat2_daily`) | Yes | Daily | 2004 → | 1 | D5 |
 | Bundesbank | German 2-year constant maturity (Svensson) `BBSIS/D.I.ZST.ZI.EUR.S1311.B.A604.R02XX.R.A.A._Z._Z.A` (`bund2_cm`) | No | Daily | 1997 → | 1 | D5 |
 | Bundesbank | Current 2-year Federal Treasury note `BBSSY/D.REN.EUR.A610.000000WT0202.A` (`bund2_daily`) | No | Daily | 2013 → | 1 | D5 sensitivity |
+
+| Bank of England IADB | Bank Rate `IUDBEDR` (`bank_rate`), SONIA `IUDSOIA` (`sonia`) | No (browser-like User-Agent required) | Daily | 2008 → | 0 and 1 | D6, D7 |

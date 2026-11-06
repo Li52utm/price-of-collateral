@@ -655,6 +655,31 @@ Code: `src/curve.py`, output `results/france/curve.json` and `results/france/cur
   (10-year spread or 2-year spread) is named.
 - **Chart:** daily 2s10s for both countries and D since 2024, with the chapter IV event markers (`src/events.py`).
 
+## Desk upgrade D6: central-bank repo facility pricing (fixed 2026-11-06, before the table was computed)
+
+Code: `src/facilities.py`, output `results/desk/facilities.json`.
+
+- One row per central bank, values on the as-of date (the last published value on or before it):
+  - **ECB**: floor = deposit facility rate (DFR, reserves above requirements earn it); repo backstop = the main
+    refinancing operations rate (MRO: weekly repo at a fixed rate with full allotment); overnight ceiling = marginal
+    lending facility (MLF). All three from the ECB Data Portal.
+  - **Fed**: floor = interest on reserve balances (IORB); the ON RRP award rate (`RRPONTSYAWARD`) is shown as the
+    floor for non-banks; repo backstop = the standing repo facility (SRF) rate, taken as the top of the target range
+    (`DFEDTARU`) by the rule the FOMC implementation notes state (plan adjustment: no series of the SRF rate is
+    published; checked against the 17 June 2026 note).
+  - **Bank of England**: floor = Bank Rate (`IUDBEDR`; reserves are remunerated at Bank Rate); repo backstop = the
+    Short-Term Repo facility, priced at Bank Rate (+0 bp, Market Notice of 4 August 2022). The Indexed Long-Term
+    Repo is priced by auction and is not in the table.
+  - **Bank of Japan**: floor = the policy rate (`data.boj_policy`, the rate paid on current account balances);
+    backstop = the complementary lending facility at the basic loan rate. Since 1 August 2024 the project's BoJ
+    policy rate IS the basic loan rate minus 0.25, so the 25 bp is true by construction (the BoJ's own rule), not a
+    measurement.
+- Columns: floor, backstop, backstop minus floor (bp), and the headroom of the market overnight rate = backstop
+  minus the latest market rate (bp; €STR, SOFR, SONIA, TONA). SONIA (`IUDSOIA`, lag 1) and Bank Rate (lag 0) are
+  added to the snapshot.
+- Generated wording: the central banks ordered by backstop minus floor, the closest and the furthest named; the
+  market rate with the least headroom named.
+
 ## Corrections log
 
 - **2026-11-04, Phase 2 sample filter.** Wrong: `forecast.dataset` dropped every day on which the

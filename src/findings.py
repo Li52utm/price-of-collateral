@@ -25,7 +25,8 @@ SUMMARIES = {"forecast": "forecast/summary.json", "corridors": "corridors/summar
              "robustness": "robustness/table.json", "construction": "france/construction.json",
              "runway": "desk/runway.json", "autonomous": "desk/autonomous.json",
              "toolkit": "desk/toolkit.json", "holders": "desk/holders.json",
-             "curve": "france/curve.json"}
+             "curve": "france/curve.json",
+             "facilities": "desk/facilities.json"}
 
 QUESTIONS = {
     "story": "What is repo, and why does the bond you hand over matter?",
@@ -232,6 +233,12 @@ def steepness_line(r: dict) -> str | None:
     """D5: France's 2s10s against Germany's (None if the result is missing)."""
     c = r.get("curve")
     return w.steepness_sentence(c["main"], c["sensitivity_current_bonds"]["verdict"]) if c else None
+
+
+def facility_line(r: dict) -> str | None:
+    """D6: the facility-pricing comparison (None if the result is missing)."""
+    f = r.get("facilities")
+    return w.facility_sentence(f["rows"]) if f else None
 
 
 ANSWERS = {"story": story_answer, "corridors": corridors_answer, "collateral": collateral_answer,

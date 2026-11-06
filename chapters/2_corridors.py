@@ -139,4 +139,20 @@ else:
                   height=380, sources="ECB Data Portal")
     st.caption("Scenarios, not forecasts: the last 52 weeks' average weekly change at 0.5, 1 and 1.5 times its pace.")
     ui.md(lines[3])
+
+ui.section_heading("vi", "Where the repo backstop sits")
+fac = ui.results().get("facilities")
+if fac is None:
+    ui.missing_results("facility pricing")
+else:
+    ui.md(findings.facility_line(ui.results()))
+    rows = [{"Central bank": x["bank"], "Floor": x["floor_name"], "Floor (%)": x["floor"], "Repo backstop":
+             x["backstop_name"], "Backstop (%)": x["backstop"], "Backstop minus floor (bp)":
+             x["backstop_minus_floor_bp"], "Market rate": x["market_name"], "Market (%)": x["market"],
+             "Headroom: backstop minus market (bp)": x["headroom_bp"]} for x in fac["rows"]]
+    ui.table(pd.DataFrame(rows).round(3))
+    for x in fac["rows"]:
+        if x["extra"] or x["note"]:
+            extra = "; ".join(f"{k} {v:.2f}%" for k, v in x["extra"].items())
+            st.caption(f"{x['bank']}: " + "; ".join(p for p in (extra, x["note"]) if p))
 ui.footer()

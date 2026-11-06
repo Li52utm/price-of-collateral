@@ -968,3 +968,21 @@ def steepness_sentence(s: dict, sens_verdict: str | None = None) -> str:
             f"excess of {signed_bp(lt['excess'], 0)} ({s['latest_percentile']:.0%} percentile of {years}, where the "
             f"95th percentile is {ref['p95']:.0f} bp). Since {pd_day(s['base_date'])} the excess has {moved} by "
             f"{bp(ch['excess'], 0)}: {legs}.{sens}")
+
+
+# --------------------------------------------------------------------------- #
+# Desk upgrade D6: central-bank repo facility pricing
+# --------------------------------------------------------------------------- #
+def facility_sentence(rows: list[dict]) -> str:
+    """Compare where each repo backstop sits above its floor, and which market rate has the least headroom."""
+    order = sorted(rows, key=lambda r: r["backstop_minus_floor_bp"])
+    parts = [f"{r['bank']} {r['backstop_minus_floor_bp']:+.0f} bp" for r in order]
+    lo, hi = order[0], order[-1]
+    closest = (f"the {lo['bank']}'s backstop sits at its floor" if lo["backstop_minus_floor_bp"] == 0 else
+               f"the {lo['bank']}'s backstop sits closest to its floor")
+    tight = min(rows, key=lambda r: r["headroom_bp"])
+    above = tight["headroom_bp"] < 0
+    head = (f"{tight['market_name']} is {bp(tight['headroom_bp'], 0)} {'above' if above else 'below'} the "
+            f"{tight['bank']}'s backstop rate, the least headroom of the four")
+    return (f"Repo backstop minus floor: {and_list(parts)}. So {closest} and the {hi['bank']}'s furthest from it. "
+            f"{head}.")
