@@ -501,6 +501,46 @@ Code: `src/construction.py`, output `results/france/construction.json`.
   the measured gap is reported as a caveat next to them. Generated wording: the gap is "small" if the absolute
   mean daily gap is at most 3 bp (about one tenth of the 30 bp blowout threshold), otherwise "material".
 
+## Desk upgrade D1: the euro runway (fixed 2026-11-06, before any D1 number was computed)
+
+Code: `src/runway.py`, output `results/desk/runway.json` and `results/desk/runway_paths.csv`.
+
+**Known when this was written.** Chapter II's committed results already show the latest weekly liquidity proxy
+(EUR 2.27 trillion, 23 October 2026) below the whole bootstrap band of the euro pressure point (kink 3.19, band
+2.43 to 4.09 trillion). The rules below were written with that knowledge and do not depend on it; they say how a
+boundary that has already been crossed is reported instead of moving the boundary.
+
+### 1. Distance to the pressure point
+
+- Inputs: the chapter II euro kink and its 95% moving-block bootstrap band (`results/corridors/summary.json`,
+  unchanged) and the latest weekly liquidity proxy (current accounts + deposit facility - marginal lending).
+- Distance (EUR bn) = latest liquidity - boundary, for the band's upper end, the kink and the band's lower end.
+  Positive: liquidity still above the boundary (runway left); negative: already below it.
+- If the kink is "not identified" (U0 rule), no distance is quoted.
+
+### 2. Three scenarios (not forecasts)
+
+- **Base drift**: the mean weekly change of the liquidity proxy over the trailing 52 weeks to the latest week.
+  Cross-check reported beside it: the mean weekly change of Eurosystem monetary-policy securities (APP + PEPP,
+  `ILM/W.U2.C.A070100.U2.EUR`) over the same 52 weeks; their ratio says how much of the drain is portfolio run-off.
+- **Scenarios**: slow = 0.5 x base drift, base = 1.0 x, fast = 1.5 x. Linear weekly paths from the latest week to
+  31 December 2028. No other input (no assumption on TLTROs, autonomous factors or policy changes).
+- **Output per scenario**: the first week the path is at or below the band's upper end, the kink and the band's
+  lower end (the "date range at which liquidity reaches the pressure band" is upper-end date to lower-end date),
+  and the projected level on 31 December 2026 and 31 December 2027. A boundary the latest level is already below
+  is reported as "already crossed" together with the week the ACTUAL proxy last moved from above to below it (the
+  start of the current run below it). If the base drift is not negative, no crossing date is given.
+- **Wording** (generated): always calls these scenarios built from a mechanical extrapolation, not forecasts.
+
+### 3. Has €STR minus DFR started drifting up?
+
+- Sample: every published €STR day in the 12 months to the as-of date (as-of date minus 365 calendar days, exclusive).
+- OLS of the daily spread (bp) on time in years, Newey-West (HAC) standard errors with 20 lags (about one month of
+  business days; the spread is persistent). Two-sided p-value. **"Drifting up" iff slope > 0 and p < 0.05**;
+  "drifting down" iff slope < 0 and p < 0.05; otherwise "no significant trend". One test, so no Holm family.
+- Sensitivity (reported, not used for the wording): the same regression without month-end turn days (the last
+  business day of each month and the first business day after it).
+
 ## Corrections log
 
 - **2026-11-04, Phase 2 sample filter.** Wrong: `forecast.dataset` dropped every day on which the

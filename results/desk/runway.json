@@ -1,0 +1,124 @@
+{
+ "data_as_of": "2026-11-03",
+ "latest_date": "2026-10-30",
+ "latest_bn": 2242.654,
+ "kink_identified": true,
+ "boundaries_bn": {
+  "upper": 4087.708749427966,
+  "kink": 3186.4059042372883,
+  "lower": 2434.1931738135595
+ },
+ "distance_bn": {
+  "upper": -1845.0547494279658,
+  "kink": -943.7519042372883,
+  "lower": -191.5391738135595
+ },
+ "drift": {
+  "liquidity_bn_per_week": -8.090807692307695,
+  "securities_bn_per_week": -9.856346153846149,
+  "securities_share": 1.2182153536064184,
+  "liquidity_12m_change_bn": -420.72200000000015,
+  "securities_12m_change_bn": -512.5299999999997,
+  "weeks": 52
+ },
+ "scenarios": {
+  "slow": {
+   "scale": 0.5,
+   "weekly_drift_bn": -4.045403846153848,
+   "crossings": {
+    "upper": {
+     "status": "already crossed",
+     "date": "2023-06-30"
+    },
+    "kink": {
+     "status": "already crossed",
+     "date": "2024-09-27"
+    },
+    "lower": {
+     "status": "already crossed",
+     "date": "2026-05-01"
+    }
+   },
+   "levels_bn": {
+    "2026-12-31": 2210.290769230769,
+    "2027-12-31": 1995.8843653846152
+   }
+  },
+  "base": {
+   "scale": 1.0,
+   "weekly_drift_bn": -8.090807692307695,
+   "crossings": {
+    "upper": {
+     "status": "already crossed",
+     "date": "2023-06-30"
+    },
+    "kink": {
+     "status": "already crossed",
+     "date": "2024-09-27"
+    },
+    "lower": {
+     "status": "already crossed",
+     "date": "2026-05-01"
+    }
+   },
+   "levels_bn": {
+    "2026-12-31": 2177.9275384615385,
+    "2027-12-31": 1749.1147307692306
+   }
+  },
+  "fast": {
+   "scale": 1.5,
+   "weekly_drift_bn": -12.136211538461543,
+   "crossings": {
+    "upper": {
+     "status": "already crossed",
+     "date": "2023-06-30"
+    },
+    "kink": {
+     "status": "already crossed",
+     "date": "2024-09-27"
+    },
+    "lower": {
+     "status": "already crossed",
+     "date": "2026-05-01"
+    }
+   },
+   "levels_bn": {
+    "2026-12-31": 2145.5643076923075,
+    "2027-12-31": 1502.3450961538458
+   }
+  }
+ },
+ "trend": {
+  "main": {
+   "n": 255,
+   "start": "2025-11-04",
+   "end": "2026-11-03",
+   "slope_bp_per_year": 1.0949003757052327,
+   "ci": [
+    0.8118973592513583,
+    1.377903392159107
+   ],
+   "p_value": 3.38083549468287e-14,
+   "first_bp": -7.115,
+   "last_bp": -5.980000000000002,
+   "hac_lags": 20,
+   "verdict": "drifting up"
+  },
+  "without_turn_days": {
+   "n": 230,
+   "start": "2025-11-04",
+   "end": "2026-10-29",
+   "slope_bp_per_year": 1.0590109588819991,
+   "ci": [
+    0.7580863239713355,
+    1.3599355937926627
+   ],
+   "p_value": 5.293100337934134e-12,
+   "first_bp": -7.115,
+   "last_bp": -6.025,
+   "hac_lags": 20,
+   "verdict": "drifting up"
+  }
+ }
+}

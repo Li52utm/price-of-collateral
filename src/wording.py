@@ -719,3 +719,83 @@ def construction_monthly_sentence(oat_irs: float, bund_irs: float, bund_cm_irs: 
     return (f"Against the ECB's monthly 10-year yields ({n_months} months since 2010), the monthly mean of the "
             f"TEC10 differs by {signed_bp(oat_irs)}, the current Bund by {signed_bp(bund_irs)} and the "
             f"constant-maturity Bund by {signed_bp(bund_cm_irs)} on average.")
+
+
+# --------------------------------------------------------------------------- #
+# Desk upgrade D1: the euro runway
+# --------------------------------------------------------------------------- #
+def eur_bn(x: float) -> str:
+    """2242.6 -> 'EUR 2,243 bn' (absolute value; the sentence carries the sign)."""
+    return f"EUR {abs(x):,.1f} bn" if abs(x) < 100 else f"EUR {abs(x):,.0f} bn"
+
+
+def runway_distance_sentence(latest_bn: float, latest_date: str, bounds: dict, dist: dict | None) -> str:
+    """Where euro liquidity stands against chapter II's pressure point and its band."""
+    if dist is None:
+        return (f"Euro liquidity is {eur_bn(latest_bn)} ({latest_date}); chapter II could not place a pressure "
+                "point, so no distance is quoted.")
+    def part(name: str, label: str) -> str:
+        d = dist[name]
+        return f"{eur_bn(d)} {'above' if d > 0 else 'below'} {label} ({eur_bn(bounds[name])})"
+    n_below = sum(v <= 0 for v in dist.values())
+    if n_below == 3:
+        lead = "Euro liquidity is already below the whole pressure band identified in chapter II"
+    elif n_below == 0:
+        lead = "Euro liquidity is still above the whole pressure band identified in chapter II"
+    else:
+        lead = "Euro liquidity is inside the pressure band identified in chapter II"
+    return (f"{lead}: {eur_bn(latest_bn)} on {latest_date}, {part('upper', 'the band upper end')}, "
+            f"{part('kink', 'the kink')} and {part('lower', 'the band lower end')}.")
+
+
+def runway_drift_sentence(liq_week: float, sec_week: float) -> str:
+    """The trailing-year drain of liquidity and of the monetary-policy portfolio (EUR bn per week)."""
+    def move(x: float) -> str:
+        return f"{'fell' if x < 0 else 'rose' if x > 0 else 'was unchanged'} by {eur_bn(x)} a week"
+    if liq_week < 0 and sec_week < 0:
+        share = ("more than accounts for" if sec_week < liq_week else "accounts for most of" if sec_week < liq_week / 2
+                 else "accounts for less than half of")
+        tail = f"so the portfolio run-off {share} the drain."
+    else:
+        tail = "so the portfolio run-off is not what moved liquidity."
+    return (f"Over the last 52 weeks euro liquidity {move(liq_week)} on average and the Eurosystem's APP and PEPP "
+            f"holdings {move(sec_week)}, {tail}")
+
+
+def runway_scenario_sentence(scenarios: dict | None) -> str:
+    """When each mechanical scenario reaches the pressure band. Always labelled as scenarios, not forecasts."""
+    if not scenarios:
+        return "No scenario is shown because the pressure point is not identified."
+    base = scenarios["base"]["crossings"]
+    statuses = {v["status"] for s in scenarios.values() for v in s["crossings"].values()}
+    lead = ("These are scenarios, not forecasts: straight-line extensions of the last year's drain at half, the same "
+            "and one and a half times its pace, with no view on policy.")
+    if statuses == {"already crossed"}:
+        when = (f"Every scenario starts below the band, so there is no date to reach it: liquidity fell below the band "
+                f"upper end on {pd_day(base['upper']['date'])}, below the kink on {pd_day(base['kink']['date'])} "
+                f"and below the lower end on {pd_day(base['lower']['date'])}.")
+    else:
+        bits = []
+        for name in ("slow", "base", "fast"):
+            c = scenarios[name]["crossings"]
+            def show(x: dict) -> str:
+                return pd_day(x["date"]) if x["date"] else x["status"]
+            bits.append(f"{name} {show(c['upper'])} to {show(c['lower'])}")
+        when = "Dates at which liquidity enters and leaves the band: " + "; ".join(bits) + "."
+    lv = {k: v["levels_bn"] for k, v in scenarios.items()}
+    levels = (f"On 31 December 2027 the paths stand at {eur_bn(lv['slow']['2027-12-31'])} (slow), "
+              f"{eur_bn(lv['base']['2027-12-31'])} (base) and {eur_bn(lv['fast']['2027-12-31'])} (fast).")
+    return f"{lead} {when} {levels}"
+
+
+def spread_trend_sentence(slope: float, lo: float, hi: float, p_value: float, verdict: str, first: float,
+                          last: float, sens_verdict: str) -> str:
+    """Whether €STR minus the DFR has drifted over the last 12 months (HAC trend test)."""
+    sig = significance_phrase(p_value)
+    head = {"drifting up": "€STR minus the DFR has started drifting up",
+            "drifting down": "€STR minus the DFR has been drifting down",
+            "no significant trend": "€STR minus the DFR shows no significant trend"}[verdict]
+    same = ("the same holds without month-end turn days" if sens_verdict == verdict else
+            f"without month-end turn days the result reads '{sens_verdict}'")
+    return (f"{head} over the last 12 months: a slope of {slope:+.2f} bp a year ({ci_text(lo, hi, ' bp', 2)}), "
+            f"{sig}, from {first:+.1f} bp to {last:+.1f} bp (20-day averages); {same}.")

@@ -9,6 +9,7 @@ import pandas as pd  # noqa: E402
 import plotly.graph_objects as go  # noqa: E402
 import streamlit as st  # noqa: E402
 
+import findings  # noqa: E402
 import ui  # noqa: E402
 import wording as w  # noqa: E402
 
@@ -108,4 +109,34 @@ cases = pd.DataFrame(c["cases"])[["case", "currency", "peak_bp", "peak_date", "b
 cases.columns = ["Episode", "Currency", "Peak spread (bp)", "Peak date", "Two weeks before (bp)", "Liquidity at start "
                                                                                                   "(tn)"]
 ui.table(cases.round(2))
+
+ui.section_heading("v", "The euro runway")
+runway = ui.results().get("runway")
+paths = ui.csv("desk/runway_paths.csv")
+if runway is None or paths is None:
+    ui.missing_results("euro runway")
+else:
+    lines = findings.runway_lines(ui.results())
+    for line in lines[:3]:
+        ui.md(line)
+    fig = go.Figure()
+    actual = paths["actual"].dropna()
+    fig.add_scatter(x=actual.index, y=actual, name="liquidity (actual)",
+                    line=dict(color=ui.CURRENCY_COLORS["EUR"], width=2))
+    proj = paths[["slow", "base", "fast"]].dropna()
+    fig.add_scatter(x=proj.index, y=proj["slow"], line=dict(width=0), showlegend=False, hoverinfo="skip")
+    fig.add_scatter(x=proj.index, y=proj["fast"], fill="tonexty",
+                    fillcolor=ui.hex_to_rgba(ui.CURRENCY_COLORS["EUR"], 0.15), line=dict(width=0),
+                    name="slow to fast scenario")
+    fig.add_scatter(x=proj.index, y=proj["base"], name="base scenario",
+                    line=dict(color=ui.CURRENCY_COLORS["EUR"], width=2, dash="dash"))
+    b = runway["boundaries_bn"]
+    if runway["kink_identified"]:
+        fig.add_hrect(y0=b["lower"], y1=b["upper"], fillcolor=ui.COLORS["amber_light"], opacity=0.25, line_width=0)
+        fig.add_hline(y=b["kink"], line=ui.ref_line(ui.COLORS["amber"], "dash"), annotation_text="pressure point")
+    fig.update_yaxes(title="euro liquidity proxy (EUR bn)")
+    ui.show_chart(fig, "Euro liquidity and three mechanical scenarios (shaded band: chapter II pressure band)",
+                  height=380, sources="ECB Data Portal")
+    st.caption("Scenarios, not forecasts: the last 52 weeks' average weekly change at 0.5, 1 and 1.5 times its pace.")
+    ui.md(lines[3])
 ui.footer()

@@ -22,7 +22,8 @@ SUMMARIES = {"forecast": "forecast/summary.json", "corridors": "corridors/summar
              "bootstrap": "inference/bootstrap.json", "tests": "inference/tests.json",
              "calibration": "inference/calibration.json", "frozen_v2": "forecasts/yearend_2026_v2.json",
              "v2": "forecast/v2_summary.json", "score_v2": "forecasts/yearend_2026_v2_score.json",
-             "robustness": "robustness/table.json", "construction": "france/construction.json"}
+             "robustness": "robustness/table.json", "construction": "france/construction.json",
+             "runway": "desk/runway.json"}
 
 QUESTIONS = {
     "story": "What is repo, and why does the bond you hand over matter?",
@@ -178,6 +179,20 @@ def construction_lines(r: dict) -> list[str]:
                                     c["latest_spread_cm_bp"], c["small"], c["small_gap_bp"], g["n_days"]),
             w.construction_monthly_sentence(m["oat_tec10_vs_irs_fr"]["mean_bp"], m["bund_current_vs_irs_de"]["mean_bp"],
                                             m["bund_cm_vs_irs_de"]["mean_bp"], m["oat_tec10_vs_irs_fr"]["n_months"])]
+
+
+def runway_lines(r: dict) -> list[str]:
+    """D1 sentences: distance to the euro pressure band, the drain, the scenarios and the trend test."""
+    rw = r.get("runway")
+    if not rw:
+        return []
+    tr, sens = rw["trend"]["main"], rw["trend"]["without_turn_days"]
+    return [w.runway_distance_sentence(rw["latest_bn"], w.pd_day(rw["latest_date"]), rw["boundaries_bn"],
+                                       rw["distance_bn"]),
+            w.runway_drift_sentence(rw["drift"]["liquidity_bn_per_week"], rw["drift"]["securities_bn_per_week"]),
+            w.runway_scenario_sentence(rw["scenarios"]),
+            w.spread_trend_sentence(tr["slope_bp_per_year"], tr["ci"][0], tr["ci"][1], tr["p_value"], tr["verdict"],
+                                    tr["first_bp"], tr["last_bp"], sens["verdict"])]
 
 
 ANSWERS = {"story": story_answer, "corridors": corridors_answer, "collateral": collateral_answer,
