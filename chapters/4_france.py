@@ -181,7 +181,31 @@ with st.expander("Source links"):
         ui.md(f"- {ev['date']}, {ev['event']}: " + ", ".join(f"[{s['outlet']}]({s['url']})" for s in ev["sources"]))
 st.caption(f"Sources checked on {events.CHECKED_ON}. Excluded: "
            + "; ".join(f"{x['event']} ({x['reason']})" for x in events.EXCLUDED) + ".")
-ui.section_heading("viii", "Who absorbed France's new debt")
+ui.section_heading("viii", "Does France carry extra curve steepness?")
+steep = findings.steepness_line(ui.results())
+cv = ui.csv("france/curve_daily.csv")
+if steep is None or cv is None:
+    ui.missing_results("French curve")
+else:
+    ui.md(steep)
+    fig = go.Figure()
+    fig.add_scatter(x=cv.index, y=cv["fr_2s10s"], name="France 2s10s (TEC10 - TEC2)",
+                    line=dict(color=ui.COUNTRY_COLORS["FR"], width=1.5))
+    fig.add_scatter(x=cv.index, y=cv["de_2s10s"], name="Germany 2s10s (constant maturity)",
+                    line=dict(color=ui.COUNTRY_COLORS["DE"], width=1.5))
+    fig.add_scatter(x=cv.index, y=cv["excess"], name="France minus Germany",
+                    line=dict(color=ui.COLORS["slate"], width=1.5, dash="dash"))
+    for ev in events.EVENTS:
+        if pd.Timestamp(ev["date"]) >= cv.index.min():
+            fig.add_vline(x=ev["date"], line=ui.ref_line(ui.COLORS["mist"], "dot"))
+    fig.add_hline(y=0, line=ui.ref_line())
+    fig.update_yaxes(title="10-year minus 2-year yield (bp)")
+    ui.show_chart(fig, "2s10s in France and Germany since 2024 (dotted lines: the verified events above)", height=360,
+                  sources=SRC_DAILY)
+    st.caption("Constant-maturity yields on both sides: Webstat TEC2 and TEC10; the Bundesbank's fitted (Svensson) "
+               "2-year and 10-year. The reference range is 2010-2023, before the French political episode.")
+
+ui.section_heading("ix", "Who absorbed France's new debt")
 absorb = findings.france_absorption_line(ui.results())
 hold = ui.results().get("holders")
 if absorb is None or not hold["france_absorption"]:

@@ -126,3 +126,6 @@ the next new issue. The size of the difference is measured daily against the Bun
 | ECB Data Portal | Securities holdings statistics by sector `SHS/Q.I8.<issuer>.<holder>.S13._X.LE.F3...` | No | Quarterly | **ends 2022-Q1**; no Eurosystem holder | — | Not used (see D4 adjustment) |
 | Eurostat | Government debt by holder `gov_10dd_ggd?freq=A&unit=MIO_EUR&sector=S13&maturity=TOTAL&na_item=GD&geo=<C>&sector2=<H>` (`hold_<C>_<H>`), C = FR, IT, DE, ES; H = S1_S2, S121, S122_S123, S124-S129, S2 | No | Annual (31 Dec) | FR, IT, ES 2020 → 2025; DE 1995 → 2025 | 80 | D4 |
 | Eurostat | Quarterly government debt `gov_10q_ggdebt` | No | Quarterly | no holder split for FR (only total debt) | — | Not used |
+| Banque de France Webstat | French 2-year constant maturity (TEC2) `FM.D.FR.EUR.FR2.BB.FRMOYTEC2.HSTA` (`oat2_daily`) | Yes | Daily | 2004 → | 1 | D5 |
+| Bundesbank | German 2-year constant maturity (Svensson) `BBSIS/D.I.ZST.ZI.EUR.S1311.B.A604.R02XX.R.A.A._Z._Z.A` (`bund2_cm`) | No | Daily | 1997 → | 1 | D5 |
+| Bundesbank | Current 2-year Federal Treasury note `BBSSY/D.REN.EUR.A610.000000WT0202.A` (`bund2_daily`) | No | Daily | 2013 → | 1 | D5 sensitivity |

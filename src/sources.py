@@ -57,6 +57,10 @@ EUR = [
            "proxy with full history"),
     Series("bund10_daily", "bbk", "BBSSY/D.REN.EUR.A630.000000WT1010.A", "daily", 1, "%",
            "Daily yield of the current 10-year Bund (Bundesbank): one bond, residual maturity about 9.5 to 10 years"),
+    Series("bund2_daily", "bbk", "BBSSY/D.REN.EUR.A610.000000WT0202.A", "daily", 1, "%",
+           "Daily yield of the current 2-year Federal Treasury note (Bundesbank; D5 sensitivity)"),
+    Series("bund2_cm", "bbk", "BBSIS/D.I.ZST.ZI.EUR.S1311.B.A604.R02XX.R.A.A._Z._Z.A", "daily", 1, "%",
+           "German 2-year constant-maturity yield from the Bundesbank's fitted (Svensson) term structure (D5)"),
     Series("bund10_cm", "bbk", "BBSIS/D.I.ZST.ZI.EUR.S1311.B.A604.R10XX.R.A.A._Z._Z.A", "daily", 1, "%",
            "German 10-year constant-maturity yield from the Bundesbank's fitted (Svensson) term structure (D0)"),
 ]
@@ -130,6 +134,8 @@ WEBSTAT_YIELDS: list[Series] = [
     Series("oat10_daily", "webstat", "FM.D.FR.EUR.FR2.BB.FRMOYTEC10.HSTA", "daily", 1, "%",
            "French 10-year constant-maturity government yield (TEC10), Banque de France; "
            "updates 09:00, 13:00 and 21:00 Paris time"),
+    Series("oat2_daily", "webstat", "FM.D.FR.EUR.FR2.BB.FRMOYTEC2.HSTA", "daily", 1, "%",
+           "French 2-year constant-maturity government yield (TEC2), Banque de France (D5)"),
 ]
 # No daily 10-year benchmark on Webstat for these countries (FM has monthly series only, e.g.
 # FM.M.IT.EUR.FR2.BB.IT10YT_RR.YLD); the project keeps the ECB IRS monthly series for them.

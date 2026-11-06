@@ -24,7 +24,8 @@ SUMMARIES = {"forecast": "forecast/summary.json", "corridors": "corridors/summar
              "v2": "forecast/v2_summary.json", "score_v2": "forecasts/yearend_2026_v2_score.json",
              "robustness": "robustness/table.json", "construction": "france/construction.json",
              "runway": "desk/runway.json", "autonomous": "desk/autonomous.json",
-             "toolkit": "desk/toolkit.json", "holders": "desk/holders.json"}
+             "toolkit": "desk/toolkit.json", "holders": "desk/holders.json",
+             "curve": "france/curve.json"}
 
 QUESTIONS = {
     "story": "What is repo, and why does the bond you hand over matter?",
@@ -225,6 +226,12 @@ def france_absorption_line(r: dict) -> str | None:
     """D4: who absorbed France's new supply (None if the result is missing)."""
     h = r.get("holders")
     return w.france_absorption_sentence(h["france_absorption"]) if h else None
+
+
+def steepness_line(r: dict) -> str | None:
+    """D5: France's 2s10s against Germany's (None if the result is missing)."""
+    c = r.get("curve")
+    return w.steepness_sentence(c["main"], c["sensitivity_current_bonds"]["verdict"]) if c else None
 
 
 ANSWERS = {"story": story_answer, "corridors": corridors_answer, "collateral": collateral_answer,

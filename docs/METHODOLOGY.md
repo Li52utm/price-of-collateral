@@ -632,6 +632,29 @@ Code: `src/holders.py`, output `results/desk/holders.json` and `results/desk/hol
 - Generated wording: for each country the holder whose share rose most and the one whose share fell most; for France,
   the largest absorber and the central bank's change.
 
+## Desk upgrade D5: French term premium, 2s10s against Germany (fixed 2026-11-06, before any D5 number was computed)
+
+Code: `src/curve.py`, output `results/france/curve.json` and `results/france/curve_daily.csv`.
+
+- **Data.** France: Webstat TEC2 `FM.D.FR.EUR.FR2.BB.FRMOYTEC2.HSTA` (`oat2_daily`) and TEC10 (`oat10_daily`), both
+  constant maturity, lag 1. Germany: the Bundesbank's constant-maturity (Svensson) 2-year
+  `BBSIS/D.I.ZST.ZI.EUR.S1311.B.A604.R02XX.R.A.A._Z._Z.A` (`bund2_cm`) and 10-year (`bund10_cm`, D0), lag 1; and the
+  current 2-year Federal Treasury note `BBSSY/D.REN.EUR.A610.000000WT0202.A` (`bund2_daily`) with the current 10-year
+  Bund for the sensitivity.
+- **Main measure (like for like, learning from D0).** 2s10s(FR) = TEC10 - TEC2; 2s10s(DE) = Svensson 10y - Svensson 2y;
+  the excess French steepness D = 2s10s(FR) - 2s10s(DE) (bp), on days with all four yields. Equivalently D = (10-year
+  spread to Germany) - (2-year spread to Germany); both legs are reported.
+- **Sensitivity.** The same with the current German 2-year and 10-year bonds (the construction used by chapter IV's
+  daily spread).
+- **Reference distribution.** Daily D from 1 January 2010 to 31 December 2023 (before the French political episode,
+  the window of the chapter IV euro-wide split): mean, 5th and 95th percentiles. Latest D: its percentile in that
+  window; its change since 7 June 2024 (the base day of the daily decomposition).
+- **Generated wording:** "France carries extra curve steepness relative to Germany, unusually large by its 2010-2023
+  history" iff D > 0 and the latest D is above the 95th percentile of the reference; "... within its 2010-2023 range"
+  iff D > 0 otherwise; "France carries no extra curve steepness" iff D <= 0. The leg that moved more since 7 June 2024
+  (10-year spread or 2-year spread) is named.
+- **Chart:** daily 2s10s for both countries and D since 2024, with the chapter IV event markers (`src/events.py`).
+
 ## Corrections log
 
 - **2026-11-04, Phase 2 sample filter.** Wrong: `forecast.dataset` dropped every day on which the

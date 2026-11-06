@@ -15,7 +15,7 @@
   {
    "name": "Ranges",
    "status": "PASS",
-   "detail": "37 rate series within -1.5%..12.0% (yields -1.5%..40.0%); MMSR collateral-specific rates -2.66%..4.02% (specials allowed down to -5.0%); no negative volumes."
+   "detail": "40 rate series within -1.5%..12.0% (yields -1.5%..40.0%); MMSR collateral-specific rates -2.66%..4.02% (specials allowed down to -5.0%); no negative volumes."
   },
   {
    "name": "Negative-rate periods",

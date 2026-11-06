@@ -943,3 +943,28 @@ def france_absorption_sentence(a: dict) -> str:
     return (f"French government debt {grew} by {eur_bn(total)} from end-{a['base'][:4]} to end-{a['latest'][:4]}. "
             f"{top} absorbed the most, {eur_bn(ch[top])} ({share[top]:.0%} of the increase){other_part}, "
             f"{cb_part}.")
+
+
+# --------------------------------------------------------------------------- #
+# Desk upgrade D5: French curve steepness against Germany
+# --------------------------------------------------------------------------- #
+def steepness_sentence(s: dict, sens_verdict: str | None = None) -> str:
+    """Whether France carries extra 2s10s steepness relative to Germany, from the D5 summary."""
+    lt, ch, ref = s["latest"], s["change_since_base"], s["reference"]
+    years = f"{ref['start'][:4]}-{ref['end'][:4]}"
+    head = {"unusual": f"France carries extra curve steepness relative to Germany, unusually large by its {years} "
+                       "history",
+            "within range": f"France carries extra curve steepness relative to Germany, within its {years} range",
+            "none": "France carries no extra curve steepness relative to Germany"}[s["verdict"]]
+    legs = (f"the 10-year spread to Germany moved {signed_bp(ch['spread10'])} and the 2-year spread "
+            f"{signed_bp(ch['spread2'])}, so the {s['larger_leg']} leg moved more")
+    sens = ""
+    if sens_verdict is not None:
+        sens = (" The same reading holds with the current German bonds instead of constant-maturity yields."
+                if sens_verdict == s["verdict"] else
+                " With the current German bonds instead of constant-maturity yields the reading changes.")
+    moved = "widened" if ch["excess"] > 0 else "narrowed" if ch["excess"] < 0 else "not changed"
+    return (f"{head}: the French 2s10s is {lt['fr_2s10s']:.0f} bp against {lt['de_2s10s']:.0f} bp for Germany, an "
+            f"excess of {signed_bp(lt['excess'], 0)} ({s['latest_percentile']:.0%} percentile of {years}, where the "
+            f"95th percentile is {ref['p95']:.0f} bp). Since {pd_day(s['base_date'])} the excess has {moved} by "
+            f"{bp(ch['excess'], 0)}: {legs}.{sens}")
