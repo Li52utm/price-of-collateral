@@ -16,7 +16,8 @@ def test_note_is_generated_from_results() -> None:
     assert text == build_note.NOTE.read_text(encoding="utf-8")
     assert 2500 <= build_note.word_count(text) <= 4000
     for section in ("## Abstract", "## 2. Data", "## 3. Methods", "## 4. Results", "## 5. Robustness",
-                    "## 6. The frozen Year-End 2026 forecasts", "## 7. Limitations", "## References"):
+                    "## 6. The frozen Year-End 2026 forecasts", "## 7. Limitations", "## References",
+                    "## Appendix A. The funding desk view"):
         assert section in text
     for fig in build_note.FIG_DIR.glob("*.png"):
         assert f"figures/{fig.name}" in text

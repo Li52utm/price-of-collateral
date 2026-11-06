@@ -22,6 +22,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 import pandas as pd  # noqa: E402
 
+import desk_gaps  # noqa: E402
 import desk_note  # noqa: E402
 import events  # noqa: E402
 import findings  # noqa: E402
@@ -167,6 +168,23 @@ def fig_yearends(r: dict) -> str:
 # --------------------------------------------------------------------------- #
 # Text
 # --------------------------------------------------------------------------- #
+def fig_runway() -> str:
+    """D1: euro liquidity with the three mechanical scenarios and the chapter II pressure band."""
+    paths = pd.read_csv(RESULTS / "desk" / "runway_paths.csv", index_col=0, parse_dates=True)
+    rw = json.loads((RESULTS / "desk" / "runway.json").read_text(encoding="utf-8"))
+    fig, ax = plt.subplots(figsize=(8, 3.6))
+    b = rw["boundaries_bn"]
+    ax.axhspan(b["lower"], b["upper"], color="#DDB874", alpha=0.25, label="pressure band (chapter II)")
+    ax.axhline(b["kink"], color="#B7791F", linestyle="--", linewidth=1, label="pressure point")
+    ax.plot(paths.index, paths["actual"], color=CUR["EUR"], linewidth=1.8, label="liquidity (actual)")
+    proj = paths[["slow", "base", "fast"]].dropna()
+    ax.fill_between(proj.index, proj["fast"], proj["slow"], color=CUR["EUR"], alpha=0.15, label="slow to fast")
+    ax.plot(proj.index, proj["base"], color=CUR["EUR"], linestyle="--", linewidth=1.5, label="base scenario")
+    _style(ax, "Euro liquidity and three scenarios (not forecasts)", "EUR bn")
+    ax.legend(fontsize=7, frameon=False, loc="upper right")
+    return _save(fig, "fig7_runway.png", "ECB Data Portal")
+
+
 def ci(d: dict, unit: str = " bp", dec: int = 1) -> str:
     return w.ci_text(d.get("lower"), d.get("upper"), unit, dec)
 
@@ -186,7 +204,7 @@ def build(r: dict) -> str:
     boot, tests, cal, rob = r["bootstrap"], r["tests"]["tests"], r["calibration"], r["robustness"]
     note = desk_note.build(r)
     figs = {"corr": fig_corridors(), "res": fig_reserves(r), "col": fig_collateral(r), "fr": fig_france(),
-            "cal": fig_calibration(r), "ye": fig_yearends(r)}
+            "cal": fig_calibration(r), "ye": fig_yearends(r), "runway": fig_runway()}
     ans = {k: findings.answer(k, r) for k in findings.QUESTIONS}
     as_of = w.pd_day(fc["data_as_of"])
     res_usd, res_eur = cor["reserves"]["USD"], cor["reserves"]["EUR"]
@@ -253,7 +271,8 @@ def build(r: dict) -> str:
     add("| Series | Source | Frequency | Lag (business days) |")
     add("|---|---|---|---|")
     for name in ("estr", "sofr", "tona", "reserves", "eur_liquidity", "repo_dvp_term", "oat10_daily",
-                 "bund10_daily", "y10_IT"):
+                 "bund10_daily", "y10_IT", "bund10_cm", "oat2_daily", "bund2_cm", "ea_resident_liab", "fed_bills",
+                 "fed_repo_total", "hold_FR_S2", "sonia", "bank_rate", "boe_reserves", "boe_str"):
         if name == "eur_liquidity":
             add("| Euro liquidity proxy (current accounts + deposit facility - marginal lending) | ECB | weekly | "
                 f"{sources.lag('ilm_current_accounts')} |")
@@ -469,6 +488,9 @@ def build(r: dict) -> str:
         f"dollar and {v2['EUR']['analogue_test'][-1]['n_prior'] + 1} euro year-ends, which is why v1's 90th and "
         "95th percentiles are not separately identified.")
     add("- €STR is an unsecured deposit rate, not a repo rate; euro repo can behave differently at the turn.")
+    add("- The daily OAT-Bund spread mixes a constant-maturity French yield with the current 10-year Bund (D0); "
+        "holder shares are annual, by domestic sector, and stop at end-2025 (D4); the Fed's standing repo rate is "
+        "taken from its published rule, not a data series (D6).")
     add("- MMSR collateral-specific rates are maintenance-period averages (69 periods), rounded to 1 bp.")
     add("- The euro-wide split for France is monthly because daily Italian and Spanish yields are not free; the "
         "split's interval reflects only the estimation of the euro-wide beta.")
@@ -518,6 +540,53 @@ def build(r: dict) -> str:
         "Information Processing Systems 32.",
     ):
         add(f"- {ref}")
+    add("")
+    add("## Appendix A. The funding desk view (desk upgrade)")
+    add("")
+    add("Each paragraph below is generated from the results files; every modelling choice was fixed in "
+        "docs/METHODOLOGY.md (Desk upgrade D0 to D9) before its number was computed.")
+    add("")
+    add("**Euro runway (D1).** " + " ".join(findings.runway_lines(r)))
+    add("")
+    add(f"![Euro runway]({figs['runway']})")
+    add("")
+    add("**Treasury cash (D2).** " + " ".join(findings.treasury_cash_lines(r)))
+    add("")
+    if r.get("toolkit"):
+        add("**The Fed's year-end toolkit (D3).** " + w.toolkit_pattern_sentence(r["toolkit"]["pattern"]) + " "
+            + w.backstop_line(r["toolkit"]["latest"]))
+        add("")
+    add("**Who holds the collateral (D4).** " + " ".join(findings.holder_lines(r)) + " "
+        + (findings.france_absorption_line(r) or ""))
+    add("")
+    add("**French curve steepness (D5).** " + (findings.steepness_line(r) or ""))
+    add("")
+    add("**Construction of the daily spread (D0).** " + " ".join(findings.construction_lines(r)))
+    add("")
+    if r.get("facilities"):
+        add("**Where the repo backstop sits (D6).** " + (findings.facility_line(r) or ""))
+        add("")
+        add("| Central bank | Floor (%) | Repo backstop (%) | Backstop minus floor (bp) | Market rate "
+            "| Headroom (bp) |")
+        add("|---|---|---|---|---|---|")
+        for x in r["facilities"]["rows"]:
+            add(f"| {x['bank']} | {x['floor']:.2f} | {x['backstop']:.2f} | {x['backstop_minus_floor_bp']:+.0f} | "
+                f"{x['market_name']} {x['market']:.3f} | {x['headroom_bp']:+.1f} |")
+        add("")
+    if r.get("uk"):
+        add("**The UK (D7).** " + " ".join(findings.uk_lines(r)))
+        add("")
+    add("**Year-end: the main risks (D9), ranked by pre-registered severity.**")
+    add("")
+    for i, line in enumerate(note["risks"], 1):
+        add(f"{i}. {line}")
+    add("")
+    add("**What a desk sees that this project cannot (D8).**")
+    add("")
+    add("| Market information | Why it matters | Public proxy used here |")
+    add("|---|---|---|")
+    for g in desk_gaps.GAPS:
+        add(f"| {g['item']} | {g['why']} | {g['proxy']} |")
     add("")
     return "\n".join(lines)
 

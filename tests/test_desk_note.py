@@ -51,7 +51,7 @@ def test_findings_are_generated_for_every_chapter() -> None:
     for key in findings.QUESTIONS:
         q, a, e = findings.answer(key, r)
         assert a != findings.NOT_AVAILABLE[0] and e
-    assert len(findings.readme_findings()) == 6
+    assert len(findings.readme_findings()) == 6 + len(findings.desk_findings(r))   # six chapters + desk lines
     assert findings.answer("france", {})[1] == findings.NOT_AVAILABLE[0]
 
 

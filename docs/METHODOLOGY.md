@@ -873,3 +873,25 @@ one-line explanation.
   dropped every IOER row. It now falls back to IOER. No committed result changed (IORB exists in the
   snapshot); the hypothesis test that perturbs or deletes data after a random date now passes for every
   date drawn. Independent audit re-run: 19 of 19 checks match (docs/AUDIT.md).
+
+- **2026-11-06, D0: wrong statement corrected (no number changed).** U1 said both daily 10-year yields were constant
+  maturity; the Bundesbank series used (`BBSSY...WT1010`) is the current 10-year Bund. Measured against the
+  Bundesbank's constant-maturity 10-year (4,784 common days since 2008): the current Bund yields on average 6.9 bp
+  less (7.1 bp over the last 250 days), so the daily OAT-Bund spread reads about 7 bp wider than like for like
+  (161.8 against 154.8 bp on 3 November 2026). Monthly means against the ECB IRS yields (201 months since 2010):
+  TEC10 -1.0 bp, current Bund +4.6 bp, constant-maturity Bund +9.2 bp. The episode rules are unchanged (they compare
+  the spread with its own trailing mean, so a steady gap largely cancels); the caveat is shown in chapter IV.
+- **2026-11-06, D2: data adjustment before any result.** The ECB's weekly government-deposit item starts in
+  November 2025; the parent item (liabilities to other euro area residents) is used, as logged in the D2 block.
+- **2026-11-06, D1-D9 results (all rules fixed above before computing).** D1: euro liquidity EUR 2,243 bn on
+  30 October 2026, already EUR 192 bn below the pressure band's lower end (crossed 1 May 2026); drain EUR 8.1 bn a
+  week (APP + PEPP run-off EUR 9.9 bn a week); base scenario EUR 1,749 bn at end-2027; €STR minus DFR drifting up
+  +1.09 bp a year (HAC p < 0.001). D2: euro +0.09 bp per EUR 100 bn (bootstrap CI +0.03 to +0.19; Holm p 0.048), no
+  out-of-sample gain (R^2 -0.08); dollar TGA -0.68 bp per USD 100 bn (CI -1.86 to +0.06), out-of-sample R^2 +0.13;
+  both "some evidence". D3: repo backstop used at 8 of 34 quarter-ends (3 of 19 before 2023, 5 of 15 since), largest
+  USD 74.6 bn on 31 December 2025. D4: from end-2022 to end-2025 non-residents gained most share and the domestic
+  central bank lost most in FR, IT, DE and ES; France's debt +EUR 505 bn, 88% absorbed by non-residents. D5: French
+  2s10s 127 bp against 34 bp for Germany, excess +93 bp (2010-2023 95th percentile 46 bp): unusual. D6: backstop
+  minus floor BoE 0, Fed 10, ECB 15, BoJ 25 bp (by construction). D7: repo supplies 35% of UK reserves (7% two years
+  earlier), +15.4 pp a year (p < 0.001). D9: five risks at severity 1 (euro liquidity, dollar reserves, France,
+  euro drift, calibration), the dollar backstop at 0.5. Independent audit: 28 of 28 match.

@@ -25,8 +25,17 @@ Data as of 2026-11-03.
 | Desk note: USD expected excess over the turn, night-weighted (bp) | -4.079 | -4.079 | match |
 | Desk note: EUR expected excess over the turn, night-weighted (bp) | -0.042 | -0.042 | match |
 | Desk note verdict (0 = No, 1 = Partly, 2 = Yes) | 0.000 | 0.000 | match |
+| Runway, base scenario: liquidity on 31 Dec 2027 (EUR bn) | 1749.115 | 1749.115 | match |
+| Runway, base scenario: date liquidity fell below the band's lower end (days since 1 Jan 2024) | 851.000 | 851.000 | match |
+| Treasury cash, euro: full-sample coefficient (bp per EUR 100 bn) | 0.088 | 0.088 | match |
+| Holders: non-residents' share of French government debt, latest year-end (%) | 54.333 | 54.333 | match |
+| Facility table: ECB backstop minus floor (bp) | 15.000 | 15.000 | match |
+| Facility table: Federal Reserve backstop minus floor (bp) | 10.000 | 10.000 | match |
+| Facility table: Bank of England backstop minus floor (bp) | 0.000 | 0.000 | match |
+| Facility table: Bank of Japan backstop minus floor (bp) | 25.000 | 25.000 | match |
+| Facility table: SOFR headroom below the SRF rate (bp) | 3.000 | 3.000 | match |
 
-19 of 19 match.
+28 of 28 match.
 
 ## What the audit found
 
@@ -35,3 +44,7 @@ The first run (4 November 2026) matched 7 of 8. The USD turn-day pinball loss di
 ## Upgrade re-run (5 November 2026)
 
 Extended to the upgrade's headline numbers, each rebuilt with independent code from the raw snapshot or the frozen file: one bootstrap interval (the USD reserves slope, by the pre-registered recipe: seed 42, 1,000 resamples, 8-week moving blocks), the Diebold-Mariano p-values of family F1 and their Holm adjustment, the daily France blowout status and start date (Webstat TEC10 minus the Bundesbank Bund), and the corrected desk-note verdict (night-weighted expected excess against the term premium, from the frozen file only).
+
+## Desk upgrade re-run (6 November 2026)
+
+Extended to the desk upgrade, each rebuilt with independent code from the raw snapshot: the euro runway's base scenario (the liquidity proxy from its three weekly items, the trailing 52-week drift, the level on 31 December 2027 and the week liquidity fell below the pressure band's lower end), the euro Treasury-cash coefficient (weekly data set and OLS rebuilt with numpy), the non-residents' share of French government debt, and every row of the facility-pricing table (the Bank of England row by its published rule, the Bank of Japan row by the BoJ's 25 bp rule).

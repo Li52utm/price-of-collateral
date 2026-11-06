@@ -52,7 +52,10 @@ to walk through in an interview.
 
 - `src/` – library code (`sources`, `download`, `data`, `validation`, `pipeline`, `features`,
   `forecast`, `forecast_v2`, `tails`, `corridors`, `collateral`, `france`, `france_daily`, `survival`, `japan`,
-  `events`, `inference` (bootstrap, Holm, calibration), `robustness`, `desk_note`, `wording`, `readme_block`, `ui`)
+  `events`, `inference` (bootstrap, Holm, calibration), `robustness`, `desk_note`, `wording`, `readme_block`, `ui`;
+  desk upgrade: `construction` (D0), `runway` (D1), `autonomous` (D2), `toolkit` (D3), `holders` (D4), `curve` (D5),
+  `facilities` (D6), `uk` (D7), `desk_gaps` (D8), `overview` (D9); their results live in `results/desk/` and
+  `results/france/`)
 - Quality gates: `ruff check` (ruff.toml, line length 120), coverage of src/ excluding ui.py >= 85% (.coveragerc),
   `scripts/reproduce.py` rebuilds every results file and checks it against git (tests/test_determinism.py),
   hypothesis no-look-ahead properties (tests/test_point_in_time.py).
@@ -140,6 +143,10 @@ Every place where data or tools forced a change to the original plan, with the r
   central bank, domestic banks, other domestic financial corporations incl. insurers, pension and investment funds,
   rest of the world), to 2025. Holders are domestic sectors, not euro-area-wide; the ECB's own share is inside "rest
   of the world".
+- **2026-11-06, UK (D7) runs.** The Bank of England database (IADB) is free (browser-like User-Agent needed):
+  SONIA, Bank Rate and the weekly report's reserves, Short-Term Repo, ILTR and APF loan are in the snapshot.
+- **2026-11-06, research note length.** The desk-upgrade section is Appendix A of docs/RESEARCH_NOTE.md, after the
+  references, so the body stays within the U7 limit of 4,000 words.
 - **2026-11-06, Fed standing repo facility rate (D6).** No data series gives the SRF minimum bid rate and the NY Fed
   operations API returned no data to scripts; the rate is taken as the top of the target range, the rule the FOMC's
   implementation notes state (checked against the 17 June 2026 note: SRF 3.75% with the range 3.50-3.75%).

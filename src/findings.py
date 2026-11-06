@@ -274,4 +274,26 @@ def readme_findings(results_dir: Path = RESULTS_DIR) -> list[str]:
         badges = [f"{w.robustness_badge_text(s['holds'], s['n'], s['not_computable'])} ({k})"
                   for k, s in ((r.get("robustness") or {}).get("summary") or {}).items() if s["chapter"] == key]
         lines.append(f"**{q}** {a}. {e}" + (f" *{'; '.join(badges)}.*" if badges else ""))
+    lines += desk_findings(r)
     return lines
+
+
+def desk_findings(r: dict) -> list[str]:
+    """The desk upgrade's headline lines for the README (each generated; missing results are skipped)."""
+    out = []
+    rw = runway_lines(r)
+    if rw:
+        out.append(f"**Euro runway.** {rw[0]} {rw[3]}")
+    cash = treasury_cash_lines(r)
+    if cash:
+        out.append(f"**Treasury cash.** {cash[-1]}")
+    fac = facility_line(r)
+    if fac:
+        out.append(f"**Repo backstops.** {fac}")
+    uk = uk_lines(r)
+    if uk:
+        out.append(f"**United Kingdom.** {uk[0].split(': ')[0]}.")
+    steep = steepness_line(r)
+    if steep:
+        out.append(f"**French curve.** {steep.split(': ')[0]}.")
+    return out

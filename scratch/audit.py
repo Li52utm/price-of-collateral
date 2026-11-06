@@ -209,6 +209,70 @@ checks.append(("Desk note: EUR expected excess over the turn, night-weighted (bp
 checks.append(("Desk note verdict (0 = No, 1 = Partly, 2 = Yes)", float(int(locks["USD"]) + int(locks["EUR"])),
                float({"No": 0, "Partly": 1, "Yes": 2}[rule["verdict"]])))
 
+# --- desk upgrade (6 November 2026): runway, Treasury cash, holders, facility table --------------- #
+as_of = min(s("estr").index.max(), s("sofr").index.max())
+# Euro liquidity proxy rebuilt from the three weekly items (EUR bn); only weeks published by the as-of date
+# (observation date + 2 weekday business days).
+parts = pd.concat([s("ilm_current_accounts"), s("ilm_deposit_facility"), s("ilm_mlf")], axis=1, sort=True).dropna()
+proxy = (parts.iloc[:, 0] + parts.iloc[:, 1] - parts.iloc[:, 2]) / 1e3
+avail = pd.DatetimeIndex(np.busday_offset(np.asarray(proxy.index.values, dtype="datetime64[D]"), 2, roll="forward"))
+proxy = proxy[avail <= as_of]
+drift = (proxy.iloc[-1] - proxy.iloc[-53]) / 52
+steps = len(pd.date_range(proxy.index[-1], "2027-12-31", freq="7D")) - 1
+base_2027 = proxy.iloc[-1] + drift * steps
+corr_sum = json.loads((RES / "corridors" / "summary.json").read_text())["reserves"]["EUR"]
+lower = corr_sum["pressure_band"][0] * 1e3
+above = proxy[proxy > lower]
+run_start = proxy[proxy.index > above.index[-1]].index[0]
+rw = json.loads((RES / "desk" / "runway.json").read_text())
+checks.append(("Runway, base scenario: liquidity on 31 Dec 2027 (EUR bn)", float(base_2027),
+               rw["scenarios"]["base"]["levels_bn"]["2027-12-31"]))
+checks.append(("Runway, base scenario: date liquidity fell below the band's lower end (days since 1 Jan 2024)",
+               float((run_start - pd.Timestamp("2024-01-01")).days),
+               float((pd.Timestamp(rw["scenarios"]["base"]["crossings"]["lower"]["date"])
+                      - pd.Timestamp("2024-01-01")).days)))
+
+# Treasury cash, euro, full-sample coefficient (bp per EUR 100 bn), weekly changes, OLS by numpy.
+cash = s("ea_resident_liab") / 1e5
+liq = proxy_all = (parts.iloc[:, 0] + parts.iloc[:, 1] - parts.iloc[:, 2]) / 1e3 / 100
+weeks = cash.index.intersection(proxy_all.index)
+weeks = weeks[weeks >= eur.index[0] - pd.Timedelta(days=7)]
+rows = {}
+for prev, end in zip(weeks[:-1], weeks[1:]):
+    days = eur[(eur.index > prev) & (eur.index <= end)]
+    if len(days) >= 3:
+        rows[end] = days.mean()
+wk = pd.DataFrame({"spread": pd.Series(rows)})
+wk["cash"], wk["liq"] = cash.reindex(wk.index), liq.reindex(wk.index)
+gap = wk.index.to_series().diff().dt.days
+d = wk.diff()[gap.between(5, 9)].dropna()
+X = np.column_stack([np.ones(len(d)), d["cash"], d["liq"]])
+beta = np.linalg.lstsq(X, d["spread"].to_numpy(), rcond=None)[0]
+auto = json.loads((RES / "desk" / "autonomous.json").read_text())
+checks.append(("Treasury cash, euro: full-sample coefficient (bp per EUR 100 bn)", float(beta[1]),
+               auto["currencies"]["EUR"]["full"]["coef"]["cash"]))
+
+# Holder share: non-residents' share of French government debt at the latest year-end (%).
+share = (s("hold_FR_S2") / s("hold_FR_S1_S2") * 100).dropna()
+holders_csv = pd.read_csv(RES / "desk" / "holders_shares.csv", parse_dates=["date"])
+proj_share = holders_csv[(holders_csv["country"] == "FR") & (holders_csv["holder"] == "Non-residents")]
+checks.append(("Holders: non-residents' share of French government debt, latest year-end (%)", float(share.iloc[-1]),
+               float(proj_share.sort_values("date")["share_pct"].iloc[-1])))
+
+# Facility table: backstop minus floor (bp) for each central bank, and SOFR's headroom below the SRF rate.
+def last_on(name):
+    x = s(name)
+    return float(x[x.index <= as_of].iloc[-1])
+fac = {r["bank"]: r for r in json.loads((RES / "desk" / "facilities.json").read_text())["rows"]}
+mine = {"ECB": (last_on("mro") - last_on("dfr")) * 100,
+        "Federal Reserve": (last_on("fed_upper") - last_on("iorb")) * 100,
+        "Bank of England": 0.0,                                      # STR priced at Bank Rate + 0 bp (rule)
+        "Bank of Japan": (last_on("boj_loan_rate") - (last_on("boj_loan_rate") - 0.25)) * 100}
+for bank, value in mine.items():
+    checks.append((f"Facility table: {bank} backstop minus floor (bp)", value, fac[bank]["backstop_minus_floor_bp"]))
+checks.append(("Facility table: SOFR headroom below the SRF rate (bp)",
+               (last_on("fed_upper") - last_on("sofr")) * 100, fac["Federal Reserve"]["headroom_bp"]))
+
 # --- report -------------------------------------------------------------------------------------- #
 lines = ["# Independent audit", "",
          "`scratch/audit.py` recomputes the numbers below from the raw snapshot (`results/snapshots/series.csv`) "
@@ -236,6 +300,13 @@ lines += ["", f"{n_match} of {len(checks)} match.", "",
           "recipe: seed 42, 1,000 resamples, 8-week moving blocks), the Diebold-Mariano p-values of family F1 "
           "and their Holm adjustment, the daily France blowout status and start date (Webstat TEC10 minus the "
           "Bundesbank Bund), and the corrected desk-note verdict (night-weighted expected excess against the "
-          "term premium, from the frozen file only)."]
+          "term premium, from the frozen file only).", "",
+          "## Desk upgrade re-run (6 November 2026)", "",
+          "Extended to the desk upgrade, each rebuilt with independent code from the raw snapshot: the euro runway's "
+          "base scenario (the liquidity proxy from its three weekly items, the trailing 52-week drift, the level on "
+          "31 December 2027 and the week liquidity fell below the pressure band's lower end), the euro Treasury-cash "
+          "coefficient (weekly data set and OLS rebuilt with numpy), the non-residents' share of French government "
+          "debt, and every row of the facility-pricing table (the Bank of England row by its published rule, the "
+          "Bank of Japan row by the BoJ's 25 bp rule)."]
 (ROOT / "docs" / "AUDIT.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 print("\n".join(lines))

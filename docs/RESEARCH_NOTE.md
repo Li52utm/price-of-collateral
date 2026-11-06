@@ -40,6 +40,17 @@ All data are free and official or quasi-official; the dashboard and this note re
 | French 10-year constant-maturity government yield | WEBSTAT (`FM.D.FR.EUR.FR2.BB.FRMOYTEC10.HSTA`) | daily | 1 |
 | Daily yield of the current 10-year Bund | BBK (`BBSSY/D.REN.EUR.A630.000000WT1010.A`) | daily | 1 |
 | Long-term interest rate for convergence purposes, IT | ECB (`IRS/M.IT.L.L40.CI.0000.EUR.N.Z`) | monthly | 25 |
+| German 10-year constant-maturity yield from the Bundesbank's fitted | BBK (`BBSIS/D.I.ZST.ZI.EUR.S1311.B.A604.R10XX.R.A.A._Z._Z.A`) | daily | 1 |
+| French 2-year constant-maturity government yield | WEBSTAT (`FM.D.FR.EUR.FR2.BB.FRMOYTEC2.HSTA`) | daily | 1 |
+| German 2-year constant-maturity yield from the Bundesbank's fitted | BBK (`BBSIS/D.I.ZST.ZI.EUR.S1311.B.A604.R02XX.R.A.A._Z._Z.A`) | daily | 1 |
+| Liabilities to other euro area residents | ECB (`ILM/W.U2.C.L050000.U2.EUR`) | weekly | 2 |
+| Fed holdings of Treasury bills | FRED (`WSHOBL`) | weekly | 1 |
+| Fed repo operations accepted, all collateral | FRED (`RPONTTLD`) | daily | 1 |
+| General government debt of FR held by non-residents | EUROSTAT (`gov_10dd_ggd?freq=A&unit=MIO_EUR&sector=S13&maturity=TOTAL&na_item=GD&geo=FR&sector2=S2`) | annual | 80 |
+| SONIA | BOE (`IUDSOIA`) | daily | 1 |
+| Bank Rate | BOE (`IUDBEDR`) | daily | 0 |
+| Reserve balances | BOE (`RPWB56A`) | weekly | 1 |
+| Short-Term Repo outstanding | BOE (`RPWB67A`) | weekly | 1 |
 | MMSR secured rates by collateral country | ECB | maintenance period | 10 |
 
 Validation (`docs/DATA_VALIDATION.md`): 10 checks passed, 0 warnings, 0 failures. Limitations: no free daily euro repo rate exists, so the euro forecasting target is €STR (an unsecured rate) minus the deposit facility rate; MMSR collateral-specific repo rates are maintenance-period averages rounded to 1 bp; daily 10-year yields are available free only for France (Banque de France TEC10) and Germany (Bundesbank), so cross-country work on spreads is monthly; French CDS, auction results and haircut histories are not free and are not used.
@@ -210,6 +221,7 @@ Both forecasts are scored automatically once 31 December 2026 is published; To b
 
 - Small samples in the tails: the year-end tail rests on 8 dollar and 7 euro year-ends, which is why v1's 90th and 95th percentiles are not separately identified.
 - €STR is an unsecured deposit rate, not a repo rate; euro repo can behave differently at the turn.
+- The daily OAT-Bund spread mixes a constant-maturity French yield with the current 10-year Bund (D0); holder shares are annual, by domestic sector, and stop at end-2025 (D4); the Fed's standing repo rate is taken from its published rule, not a data series (D6).
 - MMSR collateral-specific rates are maintenance-period averages (69 periods), rounded to 1 bp.
 - The euro-wide split for France is monthly because daily Italian and Spanish yields are not free; the split's interval reflects only the estimation of the euro-wide beta.
 - Binomial calibration intervals assume independent days; forecasts 40 days ahead overlap, so the block-bootstrap coverage intervals are the more honest ones.
@@ -236,3 +248,53 @@ Both forecasts are scored automatically once 31 December 2026 is published; To b
 - Künsch, H. R. (1989). The jackknife and the bootstrap for general stationary observations. Annals of Statistics 17(3).
 - Newey, W. K. and West, K. D. (1987). A simple, positive semi-definite, heteroskedasticity and autocorrelation consistent covariance matrix. Econometrica 55(3).
 - Romano, Y., Patterson, E. and Candès, E. (2019). Conformalized quantile regression. Advances in Neural Information Processing Systems 32.
+
+## Appendix A. The funding desk view (desk upgrade)
+
+Each paragraph below is generated from the results files; every modelling choice was fixed in docs/METHODOLOGY.md (Desk upgrade D0 to D9) before its number was computed.
+
+**Euro runway (D1).** Euro liquidity is already below the whole pressure band identified in chapter II: EUR 2,243 bn on 30 October 2026, EUR 1,845 bn below the band upper end (EUR 4,088 bn), EUR 944 bn below the kink (EUR 3,186 bn) and EUR 192 bn below the band lower end (EUR 2,434 bn). Over the last 52 weeks euro liquidity fell by EUR 8.1 bn a week on average and the Eurosystem's APP and PEPP holdings fell by EUR 9.9 bn a week, so the portfolio run-off more than accounts for the drain. These are scenarios, not forecasts: straight-line extensions of the last year's drain at half, the same and one and a half times its pace, with no view on policy. Every scenario starts below the band, so there is no date to reach it: liquidity fell below the band upper end on 30 June 2023, below the kink on 27 September 2024 and below the lower end on 1 May 2026. On 31 December 2027 the paths stand at EUR 1,996 bn (slow), EUR 1,749 bn (base) and EUR 1,502 bn (fast). €STR minus the DFR has started drifting up over the last 12 months: a slope of +1.09 bp a year (95% CI +0.81 to +1.38 bp), statistically significant (p < 0.001), from -7.1 bp to -6.0 bp (20-day averages); the same holds without month-end turn days.
+
+![Euro runway](figures/fig7_runway.png)
+
+**Treasury cash (D2).** In the euro market there is some evidence that changes in government and other non-bank deposits at the Eurosystem move overnight funding: holding liquidity fixed, €STR minus the DFR rises when Treasury cash rises (+0.09 bp per EUR 100 bn in a week, 95% CI +0.03 to +0.19 bp, which excludes zero); the liquidity term is +0.01 bp per EUR 100 bn (95% CI -0.03 to +0.10 bp). The Treasury-cash coefficient is statistically significant (Holm-adjusted p = 0.048), and the weekly model does not beat a no-change rule out of sample (R² -0.08, 2023 on). In the dollar market there is some evidence that changes in the Treasury General Account move overnight funding: holding reserves fixed, SOFR minus IORB falls when Treasury cash rises (-0.68 bp per USD 100 bn in a week, 95% CI -1.86 to +0.06 bp, which includes zero); the reserves term is -1.56 bp per USD 100 bn (95% CI -2.68 to -0.78 bp). The Treasury-cash coefficient is not statistically significant (Holm-adjusted p = 0.145), and the weekly model beats a no-change rule out of sample (R² +0.13, 2023 on). Treasury cash swings matter only partly for overnight funding in both currencies.
+
+**The Fed's year-end toolkit (D3).** The Fed's repo operations (the standing repo facility from July 2021) were used, at least USD 1 bn, on 8 of 34 quarter-end turns since mid-2018: 3 of 19 turns before 2023 and 5 of 15 from 2023, so the backstop has been used more often since 2023. The largest take-up was USD 74.6 bn on 31 December 2025. When it is used, take-up peaks on the turn itself: USD 12.7 bn a day in the week before, USD 23.7 bn on the day and USD 12.8 bn a day in the week after, on average. Turns with more take-up also had a higher SOFR minus IOR (rank correlation +0.27, descriptive). Backstop: the standing repo facility was not used (at least USD 1 bn) in the last 30 days (latest USD 0.01 bn on 3 November 2026); at the last quarter-end (30 September 2026) it lent USD 1.2 bn with SOFR minus IOR at +0 bp. ON RRP take-up is USD 0.2 bn. Fed bill holdings are USD 572 bn (28 October 2026), up USD 57 bn over 13 weeks.
+
+**Who holds the collateral (D4).** Since quantitative tightening began the pattern is the same for France, Italy, Germany and Spain: the domestic central bank lost the most share and non-residents gained the most. France: from end-2022 to end-2025 the largest gain in share was non-residents (+5.8 pp, to 54%) and the largest loss the domestic central bank (-6.1 pp, to 17%). Italy: from end-2022 to end-2025 the largest gain in share was non-residents (+7.9 pp, to 34%) and the largest loss the domestic central bank (-7.5 pp, to 19%). Germany: from end-2022 to end-2025 the largest gain in share was non-residents (+10.6 pp, to 51%) and the largest loss the domestic central bank (-9.4 pp, to 20%). Spain: from end-2022 to end-2025 the largest gain in share was non-residents (+7.3 pp, to 49%) and the largest loss the domestic central bank (-7.9 pp, to 20%). French government debt grew by EUR 505 bn from end-2022 to end-2025. Non-residents absorbed the most, EUR 445 bn (88% of the increase); domestic banks took EUR 143 bn and domestic insurers, pension and investment funds took EUR 14.9 bn, while the Banque de France reduced its holdings by EUR 96.1 bn.
+
+**French curve steepness (D5).** France carries extra curve steepness relative to Germany, unusually large by its 2010-2023 history: the French 2s10s is 127 bp against 34 bp for Germany, an excess of +93 bp (100% percentile of 2010-2023, where the 95th percentile is 46 bp). Since 7 June 2024 the excess has widened by 57 bp: the 10-year spread to Germany moved +106.8 bp and the 2-year spread +50.3 bp, so the 10-year leg moved more. The same reading holds with the current German bonds instead of constant-maturity yields.
+
+**Construction of the daily spread (D0).** The French leg is a constant-maturity 10-year yield (TEC10) but the German leg is the current 10-year Bund, a single bond. Over 4,784 common days the current Bund yielded on average 6.9 bp below the Bundesbank's constant-maturity 10-year yield (-7.1 bp over the last 250 days), so the daily spread reads wider than a like-for-like spread by about that much: 161.8 bp against 154.8 bp on the latest day. The difference is material (more than 3 bp); the episode rules compare the spread with its own trailing average, so a steady gap largely cancels out of them. Against the ECB's monthly 10-year yields (201 months since 2010), the monthly mean of the TEC10 differs by -1.0 bp, the current Bund by +4.6 bp and the constant-maturity Bund by +9.2 bp on average.
+
+**Where the repo backstop sits (D6).** Repo backstop minus floor: Bank of England +0 bp, Federal Reserve +10 bp, ECB +15 bp and Bank of Japan +25 bp. So the Bank of England's backstop sits at its floor and the Bank of Japan's furthest from it. SONIA is 2 bp below the Bank of England's backstop rate, the least headroom of the four.
+
+| Central bank | Floor (%) | Repo backstop (%) | Backstop minus floor (bp) | Market rate | Headroom (bp) |
+|---|---|---|---|---|---|
+| ECB | 2.50 | 2.65 | +15 | €STR 2.445 | +20.5 |
+| Federal Reserve | 3.90 | 4.00 | +10 | SOFR 3.970 | +3.0 |
+| Bank of England | 3.75 | 3.75 | +0 | SONIA 3.734 | +1.6 |
+| Bank of Japan | 1.25 | 1.50 | +25 | TONA 1.227 | +27.3 |
+
+**The UK (D7).** UK reserves are increasingly supplied through repo: the Short-Term Repo (GBP 143 bn) and the Indexed Long-Term Repo (GBP 84 bn) together equal 35% of reserve balances (GBP 645 bn, 28 October 2026), against 21% a year earlier and 7% two years earlier. Over the last 104 weeks the share moved +15.4 percentage points a year (95% CI +14.8 to +16.0 pp), statistically significant (p < 0.001). Over the same two years the QE portfolio (the loan to the Asset Purchase Facility) shrank from GBP 659 bn to GBP 488 bn. SONIA sits 2.0 bp below Bank Rate (median of the last 250 days; it was above Bank Rate on 0% of them), closer to Bank Rate than in 2023 (median -7.1 bp). Weekly, SONIA minus Bank Rate rose together with the repo share since 2023 (rank correlation +0.97, descriptive).
+
+**Year-end: the main risks (D9), ranked by pre-registered severity.**
+
+1. Euro liquidity below the pressure band (severity 1.00): liquidity EUR 2,243 bn, EUR 192 bn below the band's lower end. Chapter II places the start of euro funding pressure above today's liquidity, so the floor system has less cushion into the turn.
+2. Dollar reserves: SOFR at or above IORB (severity 1.00): SOFR minus IORB +0.7 bp on average over the last 20 days, reserves USD 2.89 trillion. Repo trading at or above the rate on reserves means reserves are no longer abundant; turns then add to an already firm base.
+3. France: OAT-Bund blowout (severity 1.00): OAT-Bund 162 bp, in a blowout episode, 2s10s excess over Germany +93 bp. French collateral is repricing; political news can move it further into the turn, and no model here forecasts politics.
+4. Euro overnight rate drifting up (severity 1.00): slope +1.09 bp a year over 12 months. €STR is creeping up towards the deposit rate as liquidity drains.
+5. Forecast ranges may understate the tails (severity 1.00): test-period verdicts: USD too narrow, EUR too wide; 90th and 95th year-end percentiles coincide. Treat the frozen ranges as a floor on uncertainty: the tails rest on seven or eight past year-ends.
+6. Use of the Fed's standing repo facility (severity 0.50): 0 days of use in the last 30; USD 1.2 bn at the last quarter-end. The facility was needed at the last quarter-end, so the year-end may need it too.
+
+**What a desk sees that this project cannot (D8).**
+
+| Market information | Why it matters | Public proxy used here |
+|---|---|---|
+| GC against specials, and bond-level specialness | A bond in demand (a new issue, a futures delivery candidate, a heavily shorted line) lends at a repo rate well below general collateral; that specialness, not the GC rate, sets the cost of a short or the pick-up from lending the bond. | MMSR secured rates by collateral country (maintenance-period averages, chapter III): a country-level average that mixes GC and specials. No bond-level data. |
+| Futures deliveries, cheapest-to-deliver switches and the basis | Deliverable baskets for Bund, OAT and BTP futures concentrate demand on a few bonds around delivery dates; a switch in the cheapest-to-deliver moves specialness from one bond to another, and the implied repo rate in the futures basis is a live read of term funding. | None. Futures prices, deliverable baskets and implied repo rates are not in free official data. |
+| Venue differences between cleared GC baskets (LCH RepoClear against Eurex GC Pooling) | Baskets differ in eligible collateral, central bank eligibility and netting, so the same nominal GC trade prices differently by venue, and the gap tends to widen at quarter-ends and year-ends. | €STR (unsecured) and MMSR secured averages across all venues; the venue split is not public. |
+| Dealer balance-sheet costs: leverage ratio, G-SIB scores, risk-weighted assets, reporting snapshots | Repo is balance-sheet intensive; where ratios are measured on a reporting date rather than on average, dealers shrink at quarter-ends and the year-end G-SIB snapshot makes 31 December the most expensive day. | Calendar effects estimated from rates (chapter V), Fed backstop and ON RRP usage at turns (chapter V), and the euro against dollar year-end contrast. |
+| Term repo curves | The price of locking funding over a turn is a term trade (one week, one month, three months), quoted continuously by desks; it shows when the market starts to pay for the turn. | OFR DVP term-rate bucket (dollars, daily) and MMSR one-week and one-month averages (euro, maintenance periods). No daily euro term repo rate is free. |
+| Haircut schedules | Haircuts set how much cash a bond raises; clearing houses change them by issuer and maturity, and a higher haircut on one sovereign tightens funding for everyone holding it. | Described qualitatively in chapter I. Clearing houses publish current schedules only, not their history. |
+| Equity financing and total return swaps | Equity repo, securities lending and total return swaps compete for the same dealer balance sheet and have their own seasonality (dividend dates, index rebalances), which can spill into fixed income repo. | None. The project covers government bond collateral only. |
