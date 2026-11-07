@@ -9,6 +9,8 @@ from __future__ import annotations
 
 import pandas as pd
 
+import sources
+
 
 class DataCheckError(RuntimeError):
     """A download is empty, shorter than before, or otherwise not plausible."""
@@ -43,3 +45,22 @@ def check_recent(name: str, series: pd.Series, as_of: pd.Timestamp, max_age_days
     last = series.dropna().index.max()
     if pd.isna(last) or (as_of - last).days > max_age_days:
         raise DataCheckError(f"{name}: last observation {last} is more than {max_age_days} days before {as_of.date()}")
+
+
+def trim_announced(long: pd.DataFrame, fetched: pd.Timestamp,
+                   announced: frozenset[str] = sources.ANNOUNCED_IN_ADVANCE) -> tuple[pd.DataFrame, list[str]]:
+    """Drop observations dated after the fetch date, for announced-in-advance policy rates ONLY.
+
+    A source can publish an administered rate ahead of the day it applies to (FRED's IORB on a Saturday
+    already runs to the next Monday). The value is public, but the snapshot records what was observed up
+    to the fetch date, so those rows are dropped here and listed for the log. Every other series is left
+    untouched, so a future-dated market rate still reaches validation and fails it.
+    Returns (trimmed long frame, one "name: n rows dated d1 to d2" line per trimmed series).
+    """
+    cutoff = fetched.normalize()
+    dates = pd.to_datetime(long["date"])
+    drop = long["series"].isin(announced) & (dates > cutoff)
+    notes = [f"{name}: {len(part)} rows dated {part['date'].min().date()} to {part['date'].max().date()} "
+             f"(after the fetch date {cutoff.date()})"
+             for name, part in long.assign(date=dates)[drop].groupby("series")]
+    return long[~drop].reset_index(drop=True), notes

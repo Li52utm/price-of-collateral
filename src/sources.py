@@ -171,6 +171,15 @@ GBP = [
 ALL_SERIES: list[Series] = [*EUR, *YIELDS, *USD, *JPY, *WEBSTAT_YIELDS, *HOLDERS, *GBP]
 BY_NAME: dict[str, Series] = {s.name: s for s in ALL_SERIES}
 
+# Administered policy rates: set by the central bank and announced BEFORE the days they apply to, so a
+# source may already carry a value dated after the day we download it. Found on Saturday 7 Nov 2026:
+# FRED's IORB (a 7-day series) ran to Monday 9 Nov, one business day past the fetch date, which made the
+# "nothing dated after the fetch" validation check FAIL (docs/METHODOLOGY.md, corrections log). The
+# refresh trims ONLY these series to the fetch date (pipeline.trim_announced) so the snapshot never holds
+# a future date; any other series dated in the future still fails validation, as a real data error.
+ANNOUNCED_IN_ADVANCE = frozenset({"dfr", "mro", "mlf", "iorb", "ioer", "fed_upper", "fed_lower",
+                                  "boj_loan_rate", "bank_rate"})
+
 
 def lag(name: str) -> int:
     """Publication lag in business days for a registered series (MMSR series: see MMSR_LAG_BD)."""

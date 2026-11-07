@@ -230,14 +230,19 @@ def check_publication_lags(long: pd.DataFrame, fetched: pd.Timestamp) -> dict:
         if s.empty or spec.name in DISCONTINUED:
             continue
         if s.index.max() > fetched.normalize():
-            future.append(spec.name)
+            ahead = s[s.index > fetched.normalize()]
+            future.append(f"{spec.name} ({len(ahead)} observations dated {ahead.index.min().date()} to "
+                          f"{ahead.index.max().date()}, lag {spec.lag_bd} business days)")
         if spec.freq == "daily":
             cal = data.currency_of(spec.name)
             age = len(data.business_days(cal, s.index.max(), fetched.normalize())) - 1
             if age > spec.lag_bd + STALE_EXTRA_BD:
                 stale.append(f"{spec.name} ({age} business days old, lag {spec.lag_bd})")
     if future:
-        return result("Publication lags", FAIL, f"observations dated after the fetch date: {future}")
+        return result("Publication lags", FAIL,
+                      f"observations dated after the fetch date {fetched.normalize().date()}: " + "; ".join(future)
+                      + ". A value cannot be observed before its date unless it is an announced policy rate "
+                        "(those are trimmed by pipeline.trim_announced); check the source's dates.")
     if stale:
         return result("Publication lags", WARN, "older than the publication lag allows: " + "; ".join(stale))
     return result("Publication lags", PASS, "every daily series is within its publication lag (plus "

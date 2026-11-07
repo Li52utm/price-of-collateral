@@ -157,7 +157,8 @@ Every place where data or tools forced a change to the original plan, with the r
   validation (`src/validation.py`; any FAIL stops before writing) -> write `results/snapshots/` and the
   validation reports -> `scripts/run_all.py` (every results file, plus the forecast score once
   31 Dec 2026 is in the data) -> `scripts/update_readme.py` (README auto-block from `src/findings.py`).
-  `--skip-download` recomputes from the committed snapshot.
+  `--skip-download` recomputes from the committed snapshot; `--dry-run` downloads, checks and validates only
+  (prints the full detail of any WARN or FAIL check) and writes nothing.
 - `.github/workflows/refresh-data.yml`: weekdays 14:00 UTC (after the previous day's SOFR, 08:00 ET,
   and €STR, 08:00 CET); fails if the frozen forecast changed; commits only if tests pass and files changed;
   never stages the frozen forecast. `.github/workflows/tests.yml`: every push. Actions pinned to

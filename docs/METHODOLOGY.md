@@ -895,3 +895,26 @@ one-line explanation.
   minus floor BoE 0, Fed 10, ECB 15, BoJ 25 bp (by construction). D7: repo supplies 35% of UK reserves (7% two years
   earlier), +15.4 pp a year (p < 0.001). D9: five risks at severity 1 (euro liquidity, dollar reserves, France,
   euro drift, calibration), the dollar backstop at 0.5. Independent audit: 28 of 28 match.
+- **2026-11-07, refresh: publication-lag validation FAIL on a Saturday.** Symptom: the GitHub Actions data refresh
+  run on Saturday 7 November 2026 stopped with "FAIL Publication lags" and wrote nothing. Reproduced locally with
+  `scripts/refresh_snapshots.py --dry-run` (fetch 2026-11-07 15:06 UTC): the only failing series was `iorb`. FRED's
+  IORB is a 7-day series, and on that Saturday it already ran to Monday 9 November (3.90% on Sat 7, Sun 8 and Mon 9),
+  so two observations were dated after the fetch date. On weekday runs the forward-filled dates are no later than the
+  fetch date, which is why earlier runs passed. Diagnosis: not a data error (3.90% is the rate the Fed announced),
+  not a lag set too tight (IORB's lag of 0 business days is right, and the failing branch is the "dated after the
+  fetch" test, which ignores the lag), and not a source change. The check is right to treat any future date as a
+  FAIL. The real gap was in the pipeline: an administered rate can be published before the days it applies to, and
+  the refresh stored whatever the source returned. Fix: `sources.ANNOUNCED_IN_ADVANCE` lists the administered policy
+  rates (DFR, MRO, MLF, IORB, IOER, the Fed target range, the BoJ basic loan rate, Bank Rate; all lag 0), and
+  `pipeline.trim_announced` drops only their observations dated after the fetch date, listing them in the run log.
+  The validation rule is unchanged: a future-dated value of any other series still FAILs. The FAIL detail now names
+  each series, how many observations, their dates and the fetch date, and the refresh prints the full detail of
+  every WARN and FAIL check before stopping. `check_registered` stops the refresh if any registered series is
+  missing from the download. Before -> after: the snapshot can no longer hold IORB beyond the fetch date (at most
+  two weekend days plus the next business day were affected); no model input or result changes, because every model
+  reads IORB through `data.point_in_time`, which already gives it no value after the as-of date. Tests:
+  `tests/test_refresh.py` (the exact 7 November case fails before the trim and passes after it; a future-dated
+  SOFR is not trimmed and still fails; the FAIL detail is printed). Separately, the GitHub run used the Phase 7 code:
+  the 21 local commits (U0 to D10, which add the Webstat, Bundesbank constant-maturity and 2-year, Bank of England,
+  Eurostat and government-deposit series, the OAT validation check and `WEBSTAT_API_KEY` in the workflow) had not
+  been pushed.
