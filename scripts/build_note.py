@@ -566,11 +566,12 @@ def build(r: dict) -> str:
     if r.get("facilities"):
         add("**Where the repo backstop sits (D6).** " + (findings.facility_line(r) or ""))
         add("")
-        add("| Central bank | Floor (%) | Repo backstop (%) | Backstop minus floor (bp) | Market rate "
+        add("| Central bank | Date | Floor (%) | Repo backstop (%) | Backstop minus floor (bp) | Market rate "
             "| Headroom (bp) |")
-        add("|---|---|---|---|---|---|")
+        add("|---|---|---|---|---|---|---|")
         for x in r["facilities"]["rows"]:
-            add(f"| {x['bank']} | {x['floor']:.2f} | {x['backstop']:.2f} | {x['backstop_minus_floor_bp']:+.0f} | "
+            add(f"| {x['bank']} | {x['date']} | {x['floor']:.2f} | {x['backstop']:.2f} | "
+                f"{x['backstop_minus_floor_bp']:+.0f} | "
                 f"{x['market_name']} {x['market']:.3f} | {x['headroom_bp']:+.1f} |")
         add("")
     if r.get("uk"):

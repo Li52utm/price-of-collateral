@@ -1,6 +1,6 @@
 {
- "as_of": "2026-11-03",
- "fetched_at": "2026-11-04 19:29:23",
+ "as_of": "2026-11-05",
+ "fetched_at": "2026-11-07 15:47:40",
  "counts": {
   "PASS": 10,
   "WARN": 0,
@@ -50,7 +50,7 @@
   {
    "name": "Market rates vs policy corridors",
    "status": "PASS",
-   "detail": "EFFR inside the Fed target range on 100.0% of days; median |TONA - BoJ policy rate| since Mar 2016 4.8 bp; median |MMSR S/N repo - DFR| 8.0 bp."
+   "detail": "EFFR inside the Fed target range on 100.0% of days; median |TONA - BoJ policy rate| since Mar 2016 4.7 bp; median |MMSR S/N repo - DFR| 8.0 bp."
   },
   {
    "name": "Publication lags",

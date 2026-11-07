@@ -197,8 +197,7 @@ def regional_overview(r: dict, frozen: dict, v2f: dict | None) -> list[dict]:
         us_lines.append(w.backstop_line(tk["latest"]))
     if fac:
         fed = next(x for x in fac["rows"] if x["bank"] == "Federal Reserve")
-        us_lines.append(f"SOFR is {w.bp(fed['headroom_bp'], 0)} {'below' if fed['headroom_bp'] > 0 else 'above'} the "
-                        f"standing repo facility rate ({fed['backstop']:.2f}%).")
+        us_lines.append(w.srf_headroom_sentence(fed))
     us_lines.append(w.year_end_view_sentence("USD", frozen["currencies"]["USD"], v2.get("USD")))
     eu_lines = [w.level_change_phrase("€STR minus the DFR", eu["spread"]) + "."]
     state = [w.level_change_phrase("the liquidity proxy", eu["liquidity_bn"], "EUR bn", 0)]

@@ -984,8 +984,37 @@ def facility_sentence(rows: list[dict]) -> str:
     above = tight["headroom_bp"] < 0
     head = (f"{tight['market_name']} is {bp(tight['headroom_bp'], 0)} {'above' if above else 'below'} the "
             f"{tight['bank']}'s backstop rate, the least headroom of the four")
+    dates = sorted({r["date"] for r in rows if r.get("date")})
+    when = ""
+    if len(dates) == 1:
+        when = f" Each comparison uses the rates of {pd_day(dates[0])}."
+    elif dates:
+        when = (" Each comparison uses the latest date on which both its rates are published ("
+                + and_list([f"{r['bank']} {pd_day(r['date'])}" for r in rows]) + ").")
+    later = " ".join(facility_change_note(r) for r in rows if r.get("later_changes"))
     return (f"Repo backstop minus floor: {and_list(parts)}. So {closest} and the {hi['bank']}'s furthest from it. "
-            f"{head}.")
+            f"{head}.{when}" + (f" {later}" if later else ""))
+
+
+def srf_headroom_sentence(fed: dict) -> str:
+    """Chapter VII: SOFR against the standing repo facility rate, both on the row's common date."""
+    h = fed["headroom_bp"]
+    side = "below" if h > 0 else "above" if h < 0 else "at"
+    gap = "" if h == 0 else f"{bp(h, 0)} "
+    return (f"SOFR is {gap}{side} the standing repo facility rate ({fed['backstop']:.2f}%) on "
+            f"{pd_day(fed['date'])}.")
+
+
+def facility_change_note(r: dict) -> str:
+    """A policy setting published for a later day than the market rate, shown instead of differenced."""
+    if not r.get("later_changes"):
+        return ""
+    moves = []
+    for c in r["later_changes"]:
+        moves.append(f"{c['name']} {'rose' if c['value'] > c['previous'] else 'fell'} to {c['value']:.2f}% from "
+                     f"{pd_day(c['from'])}")
+    return (f"For the {r['bank']}, {and_list(moves)}; {r['market_name']} for that day is not yet published, so "
+            f"the row compares both on {pd_day(r['date'])}.")
 
 
 # --------------------------------------------------------------------------- #

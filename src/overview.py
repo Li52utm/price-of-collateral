@@ -25,10 +25,10 @@ MEAN_DAYS = 20     # the 20-day mean of SOFR minus IORB used by the reserves ris
 def level_and_change(s: pd.Series, scale: float = 1.0) -> dict:
     """Latest value, its date, and the change from the last value on or before the latest date minus one month."""
     s = s.dropna() * scale
-    last_day = s.index[-1]
+    last_day, value = data.latest(s)   # the project's one definition of "latest"
     prior = s[s.index <= last_day - pd.DateOffset(months=1)]
-    return {"date": str(last_day.date()), "value": float(s.iloc[-1]),
-            "change_1m": float(s.iloc[-1] - prior.iloc[-1]) if len(prior) else None,
+    return {"date": str(last_day.date()), "value": value,
+            "change_1m": float(value - prior.iloc[-1]) if len(prior) else None,
             "prior_date": str(prior.index[-1].date()) if len(prior) else None}
 
 

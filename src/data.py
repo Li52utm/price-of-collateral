@@ -165,6 +165,44 @@ def as_of(long: pd.DataFrame | None = None) -> pd.Timestamp:
 
 
 # --------------------------------------------------------------------------- #
+# "Latest": one definition for every number shown as latest (METHODOLOGY.md, corrections log 2026-11-07)
+# --------------------------------------------------------------------------- #
+def latest(s: pd.Series) -> tuple[pd.Timestamp, float]:
+    """The latest published value of a series: its last non-missing observation in the snapshot, and its date.
+
+    The snapshot holds only values published by its fetch date (the refresh trims announced policy rates
+    dated later and validation fails any other future date), so the last stored observation IS the latest
+    published value. Not "the last week with a following week" (a model's sample) and not "published by
+    the as-of date" (the as-of date is an observation date: its own €STR and SOFR were published a day later).
+    """
+    s = s.dropna()
+    if s.empty:
+        raise ValueError(f"{s.name}: no observations")
+    return s.index[-1], float(s.iloc[-1])
+
+
+def latest_common_date(names: list[str], long: pd.DataFrame | None = None) -> pd.Timestamp:
+    """The latest date on which EVERY named series has a published observation.
+
+    Comparing two "latest" values is only valid on one date: if a policy rate is announced for day t but
+    the market rate is published only to t-1, both must be read on t-1 (2026-11-07: Bank Rate 4.00% on
+    5 Nov against SONIA of 4 Nov gave a false +26.6 bp of headroom).
+    """
+    common: pd.DatetimeIndex | None = None
+    for name in names:
+        idx = get(name, long).dropna().index
+        common = idx if common is None else common.intersection(idx)
+    if common is None or common.empty:
+        raise ValueError(f"no date on which all of {names} are published")
+    return common.max()
+
+
+def value_at(name: str, day: pd.Timestamp, long: pd.DataFrame | None = None) -> float:
+    """The observation of a series on exactly `day` (use with latest_common_date)."""
+    return float(get(name, long).dropna().loc[day])
+
+
+# --------------------------------------------------------------------------- #
 # Point in time
 # --------------------------------------------------------------------------- #
 def available_dates(obs_dates: pd.DatetimeIndex, lag_bd: int, currency: str) -> pd.DatetimeIndex:

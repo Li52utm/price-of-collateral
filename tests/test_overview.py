@@ -24,7 +24,12 @@ def test_overview_results_consistent() -> None:
     ov = r["overview"]
     assert set(ov) >= {"US", "EUR", "FR", "UK", "JP"}
     assert ov["FR"]["spread"]["value"] == pytest.approx(r["france_daily"]["rules"]["now"]["spread"], abs=1e-6)
-    assert ov["US"]["reserves_tn"]["value"] == pytest.approx(r["corridors"]["reserves"]["USD"]["latest_liq"], abs=1e-6)
+    for cur, key, scale in (("USD", ("US", "reserves_tn"), 1.0), ("EUR", ("EUR", "liquidity_bn"), 1e-3)):
+        res = r["corridors"]["reserves"][cur]   # chapter II's "latest" is the same latest published value
+        assert ov[key[0]][key[1]]["value"] * scale == pytest.approx(res["latest_liq"], abs=1e-6)
+        assert ov[key[0]][key[1]]["date"] == res["latest_date"]
+        assert res["last_pair_date"] <= res["latest_date"]   # the regression's last week, kept separately
+    assert r["runway"]["latest_date"] == ov["EUR"]["liquidity_bn"]["date"]
 
 
 def test_readme_desk_findings() -> None:

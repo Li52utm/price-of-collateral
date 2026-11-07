@@ -28,7 +28,7 @@ jobs:
           cache: pip
       - name: Install
         run: pip install -r requirements.txt
-      - name: Download, check, validate, write snapshots, recompute results, score the forecast, update README
+      - name: Download, check, validate, write snapshots, recompute results, score the forecast, research note, README
         env:
           WEBSTAT_API_KEY: ${{ secrets.WEBSTAT_API_KEY }}   # header-only auth; never echoed
         run: python scripts/refresh_snapshots.py
@@ -45,7 +45,7 @@ jobs:
           AS_OF=$(python -c "import json; print(json.load(open('results/snapshots/manifest.json'))['as_of'])")
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A results docs/DATA_VALIDATION.md README.md
+          git add -A results docs/DATA_VALIDATION.md docs/RESEARCH_NOTE.md docs/figures README.md
           git reset -q -- results/forecasts/yearend_2026.json results/forecasts/yearend_2026_v2.json   # never committed by the bot
           git commit -m "Data refresh: as of ${AS_OF}"
           git push

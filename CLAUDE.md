@@ -57,7 +57,8 @@ to walk through in an interview.
   `facilities` (D6), `uk` (D7), `desk_gaps` (D8), `overview` (D9); their results live in `results/desk/` and
   `results/france/`)
 - Quality gates: `ruff check` (ruff.toml, line length 120), coverage of src/ excluding ui.py >= 85% (.coveragerc),
-  `scripts/reproduce.py` rebuilds every results file and checks it against git (tests/test_determinism.py),
+  `scripts/reproduce.py` rebuilds every results file from the snapshots on disk and checks it matches the files on
+  disk, i.e. rebuilding is deterministic (tests/test_determinism.py; `--against-git` compares with HEAD by hand),
   hypothesis no-look-ahead properties (tests/test_point_in_time.py).
 - `app.py` + `chapters/` – Streamlit dashboard (router + one file per chapter; the folder is NOT
   called `pages/`, which would switch on Streamlit's automatic page list)
@@ -156,7 +157,8 @@ Every place where data or tools forced a change to the original plan, with the r
 - `scripts/refresh_snapshots.py`: download (`src/download.py`) -> pipeline checks (`src/pipeline.py`) ->
   validation (`src/validation.py`; any FAIL stops before writing) -> write `results/snapshots/` and the
   validation reports -> `scripts/run_all.py` (every results file, plus the forecast score once
-  31 Dec 2026 is in the data) -> `scripts/update_readme.py` (README auto-block from `src/findings.py`).
+  31 Dec 2026 is in the data) -> `scripts/build_note.py` (docs/RESEARCH_NOTE.md and docs/figures/) ->
+  `scripts/update_readme.py` (README auto-block from `src/findings.py`).
   `--skip-download` recomputes from the committed snapshot; `--dry-run` downloads, checks and validates only
   (prints the full detail of any WARN or FAIL check) and writes nothing.
 - `.github/workflows/refresh-data.yml`: weekdays 14:00 UTC (after the previous day's SOFR, 08:00 ET,
@@ -183,6 +185,8 @@ Every place where data or tools forced a change to the original plan, with the r
   `ui.apply_theme()`, `ui.chapter_heading(...)`, `ui.question_box(key)` (answer from
   `src/findings.py`), charts through `ui.show_chart` (title + source line), `ui.footer()` (data-check
   status and "Educational project. Not investment advice.").
+- Every number shown as "latest" is `data.latest` (last stored observation); every comparison of two series uses
+  `data.latest_common_date` and shows that date.
 - Pages read only `results/` through `ui.results()` / `ui.csv()` (cached on file modification times);
   a missing results file shows a note, never an error. Chapter VII is built by `src/desk_note.py`
   (pure; the downloadable Markdown note comes from `desk_note.markdown`).

@@ -163,10 +163,11 @@ def analyse(long: pd.DataFrame | None = None, corridor_summary: dict | None = No
     """Distance, scenarios and the trend test (dict) and the scenario paths with history (frame)."""
     summary = corridor_summary or corridors.load_summary()
     res = summary["reserves"]["EUR"]
-    as_of = data.as_of(long)
-    liq = published_by(data.get("eur_liquidity", long).dropna(), data.DERIVED_LAGS["eur_liquidity"], as_of)
-    sec = published_by((data.get("mp_securities", long) / 1e3).dropna(), data.sources.lag("mp_securities"), as_of)
-    latest_date, latest = liq.index[-1], float(liq.iloc[-1])
+    # Every stored value was published by the snapshot's fetch date, so the whole series is usable and its
+    # last observation is the latest published value (data.latest; the one definition used for "latest").
+    liq = data.get("eur_liquidity", long).dropna()
+    sec = (data.get("mp_securities", long) / 1e3).dropna()
+    latest_date, latest = data.latest(liq)
     bounds = boundaries(res)
     identified = bool(res["kink_identified"])
     drift = trailing_weekly_change(liq)

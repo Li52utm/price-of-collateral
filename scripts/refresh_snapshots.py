@@ -15,7 +15,9 @@ Steps:
     5. Recompute every results file from the new snapshot (scripts/run_all.py). This NEVER
        touches the frozen forecast results/forecasts/yearend_2026.json; it only writes the score
        file once the year-end values exist.
-    6. Regenerate the README auto-block (scripts/update_readme.py).
+    6. Rebuild the research note and its figures from the new results (scripts/build_note.py), so
+       docs/RESEARCH_NOTE.md always matches them (tests/test_research_note.py).
+    7. Regenerate the README auto-block (scripts/update_readme.py).
 """
 
 from __future__ import annotations
@@ -140,7 +142,10 @@ def main(skip_download: bool = False, add_new: bool = False, dry_run: bool = Fal
     print("5. Recomputing results ...")
     import run_all
     run_all.main()
-    print("6. README auto-block ...")
+    print("6. Research note and its figures (docs/RESEARCH_NOTE.md, docs/figures/) ...")
+    import build_note
+    build_note.main()
+    print("7. README auto-block ...")
     import update_readme
     update_readme.main()
     print("Done.")

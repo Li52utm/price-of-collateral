@@ -1,66 +1,78 @@
 {
- "data_as_of": "2026-11-03",
+ "data_as_of": "2026-11-05",
  "rows": [
   {
    "bank": "ECB",
+   "date": "2026-11-05",
    "floor_name": "Deposit facility rate",
    "floor": 2.5,
    "backstop_name": "Main refinancing operations (full allotment)",
    "backstop": 2.65,
    "backstop_minus_floor_bp": 15.0,
    "market_name": "\u20acSTR",
-   "market": 2.445,
-   "market_date": "2026-11-03",
-   "headroom_bp": 20.5,
+   "market": 2.442,
+   "headroom_bp": 20.8,
    "extra": {
     "Marginal lending facility": 2.9
    },
-   "note": ""
+   "note": "",
+   "later_changes": []
   },
   {
    "bank": "Federal Reserve",
+   "date": "2026-11-05",
    "floor_name": "Interest on reserve balances",
    "floor": 3.9,
    "backstop_name": "Standing repo facility (top of the target range)",
    "backstop": 4.0,
    "backstop_minus_floor_bp": 10.0,
    "market_name": "SOFR",
-   "market": 3.97,
-   "market_date": "2026-11-03",
-   "headroom_bp": 3.0,
+   "market": 3.92,
+   "headroom_bp": 8.0,
    "extra": {
     "ON RRP award rate": 3.75,
     "Target range lower bound": 3.75
    },
-   "note": "SRF rate = top of the target range, the FOMC implementation-note rule (https://www.federalreserve.gov/newsevents/pressreleases/monetary20260617a1.htm)."
+   "note": "SRF rate = top of the target range, the FOMC implementation-note rule (https://www.federalreserve.gov/newsevents/pressreleases/monetary20260617a1.htm).",
+   "later_changes": []
   },
   {
    "bank": "Bank of England",
+   "date": "2026-11-04",
    "floor_name": "Bank Rate (reserves remuneration)",
    "floor": 3.75,
    "backstop_name": "Short-Term Repo (Bank Rate + 0 bp)",
    "backstop": 3.75,
    "backstop_minus_floor_bp": 0.0,
    "market_name": "SONIA",
-   "market": 3.7342,
-   "market_date": "2026-11-03",
-   "headroom_bp": 1.58,
+   "market": 3.7335,
+   "headroom_bp": 1.65,
    "extra": {},
-   "note": "STR priced at Bank Rate (https://www.bankofengland.co.uk/markets/market-notices/2022/august/short-term-repo-facility-provisional-market-notice-4-august-2022)."
+   "note": "STR priced at Bank Rate (https://www.bankofengland.co.uk/markets/market-notices/2022/august/short-term-repo-facility-provisional-market-notice-4-august-2022).",
+   "later_changes": [
+    {
+     "series": "bank_rate",
+     "name": "Bank Rate (reserves remuneration)",
+     "previous": 3.75,
+     "value": 4.0,
+     "from": "2026-11-05"
+    }
+   ]
   },
   {
    "bank": "Bank of Japan",
+   "date": "2026-11-04",
    "floor_name": "Policy rate (current account remuneration)",
    "floor": 1.25,
    "backstop_name": "Complementary lending facility (basic loan rate)",
    "backstop": 1.5,
    "backstop_minus_floor_bp": 25.0,
    "market_name": "TONA",
-   "market": 1.227,
-   "market_date": "2026-10-30",
-   "headroom_bp": 27.3,
+   "market": 1.228,
+   "headroom_bp": 27.2,
    "extra": {},
-   "note": "Since August 2024 the project's policy rate is the basic loan rate minus 0.25, so the gap is 25 bp by construction (the BoJ's own rule)."
+   "note": "Since August 2024 the project's policy rate is the basic loan rate minus 0.25, so the gap is 25 bp by construction (the BoJ's own rule).",
+   "later_changes": []
   }
  ]
 }

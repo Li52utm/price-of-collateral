@@ -1,5 +1,10 @@
 """D6: where each central bank's repo backstop sits relative to its floor, and how much headroom the market
-overnight rate has below it. One row per central bank, on the as-of date.
+overnight rate has below it. One row per central bank.
+
+Every row is read on ONE date: the latest date on which the floor, the backstop, the market rate and any
+extra rate are all published (data.latest_common_date). A policy rate announced for a later day than the
+market rate's last publication is reported separately as a later change, never differenced against an older
+market rate (corrected 2026-11-07, docs/METHODOLOGY.md corrections log).
 
 Rates come from the snapshot; two prices are rules rather than series and are documented with their source
 (see docs/METHODOLOGY.md, "Desk upgrade D6"). `run()` writes results/desk/facilities.json.
@@ -21,46 +26,66 @@ BOE_STR_RULE_URL = ("https://www.bankofengland.co.uk/markets/market-notices/2022
                     "short-term-repo-facility-provisional-market-notice-4-august-2022")
 BOE_STR_SPREAD = 0.0   # Short-Term Repo priced at Bank Rate + 0 bp
 
+# One entry per central bank: (label, series) for the floor, the backstop (plus a fixed spread in percentage
+# points where the backstop is a rule on another rate), the market rate and any extra rates shown beside them.
+BANKS: list[dict] = [
+    {"bank": "ECB", "floor": ("Deposit facility rate", "dfr"),
+     "backstop": ("Main refinancing operations (full allotment)", "mro", 0.0), "market": ("€STR", "estr"),
+     "extra": {"Marginal lending facility": "mlf"}, "note": ""},
+    {"bank": "Federal Reserve", "floor": ("Interest on reserve balances", "usd_ior"),
+     "backstop": ("Standing repo facility (top of the target range)", "fed_upper", 0.0), "market": ("SOFR", "sofr"),
+     "extra": {"ON RRP award rate": "onrrp_rate", "Target range lower bound": "fed_lower"},
+     "note": f"SRF rate = top of the target range, the FOMC implementation-note rule ({FED_SRF_RULE_URL})."},
+    {"bank": "Bank of England", "floor": ("Bank Rate (reserves remuneration)", "bank_rate"),
+     "backstop": ("Short-Term Repo (Bank Rate + 0 bp)", "bank_rate", BOE_STR_SPREAD), "market": ("SONIA", "sonia"),
+     "extra": {}, "note": f"STR priced at Bank Rate ({BOE_STR_RULE_URL})."},
+    {"bank": "Bank of Japan", "floor": ("Policy rate (current account remuneration)", "boj_policy"),
+     "backstop": ("Complementary lending facility (basic loan rate)", "boj_loan_rate", 0.0),
+     "market": ("TONA", "tona"), "extra": {},
+     "note": "Since August 2024 the project's policy rate is the basic loan rate minus 0.25, so the gap is 25 bp by "
+             "construction (the BoJ's own rule)."},
+]
 
-def value_on(name: str, day: pd.Timestamp, long: pd.DataFrame | None = None) -> tuple[float, str]:
-    """The last published value of a series on or before `day` (percent) and its date."""
-    s = data.get(name, long).dropna()
-    s = s[s.index <= day]
-    return float(s.iloc[-1]), str(s.index[-1].date())
+
+def later_changes(spec: dict, day: pd.Timestamp, long: pd.DataFrame | None = None) -> list[dict]:
+    """Floor or backstop settings published for a day after the comparison date that differ from it."""
+    out = []
+    for label, name in (spec["floor"], spec["backstop"][:2]):
+        if any(c["series"] == name for c in out):
+            continue  # the BoE floor and backstop are the same series
+        last_day, last = data.latest(data.get(name, long))
+        if last_day > day and abs(last - data.value_at(name, day, long)) > 1e-9:
+            changed = data.get(name, long).dropna()
+            first = changed[(changed.index > day) & ((changed - last).abs() < 1e-9)].index.min()
+            out.append({"series": name, "name": label, "previous": data.value_at(name, day, long), "value": last,
+                        "from": str(first.date())})
+    return out
 
 
 def row(bank: str, floor_name: str, floor: float, backstop_name: str, backstop: float, market_name: str,
-        market: float, market_date: str, extra: dict | None = None, note: str = "") -> dict:
-    """One table row; differences in bp."""
-    return {"bank": bank, "floor_name": floor_name, "floor": floor, "backstop_name": backstop_name,
+        market: float, date: str, extra: dict | None = None, note: str = "",
+        later: list[dict] | None = None) -> dict:
+    """One table row; every rate is read on `date`; differences in bp."""
+    return {"bank": bank, "date": date, "floor_name": floor_name, "floor": floor, "backstop_name": backstop_name,
             "backstop": backstop, "backstop_minus_floor_bp": round((backstop - floor) * 100, 4),
-            "market_name": market_name, "market": market, "market_date": market_date,
-            "headroom_bp": round((backstop - market) * 100, 4), "extra": extra or {}, "note": note}
+            "market_name": market_name, "market": market,
+            "headroom_bp": round((backstop - market) * 100, 4), "extra": extra or {}, "note": note,
+            "later_changes": later or []}
+
+
+def bank_row(spec: dict, long: pd.DataFrame | None = None) -> dict:
+    """One table row on the latest date on which all of the bank's series are published."""
+    floor_s, (backstop_s, spread), market_s = spec["floor"][1], spec["backstop"][1:], spec["market"][1]
+    day = data.latest_common_date([floor_s, backstop_s, market_s, *spec["extra"].values()], long)
+    at = lambda n: data.value_at(n, day, long)  # noqa: E731
+    return row(spec["bank"], spec["floor"][0], at(floor_s), spec["backstop"][0], at(backstop_s) + spread,
+               spec["market"][0], at(market_s), str(day.date()), {k: at(v) for k, v in spec["extra"].items()},
+               spec["note"], later_changes(spec, day, long))
 
 
 def table(long: pd.DataFrame | None = None) -> list[dict]:
-    """The four rows (ECB, Fed, Bank of England, Bank of Japan) on the as-of date."""
-    day = data.as_of(long)
-    v = lambda n: value_on(n, day, long)[0]  # noqa: E731
-    rows = []
-    estr, estr_d = value_on("estr", day, long)
-    rows.append(row("ECB", "Deposit facility rate", v("dfr"), "Main refinancing operations (full allotment)", v("mro"),
-                    "€STR", estr, estr_d, {"Marginal lending facility": v("mlf")}))
-    sofr, sofr_d = value_on("sofr", day, long)
-    rows.append(row("Federal Reserve", "Interest on reserve balances", v("usd_ior"),
-                    "Standing repo facility (top of the target range)", v("fed_upper"), "SOFR", sofr, sofr_d,
-                    {"ON RRP award rate": v("onrrp_rate"), "Target range lower bound": v("fed_lower")},
-                    f"SRF rate = top of the target range, the FOMC implementation-note rule ({FED_SRF_RULE_URL})."))
-    sonia, sonia_d = value_on("sonia", day, long)
-    rows.append(row("Bank of England", "Bank Rate (reserves remuneration)", v("bank_rate"),
-                    "Short-Term Repo (Bank Rate + 0 bp)", v("bank_rate") + BOE_STR_SPREAD, "SONIA", sonia, sonia_d,
-                    note=f"STR priced at Bank Rate ({BOE_STR_RULE_URL})."))
-    tona, tona_d = value_on("tona", day, long)
-    rows.append(row("Bank of Japan", "Policy rate (current account remuneration)", v("boj_policy"),
-                    "Complementary lending facility (basic loan rate)", v("boj_loan_rate"), "TONA", tona, tona_d,
-                    note="Since August 2024 the project's policy rate is the basic loan rate minus 0.25, so the gap is "
-                         "25 bp by construction (the BoJ's own rule)."))
-    return rows
+    """The four rows (ECB, Fed, Bank of England, Bank of Japan), each on its own common date."""
+    return [bank_row(spec, long) for spec in BANKS]
 
 
 def run(long: pd.DataFrame | None = None, path: Path = OUT_PATH) -> dict:

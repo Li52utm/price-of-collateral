@@ -146,7 +146,8 @@ if fac is None:
     ui.missing_results("facility pricing")
 else:
     ui.md(findings.facility_line(ui.results()))
-    rows = [{"Central bank": x["bank"], "Floor": x["floor_name"], "Floor (%)": x["floor"], "Repo backstop":
+    rows = [{"Central bank": x["bank"], "Date": x.get("date"),
+             "Floor": x["floor_name"], "Floor (%)": x["floor"], "Repo backstop":
              x["backstop_name"], "Backstop (%)": x["backstop"], "Backstop minus floor (bp)":
              x["backstop_minus_floor_bp"], "Market rate": x["market_name"], "Market (%)": x["market"],
              "Headroom: backstop minus market (bp)": x["headroom_bp"]} for x in fac["rows"]]

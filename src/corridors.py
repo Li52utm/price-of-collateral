@@ -260,6 +260,8 @@ def reserves_analysis(currency: str, long: pd.DataFrame | None = None) -> dict:
     The kink comes with its bootstrap band and the U0 identification check.
     """
     pairs = weekly_pairs(currency, long)
+    name, scale, _ = LIQUIDITY[currency]
+    latest_day, latest_liq = data.latest(data.get(name, long) / scale)
     train = pairs[pairs.index <= TRAIN_END]
     test = pairs[pairs.index >= TEST_START]
     results = {}
@@ -299,7 +301,10 @@ def reserves_analysis(currency: str, long: pd.DataFrame | None = None) -> dict:
             else [float("nan"), float("nan")],
             "kink_identified": identified, "kink_at_grid_edge": bool(point_at_edge),
             "boot_edge_share": edge_share, "kink_grid": [float(kink_grid(x)[0]), float(kink_grid(x)[-1])],
-            "latest_liq": float(x[-1]), "latest_date": str(pairs.index[-1].date()),
+            # "latest" = the latest published value (data.latest), the same number as the desk overview; the
+            # regression's last week (it needs a following week of spreads) is kept separately.
+            "latest_liq": latest_liq, "latest_date": str(latest_day.date()),
+            "last_pair_liq": float(x[-1]), "last_pair_date": str(pairs.index[-1].date()),
             "pairs": pairs, "curve": curve}
 
 

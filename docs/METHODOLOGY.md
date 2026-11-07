@@ -674,9 +674,11 @@ Code: `src/facilities.py`, output `results/desk/facilities.json`.
     backstop = the complementary lending facility at the basic loan rate. Since 1 August 2024 the project's BoJ
     policy rate IS the basic loan rate minus 0.25, so the 25 bp is true by construction (the BoJ's own rule), not a
     measurement.
-- Columns: floor, backstop, backstop minus floor (bp), and the headroom of the market overnight rate = backstop
-  minus the latest market rate (bp; €STR, SOFR, SONIA, TONA). SONIA (`IUDSOIA`, lag 1) and Bank Rate (lag 0) are
-  added to the snapshot.
+- Columns: date, floor, backstop, backstop minus floor (bp), and the headroom of the market overnight rate =
+  backstop minus the market rate (bp; €STR, SOFR, SONIA, TONA). Every rate of a row is read on ONE date: the latest
+  date on which all of that row's series are published (`data.latest_common_date`; corrected 2026-11-07, see the
+  corrections log). A floor or backstop setting announced for a later day is reported as a later change, not
+  differenced. SONIA (`IUDSOIA`, lag 1) and Bank Rate (lag 0) are added to the snapshot.
 - Generated wording: the central banks ordered by backstop minus floor, the closest and the furthest named; the
   market rate with the least headroom named.
 
@@ -918,3 +920,45 @@ one-line explanation.
   the 21 local commits (U0 to D10, which add the Webstat, Bundesbank constant-maturity and 2-year, Bank of England,
   Eurostat and government-deposit series, the OAT validation check and `WEBSTAT_API_KEY` in the workflow) had not
   been pushed.
+- **2026-11-07, one definition of "latest" (chapter II vs the desk overview).** Symptom: after the 7 November
+  refresh, the desk overview showed US reserves of USD 2.93 trillion and chapter II's corridors summary showed
+  2.89 as "latest" (`tests/test_overview.py` failed). Cause: chapter II took the last point of its regression
+  sample (`corridors.weekly_pairs`), which needs a following week of SOFR to pair with, so it is always the week
+  BEFORE the latest H.4.1 week (28 October against 4 November). A third definition sat in the runway (D1): values
+  "published by the as-of date". That one is off by the lag, because the as-of date is an observation date (5
+  November's €STR and SOFR were published on 6 November). Fix: one definition, `data.latest`: the latest published
+  value is the last stored observation (the snapshot holds only values published by its fetch date: the refresh
+  trims announced rates and validation fails any other future date). It is used for every number shown as
+  "latest": the overview, chapter II (`latest_liq`, `latest_date`; the regression's last week is kept separately
+  as `last_pair_liq`, `last_pair_date`) and the runway. Before -> after: chapter II USD latest reserves 2.89
+  (28 Oct) -> **2.93 (4 Nov)**, now equal to the overview; EUR liquidity 2.24 trillion (30 Oct) unchanged, and
+  the runway (EUR 2,243 bn on 30 Oct, 191 bn below the band's lower end) unchanged. No fitted model, slope or
+  band changes (the regression sample is the same); the USD kink stays not identified, so no sentence moves.
+- **2026-11-07, date alignment in comparisons of two "latest" values (D6 facility table).** Symptom: the table
+  showed the Bank of England floor at 4.00% with SONIA at 3.733% and "+26.6 bp headroom". Cause: `facilities`
+  read each rate at its own last date on or before the as-of date: Bank Rate (lag 0, announced in advance) rose to
+  4.00% on Thursday 5 November, while SONIA (lag 1) was published only to 4 November. The table differenced a
+  policy rate of 5 November against a market rate of 4 November. Fix: `data.latest_common_date` gives the latest
+  date on which every series of a row is published, and every rate in the row is read on that date, which the
+  table, the chapter II page and the research note now show. A floor or backstop change after that date is
+  listed in the row (`later_changes`) and worded by `wording.facility_change_note`. The chapter VII line on
+  SOFR against the SRF rate now names its date. Before -> after (data as of 5 November 2026):
+
+  | Central bank | Date | Floor (%) | Backstop (%) | Market (%) | Headroom (bp) |
+  |---|---|---|---|---|---|
+  | ECB | 5 Nov | 2.50 -> 2.50 | 2.65 -> 2.65 | €STR 2.442 | +20.8 -> +20.8 |
+  | Federal Reserve | 5 Nov | 3.90 -> 3.90 | 4.00 -> 4.00 | SOFR 3.920 | +8.0 -> +8.0 |
+  | Bank of England | 4 Nov | **4.00 -> 3.75** | **4.00 -> 3.75** | SONIA 3.7335 | **+26.65 -> +1.65** |
+  | Bank of Japan | 4 Nov | 1.25 -> 1.25 | 1.50 -> 1.50 | TONA 1.228 | +27.2 -> +27.2 |
+
+  The generated conclusion changes: the least headroom was SOFR, 8 bp below the Fed's SRF rate; it is now SONIA,
+  2 bp below the Bank of England's Short-Term Repo rate, with Bank Rate's rise to 4.00% from 5 November stated
+  beside it. Audit of every other comparison of two latest values: the daily spreads (`features.target`,
+  `uk.sonia_spread`, `france_daily.daily_spread`, used by the overview, corridors, the D9 risks and the UK
+  section) already carry the policy rate forward to each market-rate date, so both legs share a date. The corridors
+  frame, the autonomous-factors weekly dataset (an index intersection) and the UK weekly frame (`dropna` across
+  reserves, STR and ILTR) are aligned by construction. The runway compares liquidity with model constants, not a
+  second series. The toolkit and autonomous "latest" values are shown side by side, each with its own date, and
+  are never differenced. No other number changed. Tests: `tests/test_facilities.py` (policy rate changes on t,
+  market rate published to t-1: the row compares on t-1 with +1.65 bp, the change is listed, and the row moves to
+  t once the market rate catches up), `tests/test_data.py`, `tests/test_overview.py`.

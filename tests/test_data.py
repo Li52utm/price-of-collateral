@@ -79,3 +79,11 @@ def test_maintenance_period_ends_are_tuesdays_or_mondays_before_a_wednesday_star
     recent = ends[ends >= "2024-01-01"]
     assert len(recent) >= 10
     assert (recent.day_of_week <= 1).mean() > 0.8  # periods start on Wednesdays (Tuesday after holidays)
+
+
+def test_latest_is_the_last_published_observation_not_a_model_sample() -> None:
+    import data
+    s = pd.Series([2.89, 2.93, float("nan")], index=pd.to_datetime(["2026-10-28", "2026-11-04", "2026-11-11"]))
+    assert data.latest(s) == (pd.Timestamp("2026-11-04"), 2.93)
+    with pytest.raises(ValueError):
+        data.latest(pd.Series([float("nan")], index=pd.to_datetime(["2026-11-04"])))
