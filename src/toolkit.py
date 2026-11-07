@@ -15,9 +15,10 @@ import pandas as pd
 
 import data
 import features as F
+import paths
 
 ROOT = Path(__file__).resolve().parent.parent
-OUT_DIR = ROOT / "results" / "desk"
+OUT_DIR = paths.RESULTS / "desk"
 FIRST_TURN = pd.Timestamp("2018-06-01")
 WINDOW_BD = 5
 USAGE_MIN_BN = 1.0

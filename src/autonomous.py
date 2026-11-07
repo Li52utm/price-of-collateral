@@ -18,10 +18,11 @@ import statsmodels.api as sm
 
 import data
 import features as F
+import paths
 import stats_tools as st
 
 ROOT = Path(__file__).resolve().parent.parent
-OUT_DIR = ROOT / "results" / "desk"
+OUT_DIR = paths.RESULTS / "desk"
 TRAIN_END = pd.Timestamp("2022-12-31")
 HAC_LAGS = 4
 BOOT_N, BOOT_BLOCK, BOOT_SEED = 1000, 8, 42

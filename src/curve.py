@@ -14,9 +14,10 @@ from pathlib import Path
 import pandas as pd
 
 import data
+import paths
 
 ROOT = Path(__file__).resolve().parent.parent
-OUT_DIR = ROOT / "results" / "france"
+OUT_DIR = paths.RESULTS / "france"
 REFERENCE = ("2010-01-01", "2023-12-31")
 BASE_DAY = pd.Timestamp("2024-06-07")      # last business day before the dissolution (the daily decomposition base)
 CHART_FROM = "2024-01-01"

@@ -14,10 +14,11 @@ from pathlib import Path
 import pandas as pd
 
 import data
+import paths
 import sources
 
 ROOT = Path(__file__).resolve().parent.parent
-OUT_DIR = ROOT / "results" / "desk"
+OUT_DIR = paths.RESULTS / "desk"
 BASE_YEAR = 2022           # last year-end before the ECB's portfolio started to shrink (March 2023)
 HOLDERS = {"S121": "Domestic central bank", "S122_S123": "Domestic banks",
            "S124-S129": "Domestic insurers, pension and investment funds", "S2": "Non-residents"}

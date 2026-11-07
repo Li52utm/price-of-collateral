@@ -737,6 +737,33 @@ one-line explanation.
 | 5 | Euro overnight drift (D1 trend test) | 1 if "drifting up"; else 0 |
 | 6 | Forecast calibration (U2, U0) | 1 if the v1 winner of either currency is "too narrow" on the test period or its 90th and 95th year-end percentiles coincide (U0 tail diagnosis); 0.5 if "too wide"; else 0 |
 
+## Reproducibility and cross-platform numbers (2026-11-07)
+
+- **Canonical results.** Optimisation-based results (the quantile regressions of the forecasts, the Markov-switching
+  corridors model, the piecewise and logistic reserve fits, and every bootstrap that refits them, including the
+  Holm-adjusted p-values built on them) can differ in their last digits across operating systems and numerical
+  libraries (BLAS/LAPACK builds, optimiser tolerances). A difference that small can still move a rounded figure
+  in a generated sentence (observed: a Holm p-value of 0.360 on Windows printed 0.359 on Linux). The CANONICAL
+  results are therefore those generated and committed by the GitHub refresh (`.github/workflows/refresh-data.yml`,
+  ubuntu-24.04). A local rebuild on another system is expected to agree to the tolerance below, not to the byte.
+- **Determinism (tested).** Within one environment a rebuild must be exactly reproducible. `tests/test_determinism.py`
+  runs `scripts/reproduce.py`, which rebuilds TWICE with `scripts/run_all.py --out-dir` into two temporary
+  directories (snapshots read from `results/snapshots/`, `src/paths.py`) and requires every file to be byte-for-byte
+  identical. Nothing under `results/` is written. The frozen forecasts must be unchanged by the rebuild and equal
+  to git HEAD.
+- **Against git (manual).** `scripts/reproduce.py --against-git` rebuilds into a temporary directory and compares
+  each file with HEAD: numbers must satisfy |a - b| <= 1e-9 + 1e-6 * max(|a|, |b|) (relative 1e-6, absolute 1e-9).
+  It reports the largest absolute and relative difference per file, every file beyond the tolerance, and every file
+  whose text differs (a generated sentence quoting a rounded number). Measured on 7 November 2026 on the
+  development machine (Windows, Python 3.14) against the committed results: 61 files identical, largest
+  difference 0 (absolute and relative). Those committed results were themselves generated on that machine, so
+  this confirms only the within-environment property. The cross-platform gap is not measurable locally until a
+  Linux refresh commits its results; rerun `--against-git` after the next GitHub refresh to measure it.
+- **Tests never modify the repository.** `tests/conftest.py` records the git status, with a hash of every listed
+  file, when the session starts and fails the session if anything changed by the end. Tests write only to
+  `tmp_path`. The research-note test draws its figures into a temporary directory, and the forecast tests send
+  their score files there (they are written only from 31 December 2026 on).
+
 ## Corrections log
 
 - **2026-11-04, Phase 2 sample filter.** Wrong: `forecast.dataset` dropped every day on which the
@@ -962,3 +989,17 @@ one-line explanation.
   are never differenced. No other number changed. Tests: `tests/test_facilities.py` (policy rate changes on t,
   market rate published to t-1: the row compares on t-1 with +1.65 bp, the change is listed, and the row moves to
   t once the market rate catches up), `tests/test_data.py`, `tests/test_overview.py`.
+- **2026-11-07, tests modified tracked files (GitHub "Tests" workflow, Linux).** Symptom: after the push, 2 tests failed
+  on Linux. `test_determinism` found 10 results files different after the rebuild (forecast, corridors, inference,
+  v2), and `test_research_note` found a Holm p-value printed 0.359 instead of 0.360. Cause: the determinism test
+  rebuilt the results IN PLACE over the committed files, which were generated on Windows. (a) It therefore compared
+  Windows numbers with Linux rebuilds, which differ in the last digits for optimisation-based models. (b) It
+  overwrote tracked files with the Linux numbers, so the research-note test that ran afterwards built the note from
+  different results than the committed note. A second mutation: `test_research_note` redrew the seven PNGs in
+  `docs/figures/` on every run. A latent third: the forecast tests would have written the year-end score files
+  into `results/forecasts/` from 31 December 2026. Fix: `src/paths.py` and `run_all.py --out-dir` (rebuilds into
+  any directory; snapshots always read from `results/snapshots/`). The determinism test now compares two rebuilds
+  in temporary directories. `build_note.build(fig_dir=...)` lets the test draw into `tmp_path`. The forecast tests
+  redirect their score paths, and a session guard in `tests/conftest.py` fails any run that changes a file in the
+  repository. Cross-platform agreement is a manual check with a documented tolerance ("Reproducibility and
+  cross-platform numbers"). No result changed.

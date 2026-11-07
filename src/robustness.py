@@ -20,11 +20,12 @@ import forecast as fc
 import france
 import france_daily as fd
 import inference
+import paths
 import stats_tools as st
 import wording as w
 
 ROOT = Path(__file__).resolve().parent.parent
-OUT_DIR = ROOT / "results" / "robustness"
+OUT_DIR = paths.RESULTS / "robustness"
 FINDINGS = {
     "R1": ("calendar", "The winning regression beats the naive baseline on test-period turn days (USD and EUR)"),
     "R2": ("calendar", "Dollar year-ends push the spread up, euro year-ends push it down"),
@@ -108,7 +109,7 @@ def pairs_ahead(weeks_ahead: int, long: pd.DataFrame | None = None) -> pd.DataFr
 
 def r3(long: pd.DataFrame | None = None) -> list[dict]:
     """R3 alternatives: block lengths, sub-samples and the two-week-ahead spread."""
-    pairs = pd.read_csv(ROOT / "results" / "corridors" / "reserves_pairs_USD.csv", index_col=0, parse_dates=True)
+    pairs = pd.read_csv(paths.RESULTS / "corridors" / "reserves_pairs_USD.csv", index_col=0, parse_dates=True)
     specs = {"bootstrap block 4 weeks": (pairs, 4), "bootstrap block 16 weeks": (pairs, 16),
              "train weeks only (to 2022)": (pairs.loc[:"2022-12-31"], 8),
              "test weeks only (2023 on)": (pairs.loc["2023-01-01":], 8),
@@ -198,7 +199,7 @@ def r6(long: pd.DataFrame | None = None) -> list[dict]:
 # --------------------------------------------------------------------------- #
 def r7() -> list[dict]:
     """R7 alternatives: sample starts, no same-day term, and block lengths."""
-    daily = pd.read_csv(ROOT / "results" / "japan" / "japan_daily.csv", index_col=0, parse_dates=True)
+    daily = pd.read_csv(paths.RESULTS / "japan" / "japan_daily.csv", index_col=0, parse_dates=True)
     neg, ex = inference.JAPAN_SAMPLES["negative"], inference.JAPAN_SAMPLES["exit"]
     specs = {"exit sample from 1 Aug 2024": ({"negative": neg, "exit": ("2024-08-01", None)}, {}),
              "negative sample from 1 Oct 2016": ({"negative": ("2016-10-01", neg[1]), "exit": ex}, {}),
@@ -237,7 +238,7 @@ def excess(fcast: dict, start_bd: int = desk_note.WINDOW_START_BD, nights: bool 
 def r8() -> list[dict]:
     """R8 alternatives: weights, window start and the euro hurdle."""
     frozen = fc.load_frozen()
-    tvo = json.loads((ROOT / "results" / "forecast" / "summary.json").read_text(encoding="utf-8"))[
+    tvo = json.loads((paths.RESULTS / "forecast" / "summary.json").read_text(encoding="utf-8"))[
         "term_vs_overnight"]["USD"]
     premium, _ = desk_note.usd_hurdle(tvo)
     usd_h = premium if premium is not None else desk_note.EUR_HURDLE_BP

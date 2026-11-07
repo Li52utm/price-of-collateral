@@ -14,10 +14,11 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+import paths
 import stats_tools as st
 
 ROOT = Path(__file__).resolve().parent.parent
-RESULTS = ROOT / "results"
+RESULTS = paths.RESULTS
 OUT_DIR = RESULTS / "inference"
 
 N_BOOT, SEED = 1000, 42

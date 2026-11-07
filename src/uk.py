@@ -14,9 +14,10 @@ import pandas as pd
 import statsmodels.api as sm
 
 import data
+import paths
 
 ROOT = Path(__file__).resolve().parent.parent
-OUT_DIR = ROOT / "results" / "desk"
+OUT_DIR = paths.RESULTS / "desk"
 RECENT_DAYS = 250
 TREND_WEEKS = 104
 HAC_LAGS = 8

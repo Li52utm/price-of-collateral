@@ -15,11 +15,12 @@ import statsmodels.api as sm
 import collateral
 import data
 import events
+import paths
 import stats_tools as st
 import survival
 
 ROOT = Path(__file__).resolve().parent.parent
-OUT_DIR = ROOT / "results" / "france"
+OUT_DIR = paths.RESULTS / "france"
 EPISODE_COUNTRIES = ("IT", "ES", "PT", "FR", "BE", "GR", "IE", "AT", "NL", "FI")
 EPISODES_FROM = pd.Timestamp("2008-01-01")
 THRESHOLD_BP = 30.0

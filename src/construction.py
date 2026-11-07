@@ -15,9 +15,10 @@ from pathlib import Path
 import pandas as pd
 
 import data
+import paths
 
 ROOT = Path(__file__).resolve().parent.parent
-OUT_PATH = ROOT / "results" / "france" / "construction.json"
+OUT_PATH = paths.RESULTS / "france" / "construction.json"
 MONTHLY_FROM = "2010-01-01"
 RECENT_DAYS = 250
 SMALL_GAP_BP = 3.0   # |mean daily gap| at or below this is "small" (one tenth of the 30 bp blowout threshold)

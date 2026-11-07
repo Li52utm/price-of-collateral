@@ -19,8 +19,10 @@ import plotly.graph_objects as go
 import plotly.io as pio
 import streamlit as st
 
+import paths
+
 ROOT = Path(__file__).resolve().parent.parent
-RESULTS_DIR = ROOT / "results"
+RESULTS_DIR = paths.RESULTS
 REPO_URL = "https://github.com/labeebbhat/price-of-collateral"
 
 # --------------------------------------------------------------------------- #

@@ -21,11 +21,12 @@ import pandas as pd
 import data
 import features as F
 import forecast as fc
+import paths
 import stats_tools as st
 
 ROOT = fc.ROOT
-FROZEN_V2_PATH = ROOT / "results" / "forecasts" / "yearend_2026_v2.json"
-SCORE_V2_PATH = ROOT / "results" / "forecasts" / "yearend_2026_v2_score.json"
+FROZEN_V2_PATH = paths.RESULTS / "forecasts" / "yearend_2026_v2.json"
+SCORE_V2_PATH = paths.RESULTS / "forecasts" / "yearend_2026_v2_score.json"
 SUMMARY_PATH = fc.OUT_DIR / "v2_summary.json"
 TURNS_PATH = fc.OUT_DIR / "past_year_ends.csv"
 MODEL_VERSION = "forecast-v2"

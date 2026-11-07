@@ -56,10 +56,18 @@ to walk through in an interview.
   desk upgrade: `construction` (D0), `runway` (D1), `autonomous` (D2), `toolkit` (D3), `holders` (D4), `curve` (D5),
   `facilities` (D6), `uk` (D7), `desk_gaps` (D8), `overview` (D9); their results live in `results/desk/` and
   `results/france/`)
-- Quality gates: `ruff check` (ruff.toml, line length 120), coverage of src/ excluding ui.py >= 85% (.coveragerc),
-  `scripts/reproduce.py` rebuilds every results file from the snapshots on disk and checks it matches the files on
-  disk, i.e. rebuilding is deterministic (tests/test_determinism.py; `--against-git` compares with HEAD by hand),
-  hypothesis no-look-ahead properties (tests/test_point_in_time.py).
+- Quality gates: `ruff check` (ruff.toml, line length 120), coverage of src/ excluding ui.py >= 85% (.coveragerc;
+  `patch = subprocess` also measures the rebuild subprocesses),
+  `scripts/reproduce.py` rebuilds every results file twice into temporary directories (`run_all.py --out-dir`,
+  `src/paths.py`) and requires the two to be identical (tests/test_determinism.py; `--against-git` compares a rebuild
+  with HEAD by hand, numbers within relative 1e-6 / absolute 1e-9), hypothesis no-look-ahead properties
+  (tests/test_point_in_time.py).
+- **Tests never modify tracked files**: they write only to `tmp_path`; `tests/conftest.py` fails the session if the
+  git status (or any listed file's content) changed. Never rebuild into `results/` from a test.
+- **Cross-platform numbers**: optimisation-based results (quantile regression, Markov switching, bootstrap refits) can
+  differ in the last digits across operating systems and numerical libraries. The CANONICAL results are those the
+  GitHub refresh (Linux) generates and commits; a local Windows rebuild agrees to the tolerance above, not byte for
+  byte (docs/METHODOLOGY.md, "Reproducibility and cross-platform numbers").
 - `app.py` + `chapters/` – Streamlit dashboard (router + one file per chapter; the folder is NOT
   called `pages/`, which would switch on Streamlit's automatic page list)
 - `scripts/` – `refresh_snapshots.py` (the only code that downloads), `update_readme.py`,

@@ -70,3 +70,23 @@ def test_staleness_rule() -> None:
     assert not ui.is_stale(pd.Timestamp("2026-11-05"), today)
     assert ui.is_stale(pd.Timestamp("2026-10-01"), today)
     assert ui.is_stale(None, today)
+
+
+def test_session_guard_detects_a_modified_tracked_file(tmp_path) -> None:
+    import subprocess
+
+    import conftest
+    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
+    (tmp_path / "a.txt").write_text("1")
+    subprocess.run(["git", "add", "a.txt"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "x"], cwd=tmp_path,
+                   check=True)
+    clean = conftest.repo_state(tmp_path)
+    assert clean == {}
+    (tmp_path / "a.txt").write_text("2")
+    dirty = conftest.repo_state(tmp_path)
+    assert conftest.changed_files(clean, dirty) == ["a.txt"]
+    (tmp_path / "a.txt").write_text("3")   # already dirty, modified again: still detected (content hash)
+    assert conftest.changed_files(dirty, conftest.repo_state(tmp_path)) == ["a.txt"]
+    (tmp_path / "new.csv").write_text("x")
+    assert "new.csv" in conftest.changed_files(dirty, conftest.repo_state(tmp_path))

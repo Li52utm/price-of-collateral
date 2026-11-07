@@ -17,9 +17,10 @@ import statsmodels.api as sm
 import corridors
 import data
 import features as F
+import paths
 
 ROOT = Path(__file__).resolve().parent.parent
-OUT_DIR = ROOT / "results" / "desk"
+OUT_DIR = paths.RESULTS / "desk"
 TRAILING_WEEKS = 52
 SCENARIOS = {"slow": 0.5, "base": 1.0, "fast": 1.5}
 HORIZON_END = pd.Timestamp("2028-12-31")

@@ -34,7 +34,7 @@ from pandas.tseries.offsets import CustomBusinessDay, DateOffset
 import sources
 
 ROOT = Path(__file__).resolve().parent.parent
-SNAPSHOT_DIR = ROOT / "results" / "snapshots"
+SNAPSHOT_DIR = ROOT / "results" / "snapshots"   # = paths.SNAPSHOT_DIR (inputs: never redirected)
 SERIES_PATH = SNAPSHOT_DIR / "series.csv"
 SETTLEMENTS_PATH = SNAPSHOT_DIR / "settlements.csv"
 MANIFEST_PATH = SNAPSHOT_DIR / "manifest.json"

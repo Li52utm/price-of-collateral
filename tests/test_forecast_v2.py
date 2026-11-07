@@ -48,5 +48,6 @@ def test_run_leaves_both_frozen_files_unchanged(tmp_path, monkeypatch) -> None:
     v1_before, v2_before = forecast.FROZEN_PATH.read_bytes(), v2.FROZEN_V2_PATH.read_bytes()
     monkeypatch.setattr(v2, "SUMMARY_PATH", tmp_path / "s.json")
     monkeypatch.setattr(v2, "TURNS_PATH", tmp_path / "t.csv")
+    monkeypatch.setattr(v2, "SCORE_V2_PATH", tmp_path / "score.json")   # written from 31 Dec 2026 on
     v2.run()
     assert forecast.FROZEN_PATH.read_bytes() == v1_before and v2.FROZEN_V2_PATH.read_bytes() == v2_before

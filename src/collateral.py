@@ -14,10 +14,11 @@ import pandas as pd
 import statsmodels.api as sm
 
 import data
+import paths
 import stats_tools as st
 
 ROOT = Path(__file__).resolve().parent.parent
-OUT_DIR = ROOT / "results" / "collateral"
+OUT_DIR = paths.RESULTS / "collateral"
 SIDE, TENOR = "le", "KS"
 COUNTRIES = ("IT", "FR", "ES")
 REGRESSION_COUNTRIES = ("IT", "FR")

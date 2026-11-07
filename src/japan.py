@@ -13,9 +13,10 @@ import pandas as pd
 import statsmodels.api as sm
 
 import data
+import paths
 
 ROOT = Path(__file__).resolve().parent.parent
-OUT_DIR = ROOT / "results" / "japan"
+OUT_DIR = paths.RESULTS / "japan"
 START = pd.Timestamp("2016-02-16")
 EXIT = pd.Timestamp("2024-03-21")
 PRE_DAYS = 10

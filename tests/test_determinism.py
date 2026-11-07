@@ -1,11 +1,11 @@
-"""U6: rebuilding every results file from the snapshots on disk is deterministic.
+"""U6: rebuilding every results file from the committed snapshots is deterministic within one environment.
 
-Runs scripts/reproduce.py's check() in-process (about a minute): results files are read, rebuilt from the
-snapshots on disk with scripts/run_all.py, and compared with what was there before (rebuilding twice gives
-identical output). This holds after a data refresh too, unlike a comparison with git HEAD, which would fail on
-every refresh that brings new data (`reproduce.py --against-git` keeps that check for manual use).
-The frozen forecasts are never written by the rebuild: they must be byte-for-byte unchanged by it AND identical
-to the committed version.
+scripts/reproduce.py rebuilds TWICE, each time with `scripts/run_all.py --out-dir` into its own temporary
+directory, and the two rebuilds must be identical byte for byte. Nothing under results/ is written, so the test
+never modifies tracked files (tests/conftest.py checks that for the whole session). Comparing with the committed
+files would mix environments: optimisation-based results differ in the last digits between Windows and Linux,
+and the committed (canonical) results are the Linux ones made by the GitHub refresh (docs/METHODOLOGY.md,
+"Reproducibility"); that comparison is the manual `reproduce.py --against-git`, with a tolerance.
 """
 
 from __future__ import annotations
@@ -24,12 +24,12 @@ import reproduce  # noqa: E402
 FROZEN = ("results/forecasts/yearend_2026.json", "results/forecasts/yearend_2026_v2.json")
 
 
-def test_rebuild_is_deterministic_and_frozen_forecasts_untouched() -> None:
+def test_two_rebuilds_are_identical_and_frozen_forecasts_untouched(tmp_path: Path) -> None:
     before = [(ROOT / rel).read_bytes() for rel in FROZEN]
-    rep = reproduce.check(rebuild=True, against="disk")
+    rep = reproduce.check_determinism(work=tmp_path)
     assert rep["different"] == [], rep["different"]
-    assert rep["untracked"] == [] and rep["missing_after_rebuild"] == []
-    assert len(rep["identical"]) + len(rep["numerically_equal"]) >= 40
+    assert rep["only_in_one"] == [], rep["only_in_one"]
+    assert len(rep["identical"]) >= 40
     assert [(ROOT / rel).read_bytes() for rel in FROZEN] == before
 
 
@@ -41,14 +41,19 @@ def test_frozen_forecast_matches_git(rel: str) -> None:
     assert reproduce._lf((ROOT / rel).read_bytes()) == reproduce._lf(out.stdout)
 
 
-def test_check_rejects_an_unknown_reference() -> None:
-    with pytest.raises(ValueError):
-        reproduce.check(rebuild=False, against="yesterday")
-
-
 def test_numeric_comparison_tolerates_rounding_only() -> None:
     assert reproduce.same_content("x.json", b'{"a": 1.0000000000001}', b'{"a": 1.0}')
     assert not reproduce.same_content("x.json", b'{"a": 1.01}', b'{"a": 1.0}')
     assert reproduce.same_content("x.csv", b"a,b\n1,x\n", b"a,b\r\n1.0000000000001,x\r\n")
     assert not reproduce.same_content("x.csv", b"a,b\n1,x\n", b"a,b\n1,y\n")
     assert not reproduce.same_content("x.txt", b"a", b"b")
+
+
+def test_git_tolerance_is_relative_1e6_absolute_1e9() -> None:
+    old, new = b'{"p": 0.3594, "q": [1.0, 2.0], "s": "x"}', b'{"p": 0.35940035, "q": [1.0, 2.0], "s": "x"}'
+    diffs = reproduce.numeric_diffs("x.json", old, new)
+    assert diffs is not None and reproduce.within(diffs, reproduce.GIT_RTOL, reproduce.GIT_ATOL)
+    assert not reproduce.within(reproduce.numeric_diffs("x.json", old, b'{"p": 0.3604, "q": [1.0, 2.0], "s": "x"}'),
+                                reproduce.GIT_RTOL, reproduce.GIT_ATOL)
+    assert reproduce.numeric_diffs("x.json", old, b'{"p": 0.3594, "q": [1.0, 2.0], "s": "y"}') is None  # text
+    assert reproduce.within([(5e-10, 0.0)], reproduce.GIT_RTOL, reproduce.GIT_ATOL)   # absolute floor near zero

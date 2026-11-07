@@ -111,7 +111,9 @@ def test_frozen_forecast_cannot_be_overwritten(tmp_path) -> None:
     assert path.read_text() == "{}"
 
 
-def test_committed_frozen_forecast_is_complete_and_untouched_by_run(tmp_path) -> None:
+def test_committed_frozen_forecast_is_complete_and_untouched_by_run(tmp_path, monkeypatch) -> None:
+    # From 31 Dec 2026 run() also writes the score: send it to tmp_path so the test never writes into results/.
+    monkeypatch.setattr(fc, "SCORE_PATH", tmp_path / "score.json")
     frozen_path = fc.FROZEN_PATH
     if not frozen_path.exists():  # only between the code commit and the freeze (see METHODOLOGY.md)
         pytest.skip("the Year-End 2026 forecast has not been frozen yet")

@@ -18,9 +18,10 @@ from pathlib import Path
 import pandas as pd
 
 import data
+import paths
 
 ROOT = Path(__file__).resolve().parent.parent
-OUT_PATH = ROOT / "results" / "desk" / "facilities.json"
+OUT_PATH = paths.RESULTS / "desk" / "facilities.json"
 FED_SRF_RULE_URL = "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260617a1.htm"
 BOE_STR_RULE_URL = ("https://www.bankofengland.co.uk/markets/market-notices/2022/august/"
                     "short-term-repo-facility-provisional-market-notice-4-august-2022")

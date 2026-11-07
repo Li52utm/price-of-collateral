@@ -26,10 +26,11 @@ import desk_gaps  # noqa: E402
 import desk_note  # noqa: E402
 import events  # noqa: E402
 import findings  # noqa: E402
+import paths  # noqa: E402
 import sources  # noqa: E402
 import wording as w  # noqa: E402
 
-RESULTS = ROOT / "results"
+RESULTS = paths.RESULTS
 FIG_DIR = ROOT / "docs" / "figures"
 NOTE = ROOT / "docs" / "RESEARCH_NOTE.md"
 CUR = {"EUR": "#0072B2", "USD": "#009E73", "JPY": "#D55E00"}
@@ -51,16 +52,17 @@ def _style(ax: plt.Axes, title: str, ylabel: str) -> None:
         ax.spines[side].set_color(GRID)
 
 
-def _save(fig: plt.Figure, name: str, source: str) -> str:
+def _save(fig: plt.Figure, name: str, source: str, fig_dir: Path = FIG_DIR) -> str:
+    """Save into `fig_dir` (docs/figures/ by default; tests pass a temporary directory) and return the link."""
     fig.text(0.01, 0.01, f"Source: {source}. The Price of Collateral.", fontsize=7, color=MUTED)
     fig.tight_layout(rect=(0, 0.03, 1, 1))
-    FIG_DIR.mkdir(parents=True, exist_ok=True)
-    fig.savefig(FIG_DIR / name, dpi=150, metadata={"Software": None})
+    fig_dir.mkdir(parents=True, exist_ok=True)
+    fig.savefig(fig_dir / name, dpi=150, metadata={"Software": None})
     plt.close(fig)
     return f"figures/{name}"
 
 
-def fig_corridors() -> str:
+def fig_corridors(fig_dir: Path = FIG_DIR) -> str:
     fig, ax = plt.subplots(figsize=(8, 3.6))
     styles = {"EUR": "-", "USD": "--", "JPY": ":"}
     for cur in ("EUR", "USD", "JPY"):
@@ -71,10 +73,10 @@ def fig_corridors() -> str:
     ax.axhline(0, color=MUTED, linewidth=0.8)
     ax.legend(frameon=False, fontsize=8, ncol=3)
     _style(ax, "Overnight rates against the policy floor (20-day median)", "bp")
-    return _save(fig, "fig1_corridors.png", "ECB Data Portal, New York Fed, FRED, Bank of Japan")
+    return _save(fig, "fig1_corridors.png", "ECB Data Portal, New York Fed, FRED, Bank of Japan", fig_dir)
 
 
-def fig_reserves(r: dict) -> str:
+def fig_reserves(r: dict, fig_dir: Path = FIG_DIR) -> str:
     pairs = pd.read_csv(RESULTS / "corridors" / "reserves_pairs_USD.csv", index_col=0, parse_dates=True)
     curve = pd.read_csv(RESULTS / "corridors" / "reserves_curve_USD.csv")
     fig, ax = plt.subplots(figsize=(6.5, 3.8))
@@ -87,10 +89,10 @@ def fig_reserves(r: dict) -> str:
     ax.set_ylim(-25, 40)
     ax.legend(frameon=False, fontsize=8)
     _style(ax, "SOFR minus interest on reserves, next week, against reserves", "bp")
-    return _save(fig, "fig2_reserves.png", "FRED, New York Fed")
+    return _save(fig, "fig2_reserves.png", "FRED, New York Fed", fig_dir)
 
 
-def fig_collateral(r: dict) -> str:
+def fig_collateral(r: dict, fig_dir: Path = FIG_DIR) -> str:
     cs = r["bootstrap"]["credit_scarcity"]
     fig, ax = plt.subplots(figsize=(7, 3.6))
     terms = ("credit", "liquidity", "de_holdings", "difference")
@@ -106,10 +108,10 @@ def fig_collateral(r: dict) -> str:
     ax.set_xticks(range(len(terms)), labels, fontsize=8)
     ax.legend(frameon=False, fontsize=8)
     _style(ax, "Standardised effects on the repo spread to German collateral, 95% intervals", "bp per 1 sd")
-    return _save(fig, "fig3_credit_scarcity.png", "ECB Data Portal (MMSR, IRS, PSPP)")
+    return _save(fig, "fig3_credit_scarcity.png", "ECB Data Portal (MMSR, IRS, PSPP)", fig_dir)
 
 
-def fig_france() -> str:
+def fig_france(fig_dir: Path = FIG_DIR) -> str:
     d = pd.read_csv(RESULTS / "france" / "daily_spread.csv", index_col=0, parse_dates=True).loc["2023":]
     fig, ax = plt.subplots(figsize=(8, 3.6))
     ax.plot(d.index, d["spread"], color=CTY["FR"], linewidth=0.7, alpha=0.6, label="daily OAT-Bund spread")
@@ -120,10 +122,10 @@ def fig_france() -> str:
             label="gradual line (trailing year + 15 bp)")
     ax.legend(frameon=False, fontsize=8, loc="upper left")
     _style(ax, "The OAT-Bund 10-year spread against the two episode rules", "bp")
-    return _save(fig, "fig4_france_daily.png", "Banque de France (Webstat), Deutsche Bundesbank")
+    return _save(fig, "fig4_france_daily.png", "Banque de France (Webstat), Deutsche Bundesbank", fig_dir)
 
 
-def fig_calibration(r: dict) -> str:
+def fig_calibration(r: dict, fig_dir: Path = FIG_DIR) -> str:
     cal = r["calibration"]
     fig, axes = plt.subplots(1, 2, figsize=(8.5, 3.5))
     for cur, marker, off in (("USD", "o", -0.08), ("EUR", "s", 0.08)):
@@ -145,10 +147,10 @@ def fig_calibration(r: dict) -> str:
                             (axes[1], "PIT bins on the test period", "share of test days")):
         ax.legend(frameon=False, fontsize=8)
         _style(ax, title, ylab)
-    return _save(fig, "fig5_calibration.png", "results/inference/calibration.json")
+    return _save(fig, "fig5_calibration.png", "results/inference/calibration.json", fig_dir)
 
 
-def fig_yearends(r: dict) -> str:
+def fig_yearends(r: dict, fig_dir: Path = FIG_DIR) -> str:
     t = pd.read_csv(RESULTS / "forecast" / "past_year_ends.csv", index_col=0, parse_dates=True)
     fig, ax = plt.subplots(figsize=(7.5, 3.8))
     for cur, marker, x0 in (("USD", "o", 2025.8), ("EUR", "s", 2026.15)):
@@ -162,13 +164,13 @@ def fig_yearends(r: dict) -> str:
     ax.set_xticks(range(2018, 2027), [str(y) for y in range(2018, 2027)], fontsize=8)
     ax.legend(frameon=False, fontsize=7, ncol=2)
     _style(ax, "Every past year-end turn and the frozen 2026 ranges", "spread to the policy rate (bp)")
-    return _save(fig, "fig6_yearends.png", "New York Fed, FRED, ECB Data Portal; frozen forecasts")
+    return _save(fig, "fig6_yearends.png", "New York Fed, FRED, ECB Data Portal; frozen forecasts", fig_dir)
 
 
 # --------------------------------------------------------------------------- #
 # Text
 # --------------------------------------------------------------------------- #
-def fig_runway() -> str:
+def fig_runway(fig_dir: Path = FIG_DIR) -> str:
     """D1: euro liquidity with the three mechanical scenarios and the chapter II pressure band."""
     paths = pd.read_csv(RESULTS / "desk" / "runway_paths.csv", index_col=0, parse_dates=True)
     rw = json.loads((RESULTS / "desk" / "runway.json").read_text(encoding="utf-8"))
@@ -182,7 +184,7 @@ def fig_runway() -> str:
     ax.plot(proj.index, proj["base"], color=CUR["EUR"], linestyle="--", linewidth=1.5, label="base scenario")
     _style(ax, "Euro liquidity and three scenarios (not forecasts)", "EUR bn")
     ax.legend(fontsize=7, frameon=False, loc="upper right")
-    return _save(fig, "fig7_runway.png", "ECB Data Portal")
+    return _save(fig, "fig7_runway.png", "ECB Data Portal", fig_dir)
 
 
 def ci(d: dict, unit: str = " bp", dec: int = 1) -> str:
@@ -199,12 +201,14 @@ def load() -> dict:
     return r
 
 
-def build(r: dict) -> str:
+def build(r: dict, fig_dir: Path = FIG_DIR) -> str:
+    """The note's Markdown; the figures are drawn into `fig_dir` (links are always figures/<name>)."""
     fc, cor, col, fr, frd = r["forecast"], r["corridors"], r["collateral"], r["france"], r["france_daily"]
     boot, tests, cal, rob = r["bootstrap"], r["tests"]["tests"], r["calibration"], r["robustness"]
     note = desk_note.build(r)
-    figs = {"corr": fig_corridors(), "res": fig_reserves(r), "col": fig_collateral(r), "fr": fig_france(),
-            "cal": fig_calibration(r), "ye": fig_yearends(r), "runway": fig_runway()}
+    figs = {"corr": fig_corridors(fig_dir), "res": fig_reserves(r, fig_dir), "col": fig_collateral(r, fig_dir),
+            "fr": fig_france(fig_dir), "cal": fig_calibration(r, fig_dir), "ye": fig_yearends(r, fig_dir),
+            "runway": fig_runway(fig_dir)}
     ans = {k: findings.answer(k, r) for k in findings.QUESTIONS}
     as_of = w.pd_day(fc["data_as_of"])
     res_usd, res_eur = cor["reserves"]["USD"], cor["reserves"]["EUR"]

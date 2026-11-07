@@ -1,6 +1,8 @@
 [run]
 source = src
 omit = src/ui.py
+# The determinism test rebuilds results in a subprocess (scripts/run_all.py --out-dir); measure it too.
+patch = subprocess
 
 [report]
 show_missing = False

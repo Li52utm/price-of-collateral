@@ -10,10 +10,11 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import paths
 import wording as w
 
 ROOT = Path(__file__).resolve().parent.parent
-RESULTS_DIR = ROOT / "results"
+RESULTS_DIR = paths.RESULTS
 SUMMARIES = {"forecast": "forecast/summary.json", "corridors": "corridors/summary.json",
              "collateral": "collateral/summary.json", "france": "france/summary.json",
              "japan": "japan/summary.json", "frozen": "forecasts/yearend_2026.json",

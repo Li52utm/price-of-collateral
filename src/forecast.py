@@ -19,12 +19,13 @@ from statsmodels.regression.quantile_regression import QuantReg
 
 import data
 import features as F
+import paths
 import stats_tools as st
 
 ROOT = Path(__file__).resolve().parent.parent
-OUT_DIR = ROOT / "results" / "forecast"
-FROZEN_PATH = ROOT / "results" / "forecasts" / "yearend_2026.json"
-SCORE_PATH = ROOT / "results" / "forecasts" / "yearend_2026_score.json"
+OUT_DIR = paths.RESULTS / "forecast"
+FROZEN_PATH = paths.RESULTS / "forecasts" / "yearend_2026.json"
+SCORE_PATH = paths.RESULTS / "forecasts" / "yearend_2026_score.json"
 
 MODEL_VERSION = "forecast-v1"
 QUANTILES = (0.05, 0.5, 0.9, 0.95)

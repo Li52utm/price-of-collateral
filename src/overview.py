@@ -15,10 +15,11 @@ import pandas as pd
 import data
 import features as F
 import france_daily as FD
+import paths
 import uk
 
 ROOT = Path(__file__).resolve().parent.parent
-OUT_PATH = ROOT / "results" / "desk" / "overview.json"
+OUT_PATH = paths.RESULTS / "desk" / "overview.json"
 MEAN_DAYS = 20     # the 20-day mean of SOFR minus IORB used by the reserves risk
 
 

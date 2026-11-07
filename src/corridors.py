@@ -16,10 +16,11 @@ from statsmodels.tsa.regime_switching.markov_regression import MarkovRegression
 
 import data
 import features as F
+import paths
 import stats_tools as st
 
 ROOT = Path(__file__).resolve().parent.parent
-OUT_DIR = ROOT / "results" / "corridors"
+OUT_DIR = paths.RESULTS / "corridors"
 TRAIN_END = pd.Timestamp("2022-12-31")
 TEST_START = pd.Timestamp("2023-01-01")
 PRESSURE_BP = 2.0
