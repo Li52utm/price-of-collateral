@@ -136,7 +136,7 @@ The dollar spread (SOFR minus IOR) rose by 11.0 bp on average at the year-end tu
 
 In USD the calendar + state quantile regression had the lowest test-period pinball loss on turn days (1.48 against 1.98 for the baseline, 25% lower); the difference is not statistically significant (Holm-adjusted p = 0.130); the block-bootstrap interval of the loss difference (95% CI -1.14 to -0.06) excludes zero.
 
-In EUR the calendar + state quantile regression had the lowest test-period pinball loss on turn days (0.18 against 0.23 for the baseline, 23% lower); the difference is not statistically significant (Holm-adjusted p = 0.360); the block-bootstrap interval of the loss difference (95% CI -0.14 to +0.02) includes zero.
+In EUR the calendar + state quantile regression had the lowest test-period pinball loss on turn days (0.18 against 0.23 for the baseline, 23% lower); the difference is not statistically significant (Holm-adjusted p = 0.359); the block-bootstrap interval of the loss difference (95% CI -0.14 to +0.02) includes zero.
 
 | Currency | Model | Turn-day pinball | All-day pinball | DM p (turns) | Holm-adjusted | 5-95% coverage |
 |---|---|---|---|---|---|---|
@@ -145,7 +145,7 @@ In EUR the calendar + state quantile regression had the lowest test-period pinba
 | USD | Calendar + state quantile regression | 1.48 | 0.81 | 0.043 | 0.130 | 85.8% |
 | EUR | Baseline: same as the last comparable turn | 0.23 | 0.12 | n/a | n/a | 87.4% |
 | EUR | Calendar-only quantile regression | 0.55 | 0.44 | < 0.001 | < 0.001 | 71.0% |
-| EUR | Calendar + state quantile regression | 0.18 | 0.10 | 0.180 | 0.360 | 99.4% |
+| EUR | Calendar + state quantile regression | 0.18 | 0.10 | 0.180 | 0.359 | 99.4% |
 | JPY | Baseline: same as the last comparable turn | 0.67 | 0.52 | n/a | n/a | 83.8% |
 | JPY | Calendar-only quantile regression | 1.87 | 1.95 | < 0.001 | < 0.001 | 22.9% |
 | JPY | Calendar + state quantile regression | 1.73 | 1.81 | < 0.001 | < 0.001 | 24.7% |
