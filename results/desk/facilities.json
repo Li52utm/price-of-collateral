@@ -1,17 +1,17 @@
 {
- "data_as_of": "2026-11-05",
+ "data_as_of": "2026-11-06",
  "rows": [
   {
    "bank": "ECB",
-   "date": "2026-11-05",
+   "date": "2026-11-06",
    "floor_name": "Deposit facility rate",
    "floor": 2.5,
    "backstop_name": "Main refinancing operations (full allotment)",
    "backstop": 2.65,
    "backstop_minus_floor_bp": 15.0,
    "market_name": "\u20acSTR",
-   "market": 2.442,
-   "headroom_bp": 20.8,
+   "market": 2.443,
+   "headroom_bp": 20.7,
    "extra": {
     "Marginal lending facility": 2.9
    },
@@ -20,15 +20,15 @@
   },
   {
    "bank": "Federal Reserve",
-   "date": "2026-11-05",
+   "date": "2026-11-06",
    "floor_name": "Interest on reserve balances",
    "floor": 3.9,
    "backstop_name": "Standing repo facility (top of the target range)",
    "backstop": 4.0,
    "backstop_minus_floor_bp": 10.0,
    "market_name": "SOFR",
-   "market": 3.92,
-   "headroom_bp": 8.0,
+   "market": 3.89,
+   "headroom_bp": 11.0,
    "extra": {
     "ON RRP award rate": 3.75,
     "Target range lower bound": 3.75
@@ -38,38 +38,30 @@
   },
   {
    "bank": "Bank of England",
-   "date": "2026-11-04",
+   "date": "2026-11-05",
    "floor_name": "Bank Rate (reserves remuneration)",
-   "floor": 3.75,
+   "floor": 4.0,
    "backstop_name": "Short-Term Repo (Bank Rate + 0 bp)",
-   "backstop": 3.75,
+   "backstop": 4.0,
    "backstop_minus_floor_bp": 0.0,
    "market_name": "SONIA",
-   "market": 3.7335,
-   "headroom_bp": 1.65,
+   "market": 3.9824,
+   "headroom_bp": 1.76,
    "extra": {},
    "note": "STR priced at Bank Rate (https://www.bankofengland.co.uk/markets/market-notices/2022/august/short-term-repo-facility-provisional-market-notice-4-august-2022).",
-   "later_changes": [
-    {
-     "series": "bank_rate",
-     "name": "Bank Rate (reserves remuneration)",
-     "previous": 3.75,
-     "value": 4.0,
-     "from": "2026-11-05"
-    }
-   ]
+   "later_changes": []
   },
   {
    "bank": "Bank of Japan",
-   "date": "2026-11-04",
+   "date": "2026-11-05",
    "floor_name": "Policy rate (current account remuneration)",
    "floor": 1.25,
    "backstop_name": "Complementary lending facility (basic loan rate)",
    "backstop": 1.5,
    "backstop_minus_floor_bp": 25.0,
    "market_name": "TONA",
-   "market": 1.228,
-   "headroom_bp": 27.2,
+   "market": 1.227,
+   "headroom_bp": 27.3,
    "extra": {},
    "note": "Since August 2024 the project's policy rate is the basic loan rate minus 0.25, so the gap is 25 bp by construction (the BoJ's own rule).",
    "later_changes": []

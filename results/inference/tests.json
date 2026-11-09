@@ -3,119 +3,119 @@
   {
    "family": "F1",
    "id": "dm_turn_USD_calendar",
-   "p": 0.8117435205971743,
+   "p": 0.8117435205982602,
    "what": "USD calendar vs baseline, turn days (Diebold-Mariano)",
-   "p_holm": 0.8117435205971743,
+   "p_holm": 0.8117435205982602,
    "m": 6
   },
   {
    "family": "F2",
    "id": "dm_all_USD_calendar",
-   "p": 0.0020329454415079244,
+   "p": 0.002002936273549242,
    "what": "USD calendar vs baseline, all days (Diebold-Mariano)",
-   "p_holm": 0.006098836324523773,
+   "p_holm": 0.006008808820647726,
    "m": 6
   },
   {
    "family": "F1",
    "id": "dm_turn_USD_state",
-   "p": 0.0433372393864085,
+   "p": 0.043337239258212965,
    "what": "USD state vs baseline, turn days (Diebold-Mariano)",
-   "p_holm": 0.13001171815922552,
+   "p_holm": 0.13001171777463888,
    "m": 6
   },
   {
    "family": "F2",
    "id": "dm_all_USD_state",
-   "p": 0.12334936616230896,
+   "p": 0.12445715286973708,
    "what": "USD state vs baseline, all days (Diebold-Mariano)",
-   "p_holm": 0.24669873232461792,
+   "p_holm": 0.24891430573947415,
    "m": 6
   },
   {
    "family": "F1",
    "id": "dm_turn_EUR_calendar",
-   "p": 7.928861854468726e-06,
+   "p": 7.928861853898611e-06,
    "what": "EUR calendar vs baseline, turn days (Diebold-Mariano)",
-   "p_holm": 3.17154474178749e-05,
+   "p_holm": 3.1715447415594445e-05,
    "m": 6
   },
   {
    "family": "F2",
    "id": "dm_all_EUR_calendar",
-   "p": 1.0041801658453063e-11,
+   "p": 1.0052851127634009e-11,
    "what": "EUR calendar vs baseline, all days (Diebold-Mariano)",
-   "p_holm": 6.025080995071838e-11,
+   "p_holm": 6.031710676580405e-11,
    "m": 6
   },
   {
    "family": "F1",
    "id": "dm_turn_EUR_state",
-   "p": 0.17966287626073696,
+   "p": 0.18007839229500913,
    "what": "EUR state vs baseline, turn days (Diebold-Mariano)",
-   "p_holm": 0.3593257525214739,
+   "p_holm": 0.36015678459001826,
    "m": 6
   },
   {
    "family": "F2",
    "id": "dm_all_EUR_state",
-   "p": 0.16103264262656344,
+   "p": 0.1621534965500515,
    "what": "EUR state vs baseline, all days (Diebold-Mariano)",
-   "p_holm": 0.24669873232461792,
+   "p_holm": 0.24891430573947415,
    "m": 6
   },
   {
    "family": "F1",
    "id": "dm_turn_JPY_calendar",
-   "p": 1.3016372939119293e-06,
+   "p": 1.301637293900129e-06,
    "what": "JPY calendar vs baseline, turn days (Diebold-Mariano)",
-   "p_holm": 7.809823763471576e-06,
+   "p_holm": 7.809823763400774e-06,
    "m": 6
   },
   {
    "family": "F2",
    "id": "dm_all_JPY_calendar",
-   "p": 7.635430314260325e-07,
+   "p": 7.336457395033589e-07,
    "what": "JPY calendar vs baseline, all days (Diebold-Mariano)",
-   "p_holm": 3.817715157130162e-06,
+   "p_holm": 3.6682286975167944e-06,
    "m": 6
   },
   {
    "family": "F1",
    "id": "dm_turn_JPY_state",
-   "p": 2.1488846821215996e-06,
+   "p": 2.148884529268302e-06,
    "what": "JPY state vs baseline, turn days (Diebold-Mariano)",
-   "p_holm": 1.0744423410607998e-05,
+   "p_holm": 1.074442264634151e-05,
    "m": 6
   },
   {
    "family": "F2",
    "id": "dm_all_JPY_state",
-   "p": 1.2366978309661382e-06,
+   "p": 1.1907888706778665e-06,
    "what": "JPY state vs baseline, all days (Diebold-Mariano)",
-   "p_holm": 4.946791323864553e-06,
+   "p_holm": 4.763155482711466e-06,
    "m": 6
   },
   {
    "family": "F3",
    "id": "coef_IT_credit",
-   "p": 8.326452043970306e-06,
+   "p": 8.326452043976495e-06,
    "what": "IT collateral: credit coefficient = 0 (HAC)",
-   "p_holm": 4.995871226382184e-05,
+   "p_holm": 4.995871226385897e-05,
    "m": 6
   },
   {
    "family": "F4",
    "id": "coef_IT_before_qt_credit",
-   "p": 0.0001229374609019653,
+   "p": 0.0001229374609017354,
    "what": "IT collateral, before QT: credit coefficient = 0 (HAC)",
-   "p_holm": 0.001229374609019653,
+   "p_holm": 0.001229374609017354,
    "m": 12
   },
   {
    "family": "F4",
    "id": "coef_IT_after_qt_credit",
-   "p": 0.5498082194829973,
+   "p": 0.5498082194830956,
    "what": "IT collateral, after QT: credit coefficient = 0 (HAC)",
    "p_holm": 1.0,
    "m": 12
@@ -123,15 +123,15 @@
   {
    "family": "F3",
    "id": "coef_IT_liquidity",
-   "p": 0.02264477763010544,
+   "p": 0.022644777630108658,
    "what": "IT collateral: liquidity coefficient = 0 (HAC)",
-   "p_holm": 0.11322388815052721,
+   "p_holm": 0.1132238881505433,
    "m": 6
   },
   {
    "family": "F4",
    "id": "coef_IT_before_qt_liquidity",
-   "p": 0.24418482036990885,
+   "p": 0.24418482036977984,
    "what": "IT collateral, before QT: liquidity coefficient = 0 (HAC)",
    "p_holm": 1.0,
    "m": 12
@@ -139,15 +139,15 @@
   {
    "family": "F4",
    "id": "coef_IT_after_qt_liquidity",
-   "p": 1.2638947067590838e-08,
+   "p": 1.2638947066831903e-08,
    "what": "IT collateral, after QT: liquidity coefficient = 0 (HAC)",
-   "p_holm": 1.5166736481109006e-07,
+   "p_holm": 1.5166736480198284e-07,
    "m": 12
   },
   {
    "family": "F3",
    "id": "coef_IT_de_holdings",
-   "p": 0.4043210741080754,
+   "p": 0.4043210741080643,
    "what": "IT collateral: German holdings coefficient = 0 (HAC)",
    "p_holm": 1.0,
    "m": 6
@@ -155,7 +155,7 @@
   {
    "family": "F4",
    "id": "coef_IT_before_qt_de_holdings",
-   "p": 0.8633079475627667,
+   "p": 0.8633079475627554,
    "what": "IT collateral, before QT: German holdings coefficient = 0 (HAC)",
    "p_holm": 1.0,
    "m": 12
@@ -163,23 +163,23 @@
   {
    "family": "F4",
    "id": "coef_IT_after_qt_de_holdings",
-   "p": 0.0065750967583373485,
+   "p": 0.006575096758264291,
    "what": "IT collateral, after QT: German holdings coefficient = 0 (HAC)",
-   "p_holm": 0.059175870825036135,
+   "p_holm": 0.05917587082437861,
    "m": 12
   },
   {
    "family": "F5",
    "id": "chow_qt_IT",
-   "p": 0.03462849862824004,
+   "p": 0.034628498628240495,
    "what": "IT collateral regression: break at the start of QT (Chow)",
-   "p_holm": 0.03462849862824004,
+   "p_holm": 0.034628498628240495,
    "m": 4
   },
   {
    "family": "F3",
    "id": "coef_FR_credit",
-   "p": 0.839207490905025,
+   "p": 0.8392074909050217,
    "what": "FR collateral: credit coefficient = 0 (HAC)",
    "p_holm": 1.0,
    "m": 6
@@ -187,31 +187,31 @@
   {
    "family": "F4",
    "id": "coef_FR_before_qt_credit",
-   "p": 7.818307748318094e-05,
+   "p": 7.81830774831908e-05,
    "what": "FR collateral, before QT: credit coefficient = 0 (HAC)",
-   "p_holm": 0.0008600138523149904,
+   "p_holm": 0.0008600138523150988,
    "m": 12
   },
   {
    "family": "F4",
    "id": "coef_FR_after_qt_credit",
-   "p": 0.009517619138426662,
+   "p": 0.009517619138443654,
    "what": "FR collateral, after QT: credit coefficient = 0 (HAC)",
-   "p_holm": 0.0761409531074133,
+   "p_holm": 0.07614095310754923,
    "m": 12
   },
   {
    "family": "F3",
    "id": "coef_FR_liquidity",
-   "p": 0.2320041230504415,
+   "p": 0.23200412305039664,
    "what": "FR collateral: liquidity coefficient = 0 (HAC)",
-   "p_holm": 0.928016492201766,
+   "p_holm": 0.9280164922015866,
    "m": 6
   },
   {
    "family": "F4",
    "id": "coef_FR_before_qt_liquidity",
-   "p": 0.4154438893224618,
+   "p": 0.4154438893224074,
    "what": "FR collateral, before QT: liquidity coefficient = 0 (HAC)",
    "p_holm": 1.0,
    "m": 12
@@ -219,7 +219,7 @@
   {
    "family": "F4",
    "id": "coef_FR_after_qt_liquidity",
-   "p": 0.4592490409114174,
+   "p": 0.45924904091102714,
    "what": "FR collateral, after QT: liquidity coefficient = 0 (HAC)",
    "p_holm": 1.0,
    "m": 12
@@ -227,7 +227,7 @@
   {
    "family": "F3",
    "id": "coef_FR_de_holdings",
-   "p": 0.5207922413345814,
+   "p": 0.5207922413345618,
    "what": "FR collateral: German holdings coefficient = 0 (HAC)",
    "p_holm": 1.0,
    "m": 6
@@ -235,7 +235,7 @@
   {
    "family": "F4",
    "id": "coef_FR_before_qt_de_holdings",
-   "p": 0.8821407595871976,
+   "p": 0.882140759587193,
    "what": "FR collateral, before QT: German holdings coefficient = 0 (HAC)",
    "p_holm": 1.0,
    "m": 12
@@ -243,7 +243,7 @@
   {
    "family": "F4",
    "id": "coef_FR_after_qt_de_holdings",
-   "p": 0.48699642271884047,
+   "p": 0.48699642271834276,
    "what": "FR collateral, after QT: German holdings coefficient = 0 (HAC)",
    "p_holm": 1.0,
    "m": 12
@@ -251,9 +251,9 @@
   {
    "family": "F5",
    "id": "chow_qt_FR",
-   "p": 6.397012452760468e-08,
+   "p": 6.397012452760467e-08,
    "what": "FR collateral regression: break at the start of QT (Chow)",
-   "p_holm": 1.9191037358281405e-07,
+   "p_holm": 1.91910373582814e-07,
    "m": 4
   },
   {
@@ -275,65 +275,65 @@
   {
    "family": "F6",
    "id": "euro_beta_IT",
-   "p": 0.00014304280411605203,
+   "p": 0.00014304280411605067,
    "what": "Euro-wide split: beta on IT = 0 (HAC)",
-   "p_holm": 0.00028608560823210406,
+   "p_holm": 0.00028608560823210135,
    "m": 2
   },
   {
    "family": "F6",
    "id": "euro_beta_ES",
-   "p": 0.06246993598528566,
+   "p": 0.06246993598528548,
    "what": "Euro-wide split: beta on ES = 0 (HAC)",
-   "p_holm": 0.06246993598528566,
+   "p_holm": 0.06246993598528548,
    "m": 2
   },
   {
    "family": "F7",
    "id": "ecm_gamma_full",
-   "p": 7.647657040769404e-06,
+   "p": 7.825931723259718e-06,
    "what": "Japan error correction (full): gap coefficient = 0 (HAC)",
-   "p_holm": 7.647657040769404e-06,
+   "p_holm": 7.825931723259718e-06,
    "m": 3
   },
   {
    "family": "F7",
    "id": "ecm_gamma_negative",
-   "p": 2.0523457738407502e-13,
+   "p": 2.052345773841137e-13,
    "what": "Japan error correction (negative): gap coefficient = 0 (HAC)",
-   "p_holm": 4.1046915476815004e-13,
+   "p_holm": 4.104691547682274e-13,
    "m": 3
   },
   {
    "family": "F7",
    "id": "ecm_gamma_exit",
-   "p": 7.653723839882885e-57,
+   "p": 5.028617956820209e-57,
    "what": "Japan error correction (exit): gap coefficient = 0 (HAC)",
-   "p_holm": 2.2961171519648652e-56,
+   "p_holm": 1.5085853870460625e-56,
    "m": 3
   },
   {
    "family": "F8",
    "id": "coverage_USD",
-   "p": 4.12008161520459e-05,
+   "p": 4.1924882130982715e-05,
    "what": "USD state: 5-95% interval covers 90% (exact binomial)",
-   "p_holm": 4.12008161520459e-05,
+   "p_holm": 4.1924882130982715e-05,
    "m": 3
   },
   {
    "family": "F8",
    "id": "coverage_EUR",
-   "p": 4.298549711725213e-36,
+   "p": 4.371055750328054e-36,
    "what": "EUR state: 5-95% interval covers 90% (exact binomial)",
-   "p_holm": 1.289564913517564e-35,
+   "p_holm": 1.3113167250984162e-35,
    "m": 3
   },
   {
    "family": "F8",
    "id": "coverage_JPY",
-   "p": 4.368331586647785e-09,
+   "p": 4.4513145709154585e-09,
    "what": "JPY baseline: 5-95% interval covers 90% (exact binomial)",
-   "p_holm": 8.73666317329557e-09,
+   "p_holm": 8.902629141830917e-09,
    "m": 3
   }
  ]

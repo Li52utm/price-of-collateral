@@ -30,11 +30,11 @@ R6,france,"regressors IT, ES and PT",True,"France-specific +54 bp, euro-wide -9 
 R6,france,cumulate from July 2024,True,"France-specific +42 bp, euro-wide -12 bp"
 R7,japan,exit sample from 1 Aug 2024,True,exit 0.4 (0.3-0.5) vs negative 13.2 (9.7-17.8) days
 R7,japan,negative sample from 1 Oct 2016,True,exit 0.4 (0.3-0.6) vs negative 13.2 (9.6-17.2) days
-R7,japan,no same-day pass-through term,True,exit 0.4 (0.2-7.6) vs negative 13.2 (9.7-17.8) days
+R7,japan,no same-day pass-through term,True,exit 0.4 (0.2-7.4) vs negative 13.2 (9.7-17.8) days
 R7,japan,bootstrap block 10 days,True,exit 0.4 (0.3-0.6) vs negative 13.2 (9.8-17.3) days
 R7,japan,bootstrap block 40 days,True,exit 0.4 (0.3-0.6) vs negative 13.2 (9.2-17.1) days
-R8,desk_note,business-day weights (pre-U0 rule),True,"verdict No; USD -5.3 vs -1.0 bp, EUR +0.08 vs +1.0 bp"
-R8,desk_note,window from 5 business days before,True,"verdict No; USD -3.3 vs -1.0 bp, EUR -0.02 vs +1.0 bp"
+R8,desk_note,business-day weights (pre-U0 rule),True,"verdict No; USD -5.3 vs +4.0 bp, EUR +0.08 vs +1.0 bp"
+R8,desk_note,window from 5 business days before,True,"verdict No; USD -3.3 vs +4.0 bp, EUR -0.02 vs +1.0 bp"
 R8,desk_note,window from 10 business days before,,not computable: the frozen path starts on 21 December 2026
-R8,desk_note,euro hurdle 0 bp,True,"verdict No; USD -4.1 vs -1.0 bp, EUR -0.04 vs +0.0 bp"
-R8,desk_note,euro hurdle 2 bp,True,"verdict No; USD -4.1 vs -1.0 bp, EUR -0.04 vs +2.0 bp"
+R8,desk_note,euro hurdle 0 bp,True,"verdict No; USD -4.1 vs +4.0 bp, EUR -0.04 vs +0.0 bp"
+R8,desk_note,euro hurdle 2 bp,True,"verdict No; USD -4.1 vs +4.0 bp, EUR -0.04 vs +2.0 bp"

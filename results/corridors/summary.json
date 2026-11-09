@@ -1,5 +1,5 @@
 {
- "data_as_of": "2026-11-05",
+ "data_as_of": "2026-11-06",
  "regimes": {
   "EUR": [
    {
@@ -110,63 +110,63 @@
   "EUR": {
    "stressed_regime": 1,
    "mean_bp": {
-    "calm": -4.570918044026729,
-    "stressed": -7.671952572928331
+    "calm": -4.570915399034597,
+    "stressed": -7.671947655903756
    },
    "sd_bp": {
-    "calm": 0.855530159259412,
-    "stressed": 1.111432509556357
+    "calm": 0.8555307051045576,
+    "stressed": 1.111428877102801
    },
-   "test_ll_per_day": -1.935190958756345,
-   "normal_ll_per_day": -2.325380927765102,
+   "test_ll_per_day": -1.9352354552003297,
+   "normal_ll_per_day": -2.3246556732196475,
    "share_stressed_train": 0.6172248803827751,
-   "share_stressed_test": 0.9989827060020345,
+   "share_stressed_test": 0.9979674796747967,
    "share_stressed_by_year": {
     "2023": 1.0,
     "2024": 1.0,
     "2025": 1.0,
-    "2026": 0.9953917050691244
+    "2026": 0.9908256880733946
    },
-   "latest_probability": 0.46516224378954757,
-   "latest_date": "2026-11-05"
+   "latest_probability": 0.24914504448045974,
+   "latest_date": "2026-11-06"
   },
   "USD": {
    "stressed_regime": 1,
    "mean_bp": {
-    "calm": -5.7154370366376686,
-    "stressed": 8.611516338344646
+    "calm": -5.715437036516486,
+    "stressed": 8.611516340930597
    },
    "sd_bp": {
-    "calm": 5.061268087412746,
-    "stressed": 25.098848242350005
+    "calm": 5.061268087492101,
+    "stressed": 25.098848242504207
    },
-   "test_ll_per_day": -2.9984621531132185,
-   "normal_ll_per_day": -3.5415119549917193,
+   "test_ll_per_day": -2.9988586595385303,
+   "normal_ll_per_day": -3.5414145919046103,
    "share_stressed_train": 0.15235690235690236,
-   "share_stressed_test": 0.06145833333333333,
+   "share_stressed_test": 0.061394380853277836,
    "share_stressed_by_year": {
     "2023": 0.0,
     "2024": 0.02,
     "2025": 0.1927710843373494,
-    "2026": 0.02830188679245283
+    "2026": 0.028169014084507043
    },
-   "latest_probability": 0.486823873174938,
-   "latest_date": "2026-11-05"
+   "latest_probability": 0.20314704365146732,
+   "latest_date": "2026-11-06"
   },
   "JPY": {
    "stressed_regime": 0,
    "mean_bp": {
-    "calm": 8.13380982722888,
-    "stressed": 4.415838751151473
+    "calm": 8.133809827228879,
+    "stressed": 4.415838751151472
    },
    "sd_bp": {
-    "calm": 0.9155502543473778,
-    "stressed": 1.7104947520587332
+    "calm": 0.9155502543473721,
+    "stressed": 1.7104947520587162
    },
-   "test_ll_per_day": -6.740212484757666,
-   "normal_ll_per_day": -6.0472122003256255,
+   "test_ll_per_day": -6.742821222346657,
+   "normal_ll_per_day": -6.049025209960894,
    "share_stressed_train": 0.6678362573099416,
-   "share_stressed_test": 0.7876200640341515,
+   "share_stressed_test": 0.7878464818763327,
    "share_stressed_by_year": {
     "2023": 0.3983739837398374,
     "2024": 0.7918367346938775,
@@ -174,7 +174,7 @@
     "2026": 1.0
    },
    "latest_probability": 1.0,
-   "latest_date": "2026-11-04"
+   "latest_date": "2026-11-05"
   }
  },
  "reserves": {
@@ -186,14 +186,14 @@
    "n_test": 200,
    "test_rmse": {
     "linear": 4.746680850493636,
-    "piecewise": 4.91690694485834,
-    "logistic": 5.853085406094335
+    "piecewise": 4.916906944858341,
+    "logistic": 5.853085380607107
    },
    "winner": "linear",
    "full_model": {
     "kind": "linear",
     "params": [
-     14.687177620127791,
+     14.687177620127787,
      -6.414790333338766
     ]
    },
@@ -223,21 +223,21 @@
    "n_train": 171,
    "n_test": 200,
    "test_rmse": {
-    "linear": 2.7391912612401015,
-    "piecewise": 2.959728220576716,
-    "logistic": 3.108030729108471
+    "linear": 2.7391634673399645,
+    "piecewise": 2.9597042515336804,
+    "logistic": 3.1080068050543
    },
    "winner": "linear",
    "full_model": {
     "kind": "linear",
     "params": [
-     -3.268580001758555,
-     -1.2397624276771335
+     -3.268414931867053,
+     -1.239802764997338
     ]
    },
    "pressure_point": 3.186446228813559,
    "pressure_from": "piecewise",
-   "slope_per_unit": -1.2397624276771335,
+   "slope_per_unit": -1.239802764997338,
    "pressure_band": [
     2.433837224576271,
     4.085325098516949
@@ -258,39 +258,39 @@
  "stats": {
   "EUR": {
    "start": "2019-10-01",
-   "n_days": 1819,
+   "n_days": 1820,
    "inside_share": 0.0,
    "below_floor_share": 1.0,
    "recent_median_bp": -6.800000000000006,
-   "recent_p95_bp": -5.945000000000013,
-   "recent_iqr_bp": 0.47499999999999254,
+   "recent_p95_bp": -5.900000000000016,
+   "recent_iqr_bp": 0.49999999999998934,
    "corridor_width_bp": 39.99999999999999,
-   "latest_spread_bp": -5.799999999999983,
-   "latest_date": "2026-11-05"
+   "latest_spread_bp": -5.699999999999994,
+   "latest_date": "2026-11-06"
   },
   "USD": {
    "start": "2018-04-02",
-   "n_days": 2148,
-   "inside_share": 0.9636871508379888,
-   "below_floor_share": 0.0074487895716946,
+   "n_days": 2149,
+   "inside_share": 0.9637040483946021,
+   "below_floor_share": 0.007445323406235459,
    "recent_median_bp": 0.0,
    "recent_p95_bp": 8.000000000000007,
    "recent_iqr_bp": 3.000000000000025,
    "corridor_width_bp": 25.0,
-   "latest_spread_bp": 2.0000000000000018,
-   "latest_date": "2026-11-05"
+   "latest_spread_bp": -0.9999999999999787,
+   "latest_date": "2026-11-06"
   },
   "JPY": {
    "start": "2008-01-04",
-   "n_days": 4606,
-   "inside_share": 0.5217108119843682,
-   "below_floor_share": 0.4782891880156318,
+   "n_days": 4607,
+   "inside_share": 0.5215975689168656,
+   "below_floor_share": 0.47840243108313435,
    "recent_median_bp": -2.300000000000002,
    "recent_p95_bp": -2.100000000000002,
    "recent_iqr_bp": 0.10000000000000009,
    "corridor_width_bp": 25.0,
-   "latest_spread_bp": -2.200000000000002,
-   "latest_date": "2026-11-04"
+   "latest_spread_bp": -2.299999999999991,
+   "latest_date": "2026-11-05"
   }
  },
  "cases": [
