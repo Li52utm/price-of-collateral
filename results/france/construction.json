@@ -1,23 +1,23 @@
 {
- "data_as_of": "2026-11-06",
+ "data_as_of": "2026-11-09",
  "gap": {
-  "n_days": 4788,
+  "n_days": 4789,
   "first": "2008-01-02",
-  "last": "2026-11-09",
-  "mean_bp": -6.946950710108605,
+  "last": "2026-11-10",
+  "mean_bp": -6.946961787429526,
   "median_bp": -3.9999999999999982,
-  "sd_bp": 10.202529469643112,
+  "sd_bp": 10.201464015755125,
   "p05_bp": -27.99999999999998,
   "p95_bp": 3.9999999999999982,
-  "recent_mean_bp": -7.036,
-  "latest_bp": -7.000000000000028
+  "recent_mean_bp": -7.031999999999998,
+  "latest_bp": -6.999999999999984
  },
- "spread_effect_mean_bp": 6.946950710108605,
- "spread_effect_latest_bp": 7.000000000000028,
+ "spread_effect_mean_bp": 6.946961787429526,
+ "spread_effect_latest_bp": 6.999999999999984,
  "small": false,
  "small_gap_bp": 3.0,
- "latest_spread_current_bp": 152.89999999999998,
- "latest_spread_cm_bp": 145.89999999999998,
+ "latest_spread_current_bp": 142.39999999999995,
+ "latest_spread_cm_bp": 135.39999999999998,
  "monthly": {
   "oat_tec10_vs_irs_fr": {
    "n_months": 201,

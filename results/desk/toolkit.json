@@ -1,5 +1,5 @@
 {
- "data_as_of": "2026-11-06",
+ "data_as_of": "2026-11-09",
  "pattern": {
   "n_turns": 34,
   "n_used": 8,
@@ -17,12 +17,12 @@
   "split_year": 2023
  },
  "latest": {
-  "repo_date": "2026-11-09",
+  "repo_date": "2026-11-10",
   "repo_bn": 0.005,
   "repo_30d_max_bn": 0.111,
   "repo_30d_days_used": 0,
-  "rrp_date": "2026-11-09",
-  "rrp_bn": 0.252,
+  "rrp_date": "2026-11-10",
+  "rrp_bn": 0.152,
   "bills_date": "2026-11-04",
   "bills_bn": 573.355,
   "bills_13w_change_bn": 48.478000000000065,

@@ -8,11 +8,11 @@ R2,calendar,lookback 5 business days,True,"USD +10.5 bp, EUR -1.1 bp"
 R2,calendar,lookback 20 business days,True,"USD +11.0 bp, EUR -1.1 bp"
 R2,calendar,median instead of mean,True,"USD +2.9 bp, EUR -1.4 bp"
 R2,calendar,drop each series' first year-end,True,"USD +4.7 bp, EUR -1.6 bp"
-R3,corridors,bootstrap block 4 weeks,True,slope -6.41 (-7.77 to -5.31) bp per trillion
-R3,corridors,bootstrap block 16 weeks,True,slope -6.41 (-8.18 to -4.85) bp per trillion
+R3,corridors,bootstrap block 4 weeks,True,slope -6.41 (-7.78 to -5.29) bp per trillion
+R3,corridors,bootstrap block 16 weeks,True,slope -6.41 (-8.17 to -4.82) bp per trillion
 R3,corridors,train weeks only (to 2022),True,slope -6.43 (-8.12 to -5.00) bp per trillion
-R3,corridors,test weeks only (2023 on),True,slope -16.26 (-24.35 to -8.79) bp per trillion
-R3,corridors,spread two weeks ahead,True,slope -6.31 (-7.84 to -4.99) bp per trillion
+R3,corridors,test weeks only (2023 on),True,slope -16.27 (-24.29 to -8.61) bp per trillion
+R3,corridors,spread two weeks ahead,True,slope -6.31 (-7.78 to -5.01) bp per trillion
 R4,collateral,MMSR overnight instead of spot-next,False,IT too close to call; FR scarcity
 R4,collateral,borrowing side instead of lending,True,IT too close to call; FR both / unclear
 R4,collateral,bootstrap block 2 periods,True,IT too close to call; FR both / unclear
@@ -30,11 +30,11 @@ R6,france,"regressors IT, ES and PT",True,"France-specific +54 bp, euro-wide -9 
 R6,france,cumulate from July 2024,True,"France-specific +42 bp, euro-wide -12 bp"
 R7,japan,exit sample from 1 Aug 2024,True,exit 0.4 (0.3-0.5) vs negative 13.2 (9.7-17.8) days
 R7,japan,negative sample from 1 Oct 2016,True,exit 0.4 (0.3-0.6) vs negative 13.2 (9.6-17.2) days
-R7,japan,no same-day pass-through term,True,exit 0.4 (0.2-7.4) vs negative 13.2 (9.7-17.8) days
+R7,japan,no same-day pass-through term,True,exit 0.4 (0.2-9.0) vs negative 13.2 (9.7-17.8) days
 R7,japan,bootstrap block 10 days,True,exit 0.4 (0.3-0.6) vs negative 13.2 (9.8-17.3) days
 R7,japan,bootstrap block 40 days,True,exit 0.4 (0.3-0.6) vs negative 13.2 (9.2-17.1) days
-R8,desk_note,business-day weights (pre-U0 rule),True,"verdict No; USD -5.3 vs +4.0 bp, EUR +0.08 vs +1.0 bp"
-R8,desk_note,window from 5 business days before,True,"verdict No; USD -3.3 vs +4.0 bp, EUR -0.02 vs +1.0 bp"
+R8,desk_note,business-day weights (pre-U0 rule),True,"verdict No; USD -5.3 vs +5.0 bp, EUR +0.08 vs +1.0 bp"
+R8,desk_note,window from 5 business days before,True,"verdict No; USD -3.3 vs +5.0 bp, EUR -0.02 vs +1.0 bp"
 R8,desk_note,window from 10 business days before,,not computable: the frozen path starts on 21 December 2026
-R8,desk_note,euro hurdle 0 bp,True,"verdict No; USD -4.1 vs +4.0 bp, EUR -0.04 vs +0.0 bp"
-R8,desk_note,euro hurdle 2 bp,True,"verdict No; USD -4.1 vs +4.0 bp, EUR -0.04 vs +2.0 bp"
+R8,desk_note,euro hurdle 0 bp,True,"verdict No; USD -4.1 vs +5.0 bp, EUR -0.04 vs +0.0 bp"
+R8,desk_note,euro hurdle 2 bp,True,"verdict No; USD -4.1 vs +5.0 bp, EUR -0.04 vs +2.0 bp"
