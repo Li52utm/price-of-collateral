@@ -1,48 +1,48 @@
 {
- "data_as_of": "2026-11-09",
+ "data_as_of": "2026-11-12",
  "gap": {
-  "n_days": 4789,
+  "n_days": 4792,
   "first": "2008-01-02",
-  "last": "2026-11-10",
-  "mean_bp": -6.946961787429526,
+  "last": "2026-11-13",
+  "mean_bp": -6.946786310517529,
   "median_bp": -3.9999999999999982,
-  "sd_bp": 10.201464015755125,
+  "sd_bp": 10.198278802122221,
   "p05_bp": -27.99999999999998,
   "p95_bp": 3.9999999999999982,
-  "recent_mean_bp": -7.031999999999998,
-  "latest_bp": -6.999999999999984
+  "recent_mean_bp": -7.016,
+  "latest_bp": -6.000000000000005
  },
- "spread_effect_mean_bp": 6.946961787429526,
- "spread_effect_latest_bp": 6.999999999999984,
+ "spread_effect_mean_bp": 6.946786310517529,
+ "spread_effect_latest_bp": 6.000000000000005,
  "small": false,
  "small_gap_bp": 3.0,
- "latest_spread_current_bp": 142.39999999999995,
- "latest_spread_cm_bp": 135.39999999999998,
+ "latest_spread_current_bp": 151.79999999999998,
+ "latest_spread_cm_bp": 145.79999999999998,
  "monthly": {
   "oat_tec10_vs_irs_fr": {
-   "n_months": 201,
-   "mean_bp": -1.0338076406480379,
-   "mean_abs_bp": 2.0311260669913604
+   "n_months": 202,
+   "mean_bp": -1.0297248845512201,
+   "mean_abs_bp": 2.0221060909621498
   },
   "bund_current_vs_irs_de": {
-   "n_months": 201,
-   "mean_bp": 4.565362798659196,
-   "mean_abs_bp": 4.5693428981616835
+   "n_months": 202,
+   "mean_bp": 4.5460923257585435,
+   "mean_abs_bp": 4.550052721798147
   },
   "bund_cm_vs_irs_de": {
-   "n_months": 201,
-   "mean_bp": 9.228609364363857,
-   "mean_abs_bp": 9.296997519578749
+   "n_months": 202,
+   "mean_bp": 9.216856572731093,
+   "mean_abs_bp": 9.284906172722147
   },
   "spread_current_vs_irs": {
-   "n_months": 201,
-   "mean_bp": -5.615037021380989,
-   "mean_abs_bp": 5.670313855729853
+   "n_months": 202,
+   "mean_bp": -5.591605244947509,
+   "mean_abs_bp": 5.646608431601579
   },
   "spread_cm_vs_irs": {
-   "n_months": 201,
-   "mean_bp": -10.283106873252217,
-   "mean_abs_bp": 10.390856942780355
+   "n_months": 202,
+   "mean_bp": -10.267168900432338,
+   "mean_abs_bp": 10.37438555377469
   }
  }
 }

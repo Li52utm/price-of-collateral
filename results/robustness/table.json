@@ -1,5 +1,5 @@
 {
- "data_as_of": "2026-11-09",
+ "data_as_of": "2026-11-12",
  "summary": {
   "R1": {
    "chapter": "calendar",
@@ -33,7 +33,7 @@
    "chapter": "france",
    "finding": "France is in a blowout now (daily rule)",
    "n": 6,
-   "holds": 5,
+   "holds": 6,
    "not_computable": 0
   },
   "R6": {
@@ -148,7 +148,7 @@
    "chapter": "corridors",
    "spec": "test weeks only (2023 on)",
    "holds": true,
-   "value": "slope -16.27 (-24.29 to -8.61) bp per trillion"
+   "value": "slope -16.26 (-24.29 to -8.61) bp per trillion"
   },
   {
    "finding": "R3",
@@ -231,36 +231,36 @@
    "finding": "R5",
    "chapter": "france",
    "spec": "monthly rule (ECB data to the last month)",
-   "holds": false,
-   "value": "not in an episode at 2026-09 (97 bp)"
+   "holds": true,
+   "value": "in an episode at 2026-10 (147 bp)"
   },
   {
    "finding": "R6",
    "chapter": "france",
    "spec": "fit window 2015-2023",
    "holds": true,
-   "value": "France-specific +51 bp, euro-wide -5 bp"
+   "value": "France-specific +94 bp, euro-wide +3 bp"
   },
   {
    "finding": "R6",
    "chapter": "france",
    "spec": "fit window 2010-2019",
    "holds": true,
-   "value": "France-specific +57 bp, euro-wide -12 bp"
+   "value": "France-specific +101 bp, euro-wide -5 bp"
   },
   {
    "finding": "R6",
    "chapter": "france",
    "spec": "regressors IT, ES and PT",
    "holds": true,
-   "value": "France-specific +54 bp, euro-wide -9 bp"
+   "value": "France-specific +98 bp, euro-wide -2 bp"
   },
   {
    "finding": "R6",
    "chapter": "france",
    "spec": "cumulate from July 2024",
    "holds": true,
-   "value": "France-specific +42 bp, euro-wide -12 bp"
+   "value": "France-specific +85 bp, euro-wide -4 bp"
   },
   {
    "finding": "R7",
@@ -281,7 +281,7 @@
    "chapter": "japan",
    "spec": "no same-day pass-through term",
    "holds": true,
-   "value": "exit 0.4 (0.2-9.0) vs negative 13.2 (9.7-17.8) days"
+   "value": "exit 0.4 (0.2-10.6) vs negative 13.2 (9.7-17.8) days"
   },
   {
    "finding": "R7",
@@ -302,14 +302,14 @@
    "chapter": "desk_note",
    "spec": "business-day weights (pre-U0 rule)",
    "holds": true,
-   "value": "verdict No; USD -5.3 vs +5.0 bp, EUR +0.08 vs +1.0 bp"
+   "value": "verdict No; USD -5.3 vs +3.0 bp, EUR +0.08 vs +1.0 bp"
   },
   {
    "finding": "R8",
    "chapter": "desk_note",
    "spec": "window from 5 business days before",
    "holds": true,
-   "value": "verdict No; USD -3.3 vs +5.0 bp, EUR -0.02 vs +1.0 bp"
+   "value": "verdict No; USD -3.3 vs +3.0 bp, EUR -0.02 vs +1.0 bp"
   },
   {
    "finding": "R8",
@@ -323,14 +323,14 @@
    "chapter": "desk_note",
    "spec": "euro hurdle 0 bp",
    "holds": true,
-   "value": "verdict No; USD -4.1 vs +5.0 bp, EUR -0.04 vs +0.0 bp"
+   "value": "verdict No; USD -4.1 vs +3.0 bp, EUR -0.04 vs +0.0 bp"
   },
   {
    "finding": "R8",
    "chapter": "desk_note",
    "spec": "euro hurdle 2 bp",
    "holds": true,
-   "value": "verdict No; USD -4.1 vs +5.0 bp, EUR -0.04 vs +2.0 bp"
+   "value": "verdict No; USD -4.1 vs +3.0 bp, EUR -0.04 vs +2.0 bp"
   }
  ]
 }

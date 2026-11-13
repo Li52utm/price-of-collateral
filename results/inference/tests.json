@@ -11,9 +11,9 @@
   {
    "family": "F2",
    "id": "dm_all_USD_calendar",
-   "p": 0.001986439685496595,
+   "p": 0.0019538690383281232,
    "what": "USD calendar vs baseline, all days (Diebold-Mariano)",
-   "p_holm": 0.0059593190564897845,
+   "p_holm": 0.00586160711498437,
    "m": 6
   },
   {
@@ -27,9 +27,9 @@
   {
    "family": "F2",
    "id": "dm_all_USD_state",
-   "p": 0.12449811367363815,
+   "p": 0.12468012867017857,
    "what": "USD state vs baseline, all days (Diebold-Mariano)",
-   "p_holm": 0.2489962273472763,
+   "p_holm": 0.24936025734035713,
    "m": 6
   },
   {
@@ -43,9 +43,9 @@
   {
    "family": "F2",
    "id": "dm_all_EUR_calendar",
-   "p": 1.0086739087548108e-11,
+   "p": 1.0073094583815872e-11,
    "what": "EUR calendar vs baseline, all days (Diebold-Mariano)",
-   "p_holm": 6.052043452528865e-11,
+   "p_holm": 6.043856750289524e-11,
    "m": 6
   },
   {
@@ -59,9 +59,9 @@
   {
    "family": "F2",
    "id": "dm_all_EUR_state",
-   "p": 0.1611187112900549,
+   "p": 0.16020603387123097,
    "what": "EUR state vs baseline, all days (Diebold-Mariano)",
-   "p_holm": 0.2489962273472763,
+   "p_holm": 0.24936025734035713,
    "m": 6
   },
   {
@@ -75,9 +75,9 @@
   {
    "family": "F2",
    "id": "dm_all_JPY_calendar",
-   "p": 7.05473313848448e-07,
+   "p": 6.272507303560081e-07,
    "what": "JPY calendar vs baseline, all days (Diebold-Mariano)",
-   "p_holm": 3.52736656924224e-06,
+   "p_holm": 3.1362536517800403e-06,
    "m": 6
   },
   {
@@ -91,9 +91,9 @@
   {
    "family": "F2",
    "id": "dm_all_JPY_state",
-   "p": 1.1476829736730969e-06,
+   "p": 1.027518436919705e-06,
    "what": "JPY state vs baseline, all days (Diebold-Mariano)",
-   "p_holm": 4.590731894692387e-06,
+   "p_holm": 4.11007374767882e-06,
    "m": 6
   },
   {
@@ -291,9 +291,9 @@
   {
    "family": "F7",
    "id": "ecm_gamma_full",
-   "p": 7.511591106927831e-06,
+   "p": 7.093021751556905e-06,
    "what": "Japan error correction (full): gap coefficient = 0 (HAC)",
-   "p_holm": 7.511591106927831e-06,
+   "p_holm": 7.093021751556905e-06,
    "m": 3
   },
   {
@@ -307,33 +307,33 @@
   {
    "family": "F7",
    "id": "ecm_gamma_exit",
-   "p": 4.056373263576565e-57,
+   "p": 1.1298683976006248e-57,
    "what": "Japan error correction (exit): gap coefficient = 0 (HAC)",
-   "p_holm": 1.2169119790729695e-56,
+   "p_holm": 3.389605192801875e-57,
    "m": 3
   },
   {
    "family": "F8",
    "id": "coverage_USD",
-   "p": 5.231000593888968e-05,
+   "p": 5.3455600806442e-05,
    "what": "USD state: 5-95% interval covers 90% (exact binomial)",
-   "p_holm": 5.231000593888968e-05,
+   "p_holm": 5.3455600806442e-05,
    "m": 3
   },
   {
    "family": "F8",
    "id": "coverage_EUR",
-   "p": 4.523667547730204e-36,
+   "p": 2.975662389478035e-36,
    "what": "EUR state: 5-95% interval covers 90% (exact binomial)",
-   "p_holm": 1.3571002643190611e-35,
+   "p_holm": 8.926987168434106e-36,
    "m": 3
   },
   {
    "family": "F8",
    "id": "coverage_JPY",
-   "p": 4.55393098859629e-09,
+   "p": 4.986284360937096e-09,
    "what": "JPY baseline: 5-95% interval covers 90% (exact binomial)",
-   "p_holm": 9.10786197719258e-09,
+   "p_holm": 9.972568721874192e-09,
    "m": 3
   }
  ]

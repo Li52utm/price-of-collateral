@@ -1,5 +1,5 @@
 {
- "data_as_of": "2026-11-09",
+ "data_as_of": "2026-11-12",
  "regimes": {
   "EUR": [
    {
@@ -117,18 +117,18 @@
     "calm": 0.8555307051045576,
     "stressed": 1.111428877102801
    },
-   "test_ll_per_day": -1.9352218022225898,
-   "normal_ll_per_day": -2.323909366728874,
+   "test_ll_per_day": -1.9353214168808903,
+   "normal_ll_per_day": -2.321652902959296,
    "share_stressed_train": 0.6172248803827751,
-   "share_stressed_test": 0.9969543147208122,
+   "share_stressed_test": 0.9939271255060729,
    "share_stressed_by_year": {
     "2023": 1.0,
     "2024": 1.0,
     "2025": 1.0,
-    "2026": 0.9863013698630136
+    "2026": 0.972972972972973
    },
-   "latest_probability": 0.14840172971348944,
-   "latest_date": "2026-11-09"
+   "latest_probability": 0.047837712248926585,
+   "latest_date": "2026-11-12"
   },
   "USD": {
    "stressed_regime": 1,
@@ -140,18 +140,18 @@
     "calm": 5.061268087492101,
     "stressed": 25.098848242504207
    },
-   "test_ll_per_day": -2.9988340454987443,
-   "normal_ll_per_day": -3.541304418511528,
+   "test_ll_per_day": -2.99906040744232,
+   "normal_ll_per_day": -3.5411305650063847,
    "share_stressed_train": 0.15235690235690236,
-   "share_stressed_test": 0.061330561330561334,
+   "share_stressed_test": 0.061203319502074686,
    "share_stressed_by_year": {
     "2023": 0.0,
     "2024": 0.02,
     "2025": 0.1927710843373494,
-    "2026": 0.028037383177570093
+    "2026": 0.027777777777777776
    },
-   "latest_probability": 0.05716562997283135,
-   "latest_date": "2026-11-09"
+   "latest_probability": 0.009863851849898134,
+   "latest_date": "2026-11-12"
   },
   "JPY": {
    "stressed_regime": 0,
@@ -163,10 +163,10 @@
     "calm": 0.9155502543473721,
     "stressed": 1.7104947520587162
    },
-   "test_ll_per_day": -6.7449427820668255,
-   "normal_ll_per_day": -6.050518904813556,
+   "test_ll_per_day": -6.751305833230164,
+   "normal_ll_per_day": -6.054994908887395,
    "share_stressed_train": 0.6678362573099416,
-   "share_stressed_test": 0.7880724174653887,
+   "share_stressed_test": 0.7887473460721869,
    "share_stressed_by_year": {
     "2023": 0.3983739837398374,
     "2024": 0.7918367346938775,
@@ -174,7 +174,7 @@
     "2026": 1.0
    },
    "latest_probability": 1.0,
-   "latest_date": "2026-11-06"
+   "latest_date": "2026-11-11"
   }
  },
  "reserves": {
@@ -185,21 +185,21 @@
    "n_train": 249,
    "n_test": 201,
    "test_rmse": {
-    "linear": 4.7450535605690085,
-    "piecewise": 4.917175882209677,
-    "logistic": 5.861630910177203
+    "linear": 4.744297855759678,
+    "piecewise": 4.916351657395707,
+    "logistic": 5.860599436895667
    },
    "winner": "linear",
    "full_model": {
     "kind": "linear",
     "params": [
-     14.695826556413158,
-     -6.4148786003254825
+     14.695444745586084,
+     -6.414874703743278
     ]
    },
    "pressure_point": 1.566813118644068,
    "pressure_from": "piecewise",
-   "slope_per_unit": -6.4148786003254825,
+   "slope_per_unit": -6.414874703743278,
    "pressure_band": [
     1.5183722499999999,
     2.882393739618644
@@ -211,86 +211,86 @@
     1.525182,
     3.9814179999999997
    ],
-   "latest_liq": 2.93009,
-   "latest_date": "2026-11-04",
+   "latest_liq": 2.9606,
+   "latest_date": "2026-11-11",
    "last_pair_liq": 2.93009,
    "last_pair_date": "2026-11-04"
   },
   "EUR": {
    "currency": "EUR",
    "label": "liquidity (EUR trillion)",
-   "n_weeks": 371,
+   "n_weeks": 372,
    "n_train": 171,
-   "n_test": 200,
+   "n_test": 201,
    "test_rmse": {
-    "linear": 2.7391634673399645,
-    "piecewise": 2.9597042515336804,
-    "logistic": 3.1080068050543
+    "linear": 2.734640952144683,
+    "piecewise": 2.954211896800572,
+    "logistic": 3.1022548141178063
    },
    "winner": "linear",
    "full_model": {
     "kind": "linear",
     "params": [
-     -3.268414931867053,
-     -1.239802764997338
+     -3.2647252790147117,
+     -1.2407012943867881
     ]
    },
-   "pressure_point": 3.186446228813559,
+   "pressure_point": 3.1864865533898303,
    "pressure_from": "piecewise",
-   "slope_per_unit": -1.239802764997338,
+   "slope_per_unit": -1.2407012943867881,
    "pressure_band": [
-    2.433837224576271,
-    4.085325098516949
+    2.429590556779661,
+    4.082039983601695
    ],
    "kink_identified": true,
    "kink_at_grid_edge": false,
-   "boot_edge_share": 0.01,
+   "boot_edge_share": 0.008,
    "kink_grid": [
-    1.9116815,
-    4.6972784999999995
+    1.9118484500000001,
+    4.6971687499999994
    ],
    "latest_liq": 2.267044,
    "latest_date": "2026-11-06",
-   "last_pair_liq": 2.242654,
-   "last_pair_date": "2026-10-30"
+   "last_pair_liq": 2.267044,
+   "last_pair_date": "2026-11-06"
   }
  },
  "stats": {
   "EUR": {
    "start": "2019-10-01",
-   "n_days": 1821,
+   "n_days": 1824,
    "inside_share": 0.0,
    "below_floor_share": 1.0,
    "recent_median_bp": -6.800000000000006,
    "recent_p95_bp": -5.900000000000016,
-   "recent_iqr_bp": 0.49999999999998934,
+   "recent_iqr_bp": 0.5999999999999783,
    "corridor_width_bp": 39.99999999999999,
-   "latest_spread_bp": -5.799999999999983,
-   "latest_date": "2026-11-09"
+   "latest_spread_bp": -5.699999999999994,
+   "latest_date": "2026-11-12"
   },
   "USD": {
    "start": "2018-04-02",
-   "n_days": 2150,
-   "inside_share": 0.9637209302325581,
-   "below_floor_share": 0.0074418604651162795,
-   "recent_median_bp": 0.0,
+   "n_days": 2152,
+   "inside_share": 0.9637546468401487,
+   "below_floor_share": 0.007434944237918215,
+   "recent_median_bp": -0.49999999999998934,
    "recent_p95_bp": 8.000000000000007,
    "recent_iqr_bp": 3.000000000000025,
    "corridor_width_bp": 25.0,
-   "latest_spread_bp": -2.0000000000000018,
-   "latest_date": "2026-11-09"
+   "latest_spread_bp": 0.0,
+   "latest_date": "2026-11-12"
   },
   "JPY": {
    "start": "2008-01-04",
-   "n_days": 4608,
-   "inside_share": 0.521484375,
-   "below_floor_share": 0.478515625,
+   "n_days": 4611,
+   "inside_share": 0.5211450878334418,
+   "below_floor_share": 0.47885491216655823,
    "recent_median_bp": -2.300000000000002,
-   "recent_p95_bp": -2.0999999999999956,
+   "recent_p95_bp": -2.0449999999999986,
    "recent_iqr_bp": 0.10000000000000009,
    "corridor_width_bp": 25.0,
-   "latest_spread_bp": -2.0999999999999908,
-   "latest_date": "2026-11-06"
+   "latest_spread_bp": -1.8000000000000016,
+   "latest_date": "2026-11-11"
   }
  },
  "cases": [

@@ -1,6 +1,6 @@
 {
- "as_of": "2026-11-09",
- "fetched_at": "2026-11-10 20:39:36",
+ "as_of": "2026-11-12",
+ "fetched_at": "2026-11-13 20:41:52",
  "counts": {
   "PASS": 10,
   "WARN": 0,
@@ -35,12 +35,12 @@
   {
    "name": "Bund: Bundesbank daily vs ECB monthly",
    "status": "PASS",
-   "detail": "225 months; mean absolute difference 4.4 bp (the ECB convergence series uses a benchmark basket, the Bundesbank the current 10-year bond)."
+   "detail": "226 months; mean absolute difference 4.4 bp (the ECB convergence series uses a benchmark basket, the Bundesbank the current 10-year bond)."
   },
   {
    "name": "OAT: Webstat daily vs ECB monthly",
    "status": "PASS",
-   "detail": "263 months; mean absolute difference 1.8 bp (mean -0.8 bp; TEC10 is a constant-maturity interpolation, the ECB series a benchmark basket). Monthly changes of the daily-based OAT-Bund spread correlate 0.93 with the ECB-based spread."
+   "detail": "264 months; mean absolute difference 1.8 bp (mean -0.8 bp; TEC10 is a constant-maturity interpolation, the ECB series a benchmark basket). Monthly changes of the daily-based OAT-Bund spread correlate 0.94 with the ECB-based spread."
   },
   {
    "name": "Euro liquidity proxy",
