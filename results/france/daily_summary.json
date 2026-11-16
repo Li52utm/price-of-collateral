@@ -1,8 +1,8 @@
 {
- "data_as_of": "2026-11-12",
+ "data_as_of": "2026-11-13",
  "first_day": "2008-01-02",
- "last_day": "2026-11-13",
- "n_days": 4789,
+ "last_day": "2026-11-16",
+ "n_days": 4790,
  "rules": {
   "blowout": {
    "30": {
@@ -11,13 +11,13 @@
      "in_episode": true,
      "start": "2026-09-28",
      "confirmed": "2026-09-28",
-     "age_periods": 34,
-     "age_months": 1.619047619047619,
+     "age_periods": 35,
+     "age_months": 1.6666666666666667,
      "baseline": 74.1996,
      "peak": 163.94000000000003,
      "peak_date": "2026-10-27",
      "half_retrace_level": 119.06980000000001,
-     "as_of": "2026-11-13",
+     "as_of": "2026-11-16",
      "p_recover_next_12m": 0.59375,
      "p_recover_12m_unconditional": 0.6111111111111112
     },
@@ -89,7 +89,7 @@
       "peak": 163.94000000000003,
       "peak_date": "2026-10-27",
       "recovery": null,
-      "months": 1.619047619047619,
+      "months": 1.6666666666666667,
       "observed": false
      }
     ]
@@ -100,13 +100,13 @@
      "in_episode": true,
      "start": "2026-09-17",
      "confirmed": "2026-09-17",
-     "age_periods": 41,
-     "age_months": 1.9523809523809523,
+     "age_periods": 42,
+     "age_months": 2.0,
      "baseline": 73.604,
      "peak": 163.94000000000003,
      "peak_date": "2026-10-27",
      "half_retrace_level": 118.77200000000002,
-     "as_of": "2026-11-13"
+     "as_of": "2026-11-16"
     },
     "episodes": [
      {
@@ -226,7 +226,7 @@
       "peak": 163.94000000000003,
       "peak_date": "2026-10-27",
       "recovery": null,
-      "months": 1.9523809523809523,
+      "months": 2.0,
       "observed": false
      }
     ]
@@ -237,13 +237,13 @@
      "in_episode": true,
      "start": "2026-10-05",
      "confirmed": "2026-10-05",
-     "age_periods": 29,
-     "age_months": 1.380952380952381,
+     "age_periods": 30,
+     "age_months": 1.4285714285714286,
      "baseline": 75.00319999999999,
      "peak": 163.94000000000003,
      "peak_date": "2026-10-27",
      "half_retrace_level": 119.47160000000001,
-     "as_of": "2026-11-13"
+     "as_of": "2026-11-16"
     },
     "episodes": [
      {
@@ -273,7 +273,7 @@
       "peak": 163.94000000000003,
       "peak_date": "2026-10-27",
       "recovery": null,
-      "months": 1.380952380952381,
+      "months": 1.4285714285714286,
       "observed": false
      }
     ]
@@ -401,12 +401,12 @@
    }
   },
   "now": {
-   "date": "2026-11-13",
-   "spread": 151.79999999999998,
-   "smoothed": 147.99999999999997,
-   "baseline": 83.212,
-   "excess": 64.78799999999997,
-   "gap_to_blowout": -34.78799999999997
+   "date": "2026-11-16",
+   "spread": 154.99999999999997,
+   "smoothed": 148.42,
+   "baseline": 83.5192,
+   "excess": 64.90079999999999,
+   "gap_to_blowout": -34.90079999999999
   }
  },
  "gradual_panel": {
@@ -462,12 +462,12 @@
  },
  "decomposition": {
   "base_day": "2024-06-07",
-  "last_day": "2026-11-13",
+  "last_day": "2026-11-16",
   "spread_base": 49.00000000000002,
-  "spread_last": 151.79999999999998,
-  "oat_leg": 182.79999999999998,
-  "bund_contribution": -80.00000000000003,
-  "spread_change": 102.79999999999995
+  "spread_last": 154.99999999999997,
+  "oat_leg": 186.99999999999997,
+  "bund_contribution": -81.0,
+  "spread_change": 105.99999999999997
  },
  "events": [
   {
@@ -476,9 +476,9 @@
    "event": "President Macron dissolves the National Assembly",
    "event_day": "2024-06-10",
    "change_bp": 14.99999999999995,
-   "percentile": 0.9934579439252337,
-   "z": 3.680094199922551,
-   "n_windows": 4280
+   "percentile": 0.9934594720859612,
+   "z": 3.6785169509497195,
+   "n_windows": 4281
   },
   {
    "date": "2024-10-25",
@@ -486,9 +486,9 @@
    "event": "Moody's moves France's Aa2 outlook to negative",
    "event_day": "2024-10-25",
    "change_bp": 0.9999999999999716,
-   "percentile": 0.6450934579439253,
-   "z": 0.23165867050350608,
-   "n_windows": 4280
+   "percentile": 0.6449427703807522,
+   "z": 0.23114218157837535,
+   "n_windows": 4281
   },
   {
    "date": "2024-12-04",
@@ -496,9 +496,9 @@
    "event": "The National Assembly adopts a motion of censure; the Barnier government falls",
    "event_day": "2024-12-04",
    "change_bp": -1.0000000000000284,
-   "percentile": 0.25957943925233645,
-   "z": -0.26097497655635826,
-   "n_windows": 4280
+   "percentile": 0.25951880401775285,
+   "z": -0.26133992833181746,
+   "n_windows": 4281
   },
   {
    "date": "2024-12-13",
@@ -506,9 +506,9 @@
    "event": "Moody's downgrades France to Aa3 (Friday evening)",
    "event_day": "2024-12-13",
    "change_bp": 3.9999999999999574,
-   "percentile": 0.9191588785046729,
-   "z": 0.9706091410932991,
-   "n_windows": 4280
+   "percentile": 0.918944171922448,
+   "z": 0.9698653464436611,
+   "n_windows": 4281
   },
   {
    "date": "2025-09-08",
@@ -516,9 +516,9 @@
    "event": "The National Assembly refuses its confidence to the Bayrou government (article 49, paragraph 1)",
    "event_day": "2025-09-08",
    "change_bp": -1.0000000000000142,
-   "percentile": 0.2759345794392523,
-   "z": -0.26097497655635477,
-   "n_windows": 4280
+   "percentile": 0.2758701238028498,
+   "z": -0.26133992833181396,
+   "n_windows": 4281
   },
   {
    "date": "2025-09-12",
@@ -526,9 +526,9 @@
    "event": "Fitch downgrades France to A+ (Friday evening)",
    "event_day": "2025-09-12",
    "change_bp": 0.0,
-   "percentile": 0.44906542056074766,
-   "z": -0.014658153026419091,
-   "n_windows": 4280
+   "percentile": 0.4489605232422331,
+   "z": -0.015098873376714037,
+   "n_windows": 4281
   },
   {
    "date": "2025-10-06",
@@ -536,9 +536,9 @@
    "event": "Prime Minister Lecornu resigns; his first government falls",
    "event_day": "2025-10-06",
    "change_bp": 4.000000000000057,
-   "percentile": 0.9285046728971963,
-   "z": 0.9706091410933235,
-   "n_windows": 4280
+   "percentile": 0.9282877832282177,
+   "z": 0.9698653464436856,
+   "n_windows": 4281
   },
   {
    "date": "2025-10-17",
@@ -546,9 +546,9 @@
    "event": "S&P downgrades France to A+ (Friday evening, unscheduled)",
    "event_day": "2025-10-17",
    "change_bp": 2.0,
-   "percentile": 0.802803738317757,
-   "z": 0.47797549403344525,
-   "n_windows": 4280
+   "percentile": 0.8026162111656155,
+   "z": 0.47738323653347875,
+   "n_windows": 4281
   },
   {
    "date": "2025-10-24",
@@ -556,9 +556,9 @@
    "event": "Moody's moves France's Aa3 outlook to negative",
    "event_day": "2025-10-24",
    "change_bp": 0.0,
-   "percentile": 0.44906542056074766,
-   "z": -0.014658153026419091,
-   "n_windows": 4280
+   "percentile": 0.4489605232422331,
+   "z": -0.015098873376714037,
+   "n_windows": 4281
   },
   {
    "date": "2026-10-23",
@@ -566,9 +566,9 @@
    "event": "Moody's periodic review keeps France at Aa3, outlook negative (no rating action)",
    "event_day": "2026-10-23",
    "change_bp": -18.200000000000045,
-   "percentile": 0.00397196261682243,
-   "z": -4.497624341271195,
-   "n_windows": 4280
+   "percentile": 0.003971034804952114,
+   "z": -4.49668607355948,
+   "n_windows": 4281
   },
   {
    "date": "2026-10-30",
@@ -576,9 +576,9 @@
    "event": "Fitch moves France's A+ outlook to negative (unscheduled)",
    "event_day": "2026-10-30",
    "change_bp": 6.499999999999943,
-   "percentile": 0.9640186915887851,
-   "z": 1.586401199918126,
-   "n_windows": 4280
+   "percentile": 0.9637935061901425,
+   "z": 1.5854679838313985,
+   "n_windows": 4281
   }
  ],
  "events_summary": {

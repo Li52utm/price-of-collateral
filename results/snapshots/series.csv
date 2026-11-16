@@ -4767,6 +4767,7 @@ date,series,value
 2026-11-10,bank_rate,4
 2026-11-11,bank_rate,4
 2026-11-12,bank_rate,4
+2026-11-13,bank_rate,4
 2018-04-02,bgcr,1.77
 2018-04-03,bgcr,1.81
 2018-04-04,bgcr,1.7
@@ -6919,6 +6920,7 @@ date,series,value
 2026-11-09,bgcr,3.86
 2026-11-10,bgcr,3.87
 2026-11-12,bgcr,3.87
+2026-11-13,bgcr,3.87
 2013-09-25,boe_apf,375000
 2013-10-02,boe_apf,375000
 2013-10-09,boe_apf,375000
@@ -7604,6 +7606,7 @@ date,series,value
 2026-10-21,boe_apf,521819
 2026-10-28,boe_apf,488149
 2026-11-04,boe_apf,488149
+2026-11-11,boe_apf,488149
 2013-09-25,boe_iltr,215
 2013-10-02,boe_iltr,215
 2013-10-09,boe_iltr,215
@@ -8289,6 +8292,7 @@ date,series,value
 2026-10-21,boe_iltr,83333
 2026-10-28,boe_iltr,84094
 2026-11-04,boe_iltr,85207
+2026-11-11,boe_iltr,86221
 2008-01-02,boe_reserves,23611
 2008-01-09,boe_reserves,24791
 2008-01-16,boe_reserves,21447
@@ -9273,6 +9277,7 @@ date,series,value
 2026-10-21,boe_reserves,636904
 2026-10-28,boe_reserves,645452
 2026-11-04,boe_reserves,641005
+2026-11-11,boe_reserves,646280
 2008-01-02,boe_str,2440
 2008-01-09,boe_str,2019
 2008-01-16,boe_str,8039
@@ -10257,6 +10262,7 @@ date,series,value
 2026-10-21,boe_str,140845
 2026-10-28,boe_str,143083
 2026-11-04,boe_str,139958
+2026-11-11,boe_str,142767
 1998-01-01,boj_current_accounts,36622
 1998-02-01,boj_current_accounts,36885
 1998-03-01,boj_current_accounts,35413
@@ -17493,6 +17499,7 @@ date,series,value
 2026-11-09,boj_loan_rate,1.5
 2026-11-10,boj_loan_rate,1.5
 2026-11-11,boj_loan_rate,1.5
+2026-11-12,boj_loan_rate,1.5
 2008-01-02,bund10_cm,4.45
 2008-01-03,bund10_cm,4.31
 2008-01-04,bund10_cm,4.28
@@ -22286,6 +22293,7 @@ date,series,value
 2026-11-11,bund10_cm,3.37
 2026-11-12,bund10_cm,3.36
 2026-11-13,bund10_cm,3.43
+2026-11-16,bund10_cm,3.45
 2008-01-02,bund10_daily,4.36
 2008-01-03,bund10_daily,4.22
 2008-01-04,bund10_daily,4.18
@@ -27078,6 +27086,7 @@ date,series,value
 2026-11-11,bund10_daily,3.3
 2026-11-12,bund10_daily,3.29
 2026-11-13,bund10_daily,3.37
+2026-11-16,bund10_daily,3.38
 2008-01-02,bund2_cm,4.03
 2008-01-03,bund2_cm,3.9
 2008-01-04,bund2_cm,3.88
@@ -31871,6 +31880,7 @@ date,series,value
 2026-11-11,bund2_cm,3.08
 2026-11-12,bund2_cm,3.09
 2026-11-13,bund2_cm,3.13
+2026-11-16,bund2_cm,3.16
 2014-01-02,bund2_daily,0.21
 2014-01-03,bund2_daily,0.21
 2014-01-06,bund2_daily,0.2
@@ -35135,6 +35145,7 @@ date,series,value
 2026-11-11,bund2_daily,3.08
 2026-11-12,bund2_daily,3.08
 2026-11-13,bund2_daily,3.13
+2026-11-16,bund2_daily,3.16
 2025-01-06,call_collat_on,0.18
 2025-01-07,call_collat_on,0.18
 2025-01-08,call_collat_on,0.18
@@ -35585,6 +35596,7 @@ date,series,value
 2026-11-09,call_collat_on,1.18
 2026-11-10,call_collat_on,1.18
 2026-11-11,call_collat_on,1.18
+2026-11-12,call_collat_on,1.18
 1998-01-01,call_collat_on_m,0.42
 1998-02-01,call_collat_on_m,0.43
 1998-03-01,call_collat_on_m,0.45
@@ -42721,6 +42733,9 @@ date,series,value
 2026-11-11,dfr,2.5
 2026-11-12,dfr,2.5
 2026-11-13,dfr,2.5
+2026-11-14,dfr,2.5
+2026-11-15,dfr,2.5
+2026-11-16,dfr,2.5
 2008-01-11,ea_resident_liab,55043
 2008-01-18,ea_resident_liab,47068
 2008-01-25,ea_resident_liab,71972
@@ -45868,6 +45883,7 @@ date,series,value
 2026-11-09,effr,3.88
 2026-11-10,effr,3.88
 2026-11-12,effr,3.88
+2026-11-13,effr,3.88
 1999-01-04,eonia,3.2
 1999-01-05,eonia,3.2
 1999-01-06,eonia,3.21
@@ -53582,6 +53598,7 @@ date,series,value
 2026-11-10,estr,2.442
 2026-11-11,estr,2.439
 2026-11-12,estr,2.443
+2026-11-13,estr,2.437
 2019-10-01,estr_p25,-0.57
 2019-10-02,estr_p25,-0.57
 2019-10-03,estr_p25,-0.57
@@ -55406,6 +55423,7 @@ date,series,value
 2026-11-10,estr_p25,2.41
 2026-11-11,estr_p25,2.4
 2026-11-12,estr_p25,2.41
+2026-11-13,estr_p25,2.4
 2019-10-01,estr_p75,-0.53
 2019-10-02,estr_p75,-0.54
 2019-10-03,estr_p75,-0.54
@@ -57230,6 +57248,7 @@ date,series,value
 2026-11-10,estr_p75,2.46
 2026-11-11,estr_p75,2.46
 2026-11-12,estr_p75,2.46
+2026-11-13,estr_p75,2.46
 2019-10-01,estr_volume,35996
 2019-10-02,estr_volume,33549
 2019-10-03,estr_volume,29200
@@ -59054,6 +59073,7 @@ date,series,value
 2026-11-10,estr_volume,65658
 2026-11-11,estr_volume,59725
 2026-11-12,estr_volume,61322
+2026-11-13,estr_volume,55210
 2024-09-27,excess_liquidity,2.98405e+06
 2024-09-28,excess_liquidity,2.98405e+06
 2024-09-29,excess_liquidity,2.98405e+06
@@ -59831,6 +59851,9 @@ date,series,value
 2026-11-10,excess_liquidity,2.08486e+06
 2026-11-11,excess_liquidity,2.09254e+06
 2026-11-12,excess_liquidity,2.08978e+06
+2026-11-13,excess_liquidity,2.0882e+06
+2026-11-14,excess_liquidity,2.0882e+06
+2026-11-15,excess_liquidity,2.0882e+06
 2008-01-02,fed_bills,227841
 2008-01-09,fed_bills,215360
 2008-01-16,fed_bills,215360
@@ -67358,6 +67381,9 @@ date,series,value
 2026-11-11,fed_lower,3.75
 2026-11-12,fed_lower,3.75
 2026-11-13,fed_lower,3.75
+2026-11-14,fed_lower,3.75
+2026-11-15,fed_lower,3.75
+2026-11-16,fed_lower,3.75
 2008-01-02,fed_repo_ops,2.692
 2008-01-03,fed_repo_ops,2.5
 2008-01-04,fed_repo_ops,5.205
@@ -69302,6 +69328,7 @@ date,series,value
 2026-11-10,fed_repo_ops,0.002
 2026-11-12,fed_repo_ops,0.001
 2026-11-13,fed_repo_ops,0
+2026-11-16,fed_repo_ops,0.002
 2008-01-02,fed_repo_total,14.25
 2008-01-03,fed_repo_total,2.5
 2008-01-04,fed_repo_total,6.25
@@ -71246,6 +71273,7 @@ date,series,value
 2026-11-10,fed_repo_total,0.005
 2026-11-12,fed_repo_total,0.001
 2026-11-13,fed_repo_total,0
+2026-11-16,fed_repo_total,0.002
 2008-01-02,fed_securities,740627
 2008-01-09,fed_securities,728203
 2008-01-16,fed_securities,728259
@@ -78773,6 +78801,9 @@ date,series,value
 2026-11-11,fed_upper,4
 2026-11-12,fed_upper,4
 2026-11-13,fed_upper,4
+2026-11-14,fed_upper,4
+2026-11-15,fed_upper,4
+2026-11-16,fed_upper,4
 2025-11-07,gov_deposits,101532
 2026-01-02,gov_deposits,91077
 2026-01-09,gov_deposits,86644
@@ -78984,26 +79015,26 @@ date,series,value
 2021-12-31,hold_ES_S122_S123,281457
 2022-12-31,hold_ES_S122_S123,305589
 2023-12-31,hold_ES_S122_S123,296132
-2024-12-31,hold_ES_S122_S123,315937
-2025-12-31,hold_ES_S122_S123,342567
+2024-12-31,hold_ES_S122_S123,315941
+2025-12-31,hold_ES_S122_S123,342694
 2020-12-31,hold_ES_S124-S129,140134
 2021-12-31,hold_ES_S124-S129,129524
 2022-12-31,hold_ES_S124-S129,140662
 2023-12-31,hold_ES_S124-S129,158119
-2024-12-31,hold_ES_S124-S129,153132
-2025-12-31,hold_ES_S124-S129,149906
+2024-12-31,hold_ES_S124-S129,153136
+2025-12-31,hold_ES_S124-S129,149934
 2020-12-31,hold_ES_S1_S2,1.34692e+06
 2021-12-31,hold_ES_S1_S2,1.4294e+06
 2022-12-31,hold_ES_S1_S2,1.50411e+06
 2023-12-31,hold_ES_S1_S2,1.57538e+06
-2024-12-31,hold_ES_S1_S2,1.62057e+06
-2025-12-31,hold_ES_S1_S2,1.69822e+06
+2024-12-31,hold_ES_S1_S2,1.62058e+06
+2025-12-31,hold_ES_S1_S2,1.69835e+06
 2020-12-31,hold_ES_S2,589910
 2021-12-31,hold_ES_S2,617713
 2022-12-31,hold_ES_S2,625519
 2023-12-31,hold_ES_S2,672676
 2024-12-31,hold_ES_S2,727358
-2025-12-31,hold_ES_S2,831026
+2025-12-31,hold_ES_S2,831014
 2020-12-31,hold_FR_S121,486041
 2021-12-31,hold_FR_S121,623029
 2022-12-31,hold_FR_S121,667717
@@ -79045,25 +79076,25 @@ date,series,value
 2022-12-31,hold_IT_S122_S123,666302
 2023-12-31,hold_IT_S122_S123,618223
 2024-12-31,hold_IT_S122_S123,596640
-2025-12-31,hold_IT_S122_S123,618066
+2025-12-31,hold_IT_S122_S123,617917
 2020-12-31,hold_IT_S124-S129,373693
 2021-12-31,hold_IT_S124-S129,365575
 2022-12-31,hold_IT_S124-S129,382922
 2023-12-31,hold_IT_S124-S129,395186
 2024-12-31,hold_IT_S124-S129,394655
-2025-12-31,hold_IT_S124-S129,392715
-2020-12-31,hold_IT_S1_S2,2.57818e+06
-2021-12-31,hold_IT_S1_S2,2.68674e+06
-2022-12-31,hold_IT_S1_S2,2.76448e+06
-2023-12-31,hold_IT_S1_S2,2.86998e+06
-2024-12-31,hold_IT_S1_S2,2.967e+06
-2025-12-31,hold_IT_S1_S2,3.09589e+06
+2025-12-31,hold_IT_S124-S129,392855
+2020-12-31,hold_IT_S1_S2,2.57806e+06
+2021-12-31,hold_IT_S1_S2,2.68675e+06
+2022-12-31,hold_IT_S1_S2,2.76464e+06
+2023-12-31,hold_IT_S1_S2,2.87027e+06
+2024-12-31,hold_IT_S1_S2,2.96783e+06
+2025-12-31,hold_IT_S1_S2,3.09709e+06
 2020-12-31,hold_IT_S2,765212
 2021-12-31,hold_IT_S2,777058
 2022-12-31,hold_IT_S2,731374
 2023-12-31,hold_IT_S2,781383
 2024-12-31,hold_IT_S2,916014
-2025-12-31,hold_IT_S2,1.06323e+06
+2025-12-31,hold_IT_S2,1.06324e+06
 2008-01-11,ilm_current_accounts,180614
 2008-01-18,ilm_current_accounts,230825
 2008-01-25,ilm_current_accounts,192680
@@ -88623,6 +88654,9 @@ date,series,value
 2026-11-11,iorb,3.9
 2026-11-12,iorb,3.9
 2026-11-13,iorb,3.9
+2026-11-14,iorb,3.9
+2026-11-15,iorb,3.9
+2026-11-16,iorb,3.9
 2024-09-27,min_reserves,162940
 2024-09-28,min_reserves,162940
 2024-09-29,min_reserves,162940
@@ -89400,6 +89434,9 @@ date,series,value
 2026-11-10,min_reserves,177314
 2026-11-11,min_reserves,177314
 2026-11-12,min_reserves,177314
+2026-11-13,min_reserves,177314
+2026-11-14,min_reserves,177314
+2026-11-15,min_reserves,177314
 2008-01-01,mlf,5
 2008-01-02,mlf,5
 2008-01-03,mlf,5
@@ -96292,6 +96329,9 @@ date,series,value
 2026-11-11,mlf,2.9
 2026-11-12,mlf,2.9
 2026-11-13,mlf,2.9
+2026-11-14,mlf,2.9
+2026-11-15,mlf,2.9
+2026-11-16,mlf,2.9
 2018-03-13,mmsr_rate_bo_KS_ALL,-0.59
 2018-05-02,mmsr_rate_bo_KS_ALL,-0.57
 2018-06-19,mmsr_rate_bo_KS_ALL,-0.55
@@ -113262,6 +113302,9 @@ date,series,value
 2026-11-11,mro,2.65
 2026-11-12,mro,2.65
 2026-11-13,mro,2.65
+2026-11-14,mro,2.65
+2026-11-15,mro,2.65
+2026-11-16,mro,2.65
 2004-11-03,oat10_daily,3.97
 2004-11-04,oat10_daily,3.93
 2004-11-05,oat10_daily,3.91
@@ -118902,6 +118945,7 @@ date,series,value
 2026-11-11,oat10_daily,4.757
 2026-11-12,oat10_daily,4.762
 2026-11-13,oat10_daily,4.888
+2026-11-16,oat10_daily,4.93
 2004-11-03,oat2_daily,2.49
 2004-11-04,oat2_daily,2.45
 2004-11-05,oat2_daily,2.45
@@ -124542,6 +124586,7 @@ date,series,value
 2026-11-11,oat2_daily,3.587
 2026-11-12,oat2_daily,3.607
 2026-11-13,oat2_daily,3.676
+2026-11-16,oat2_daily,3.699
 2008-03-19,onrrp,7.25
 2008-03-28,onrrp,6
 2008-03-31,onrrp,5
@@ -127893,6 +127938,7 @@ date,series,value
 2026-11-10,onrrp,0.152
 2026-11-12,onrrp,0.25
 2026-11-13,onrrp,0.325
+2026-11-16,onrrp,0.182
 2013-09-23,onrrp_rate,0.01
 2013-09-24,onrrp_rate,0.01
 2013-09-25,onrrp_rate,0.01
@@ -131095,6 +131141,7 @@ date,series,value
 2026-11-10,onrrp_rate,3.75
 2026-11-12,onrrp_rate,3.75
 2026-11-13,onrrp_rate,3.75
+2026-11-16,onrrp_rate,3.75
 2015-03-31,pspp_AT,1216
 2015-04-30,pspp_AT,2421
 2015-05-31,pspp_AT,3735
@@ -134398,6 +134445,7 @@ date,series,value
 2026-11-09,repo_dvp_on,3.9
 2026-11-10,repo_dvp_on,3.91
 2026-11-12,repo_dvp_on,3.92
+2026-11-13,repo_dvp_on,3.91
 2018-05-08,repo_dvp_term,1.73
 2018-05-09,repo_dvp_term,1.77
 2018-05-10,repo_dvp_term,1.81
@@ -136389,6 +136437,7 @@ date,series,value
 2026-11-09,repo_dvp_term,3.95
 2026-11-10,repo_dvp_term,3.93
 2026-11-12,repo_dvp_term,3.95
+2026-11-13,repo_dvp_term,3.93
 2008-01-02,reserves,13029
 2008-01-09,reserves,4149
 2008-01-16,reserves,11626
@@ -139526,6 +139575,7 @@ date,series,value
 2026-11-09,sofr,3.88
 2026-11-10,sofr,3.89
 2026-11-12,sofr,3.9
+2026-11-13,sofr,3.9
 2018-04-02,sofr_p99,2.25
 2018-04-03,sofr_p99,2
 2018-04-04,sofr_p99,1.84
@@ -141676,6 +141726,7 @@ date,series,value
 2026-11-09,sofr_p99,3.96
 2026-11-10,sofr_p99,3.97
 2026-11-12,sofr_p99,3.98
+2026-11-13,sofr_p99,3.97
 2018-04-02,sofr_volume,849
 2018-04-03,sofr_volume,825
 2018-04-04,sofr_volume,859
@@ -143828,6 +143879,7 @@ date,series,value
 2026-11-09,sofr_volume,3100
 2026-11-10,sofr_volume,3159
 2026-11-12,sofr_volume,3138
+2026-11-13,sofr_volume,3092
 2008-01-02,sonia,5.535
 2008-01-03,sonia,5.5262
 2008-01-04,sonia,5.5423
@@ -148595,6 +148647,7 @@ date,series,value
 2026-11-09,sonia,3.9842
 2026-11-10,sonia,3.9837
 2026-11-11,sonia,3.9845
+2026-11-12,sonia,3.9846
 2018-01-02,tga_daily,190038
 2018-01-03,tga_daily,169957
 2018-01-04,tga_daily,204358
@@ -150684,6 +150737,8 @@ date,series,value
 2026-11-06,tga_daily,910313
 2026-11-09,tga_daily,922633
 2026-11-10,tga_daily,912134
+2026-11-12,tga_daily,933127
+2026-11-13,tga_daily,924618
 2008-01-02,tga_weekly,8693
 2008-01-09,tga_weekly,5146
 2008-01-16,tga_weekly,5171
@@ -153821,6 +153876,7 @@ date,series,value
 2026-11-09,tgcr,3.86
 2026-11-10,tgcr,3.87
 2026-11-12,tgcr,3.87
+2026-11-13,tgcr,3.87
 2008-01-04,tona,0.478
 2008-01-07,tona,0.493
 2008-01-08,tona,0.5
@@ -158432,6 +158488,7 @@ date,series,value
 2026-11-09,tona,1.228
 2026-11-10,tona,1.227
 2026-11-11,tona,1.232
+2026-11-12,tona,1.227
 1999-01-01,y10_AT,3.8426
 1999-02-01,y10_AT,3.984
 1999-03-01,y10_AT,4.1648

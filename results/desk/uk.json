@@ -1,5 +1,5 @@
 {
- "data_as_of": "2026-11-12",
+ "data_as_of": "2026-11-13",
  "spread": {
   "by_year": {
    "2008": {
@@ -79,36 +79,36 @@
     "p95": -1.6000000000000014
    }
   },
-  "recent_median_bp": -2.0199999999999996,
-  "recent_p95_bp": -1.6199999999999992,
+  "recent_median_bp": -2.014999999999989,
+  "recent_p95_bp": -1.6090000000000009,
   "recent_share_above": 0.0,
-  "latest_bp": -1.5499999999999847,
-  "latest_date": "2026-11-11"
+  "latest_bp": -1.540000000000008,
+  "latest_date": "2026-11-12"
  },
  "weekly": {
-  "latest_date": "2026-11-04",
-  "reserves_bn": 641.005,
-  "str_bn": 139.958,
-  "iltr_bn": 85.207,
-  "repo_bn": 225.165,
-  "repo_share_pct": 35.12687108524894,
-  "repo_share_52w_ago": 23.36968204347105,
-  "repo_share_104w_ago": 7.008838152620947,
+  "latest_date": "2026-11-11",
+  "reserves_bn": 646.28,
+  "str_bn": 142.767,
+  "iltr_bn": 86.221,
+  "repo_bn": 228.988,
+  "repo_share_pct": 35.43170142972086,
+  "repo_share_52w_ago": 21.930822654554724,
+  "repo_share_104w_ago": 6.827185286387605,
   "apf_bn": 488.149,
   "apf_104w_ago": 659.015,
-  "reserves_104w_ago": 726.283
+  "reserves_104w_ago": 729.012
  },
  "trend": {
   "n": 104,
-  "start": "2024-11-13",
-  "end": "2026-11-04",
-  "slope_pp_per_year": 15.428326554518062,
+  "start": "2024-11-20",
+  "end": "2026-11-11",
+  "slope_pp_per_year": 15.471169761816725,
   "ci": [
-   14.868325178539806,
-   15.988327930496318
+   14.951330955549203,
+   15.991008568084247
   ],
   "p_value": 0.0,
   "verdict": "increasingly"
  },
- "spearman_spread_share": 0.9717661523399567
+ "spearman_spread_share": 0.9721820815393802
 }
