@@ -1,5 +1,5 @@
 {
- "data_as_of": "2026-11-13",
+ "data_as_of": "2026-11-17",
  "summary": {
   "R1": {
    "chapter": "calendar",
@@ -127,14 +127,14 @@
    "chapter": "corridors",
    "spec": "bootstrap block 4 weeks",
    "holds": true,
-   "value": "slope -6.41 (-7.78 to -5.29) bp per trillion"
+   "value": "slope -6.41 (-7.73 to -5.28) bp per trillion"
   },
   {
    "finding": "R3",
    "chapter": "corridors",
    "spec": "bootstrap block 16 weeks",
    "holds": true,
-   "value": "slope -6.41 (-8.17 to -4.82) bp per trillion"
+   "value": "slope -6.41 (-8.17 to -4.84) bp per trillion"
   },
   {
    "finding": "R3",
@@ -148,14 +148,14 @@
    "chapter": "corridors",
    "spec": "test weeks only (2023 on)",
    "holds": true,
-   "value": "slope -16.26 (-24.29 to -8.61) bp per trillion"
+   "value": "slope -16.34 (-24.17 to -8.51) bp per trillion"
   },
   {
    "finding": "R3",
    "chapter": "corridors",
    "spec": "spread two weeks ahead",
    "holds": true,
-   "value": "slope -6.31 (-7.78 to -5.01) bp per trillion"
+   "value": "slope -6.31 (-7.82 to -5.00) bp per trillion"
   },
   {
    "finding": "R4",
@@ -281,7 +281,7 @@
    "chapter": "japan",
    "spec": "no same-day pass-through term",
    "holds": true,
-   "value": "exit 0.4 (0.2-12.0) vs negative 13.2 (9.7-17.8) days"
+   "value": "exit 0.4 (0.2-7.9) vs negative 13.2 (9.7-17.8) days"
   },
   {
    "finding": "R7",
@@ -302,14 +302,14 @@
    "chapter": "desk_note",
    "spec": "business-day weights (pre-U0 rule)",
    "holds": true,
-   "value": "verdict No; USD -5.3 vs +2.0 bp, EUR +0.08 vs +1.0 bp"
+   "value": "verdict No; USD -5.3 vs +1.0 bp, EUR +0.08 vs +1.0 bp"
   },
   {
    "finding": "R8",
    "chapter": "desk_note",
    "spec": "window from 5 business days before",
    "holds": true,
-   "value": "verdict No; USD -3.3 vs +2.0 bp, EUR -0.02 vs +1.0 bp"
+   "value": "verdict No; USD -3.3 vs +1.0 bp, EUR -0.02 vs +1.0 bp"
   },
   {
    "finding": "R8",
@@ -323,14 +323,14 @@
    "chapter": "desk_note",
    "spec": "euro hurdle 0 bp",
    "holds": true,
-   "value": "verdict No; USD -4.1 vs +2.0 bp, EUR -0.04 vs +0.0 bp"
+   "value": "verdict No; USD -4.1 vs +1.0 bp, EUR -0.04 vs +0.0 bp"
   },
   {
    "finding": "R8",
    "chapter": "desk_note",
    "spec": "euro hurdle 2 bp",
    "holds": true,
-   "value": "verdict No; USD -4.1 vs +2.0 bp, EUR -0.04 vs +2.0 bp"
+   "value": "verdict No; USD -4.1 vs +1.0 bp, EUR -0.04 vs +2.0 bp"
   }
  ]
 }

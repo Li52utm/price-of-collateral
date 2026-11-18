@@ -1,6 +1,6 @@
 {
- "as_of": "2026-11-13",
- "fetched_at": "2026-11-16 23:06:26",
+ "as_of": "2026-11-17",
+ "fetched_at": "2026-11-18 21:39:31",
  "counts": {
   "PASS": 10,
   "WARN": 0,
@@ -45,7 +45,7 @@
   {
    "name": "Euro liquidity proxy",
    "status": "PASS",
-   "detail": "111 weeks; median |proxy - excess liquidity - reserve requirements| EUR 0 bn."
+   "detail": "112 weeks; median |proxy - excess liquidity - reserve requirements| EUR 0 bn."
   },
   {
    "name": "Market rates vs policy corridors",

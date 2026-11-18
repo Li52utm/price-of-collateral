@@ -11,25 +11,25 @@
   {
    "family": "F2",
    "id": "dm_all_USD_calendar",
-   "p": 0.0019249145214944425,
+   "p": 0.0019222796397462523,
    "what": "USD calendar vs baseline, all days (Diebold-Mariano)",
-   "p_holm": 0.005774743564483327,
+   "p_holm": 0.005766838919238757,
    "m": 6
   },
   {
    "family": "F1",
    "id": "dm_turn_USD_state",
-   "p": 0.04333723932222153,
+   "p": 0.0433372393864085,
    "what": "USD state vs baseline, turn days (Diebold-Mariano)",
-   "p_holm": 0.13001171796666458,
+   "p_holm": 0.13001171815922552,
    "m": 6
   },
   {
    "family": "F2",
    "id": "dm_all_USD_state",
-   "p": 0.12560939445731356,
+   "p": 0.13001813821656522,
    "what": "USD state vs baseline, all days (Diebold-Mariano)",
-   "p_holm": 0.2512187889146271,
+   "p_holm": 0.26003627643313043,
    "m": 6
   },
   {
@@ -43,25 +43,25 @@
   {
    "family": "F2",
    "id": "dm_all_EUR_calendar",
-   "p": 1.0072188883473688e-11,
+   "p": 1.0039436608569395e-11,
    "what": "EUR calendar vs baseline, all days (Diebold-Mariano)",
-   "p_holm": 6.043313330084214e-11,
+   "p_holm": 6.023661965141637e-11,
    "m": 6
   },
   {
    "family": "F1",
    "id": "dm_turn_EUR_state",
-   "p": 0.1800783809323937,
+   "p": 0.17966287626073696,
    "what": "EUR state vs baseline, turn days (Diebold-Mariano)",
-   "p_holm": 0.3601567618647874,
+   "p_holm": 0.3593257525214739,
    "m": 6
   },
   {
    "family": "F2",
    "id": "dm_all_EUR_state",
-   "p": 0.16246932446094917,
+   "p": 0.16081021576498544,
    "what": "EUR state vs baseline, all days (Diebold-Mariano)",
-   "p_holm": 0.2512187889146271,
+   "p_holm": 0.26003627643313043,
    "m": 6
   },
   {
@@ -75,25 +75,25 @@
   {
    "family": "F2",
    "id": "dm_all_JPY_calendar",
-   "p": 6.024980001518683e-07,
+   "p": 5.563655932344936e-07,
    "what": "JPY calendar vs baseline, all days (Diebold-Mariano)",
-   "p_holm": 3.012490000759342e-06,
+   "p_holm": 2.781827966172468e-06,
    "m": 6
   },
   {
    "family": "F1",
    "id": "dm_turn_JPY_state",
-   "p": 2.14888478111284e-06,
+   "p": 2.1488846821215996e-06,
    "what": "JPY state vs baseline, turn days (Diebold-Mariano)",
-   "p_holm": 1.07444239055642e-05,
+   "p_holm": 1.0744423410607998e-05,
    "m": 6
   },
   {
    "family": "F2",
    "id": "dm_all_JPY_state",
-   "p": 9.890491449682645e-07,
+   "p": 9.173291992330529e-07,
    "what": "JPY state vs baseline, all days (Diebold-Mariano)",
-   "p_holm": 3.956196579873058e-06,
+   "p_holm": 3.6693167969322115e-06,
    "m": 6
   },
   {
@@ -291,49 +291,49 @@
   {
    "family": "F7",
    "id": "ecm_gamma_full",
-   "p": 7.809896048498512e-06,
+   "p": 7.6633656227828e-06,
    "what": "Japan error correction (full): gap coefficient = 0 (HAC)",
-   "p_holm": 7.809896048498512e-06,
+   "p_holm": 7.6633656227828e-06,
    "m": 3
   },
   {
    "family": "F7",
    "id": "ecm_gamma_negative",
-   "p": 2.0523457738413296e-13,
+   "p": 2.0523457738407502e-13,
    "what": "Japan error correction (negative): gap coefficient = 0 (HAC)",
-   "p_holm": 4.104691547682659e-13,
+   "p_holm": 4.1046915476815004e-13,
    "m": 3
   },
   {
    "family": "F7",
    "id": "ecm_gamma_exit",
-   "p": 6.142142078019125e-61,
+   "p": 2.7999939361390567e-61,
    "what": "Japan error correction (exit): gap coefficient = 0 (HAC)",
-   "p_holm": 1.8426426234057376e-60,
+   "p_holm": 8.39998180841717e-61,
    "m": 3
   },
   {
    "family": "F8",
    "id": "coverage_USD",
-   "p": 5.4191080745893184e-05,
+   "p": 4.340734642521013e-05,
    "what": "USD state: 5-95% interval covers 90% (exact binomial)",
-   "p_holm": 5.4191080745893184e-05,
+   "p_holm": 4.340734642521013e-05,
    "m": 3
   },
   {
    "family": "F8",
    "id": "coverage_EUR",
-   "p": 3.085186861440041e-36,
+   "p": 1.9852451023132082e-36,
    "what": "EUR state: 5-95% interval covers 90% (exact binomial)",
-   "p_holm": 9.255560584320122e-36,
+   "p_holm": 5.955735306939624e-36,
    "m": 3
   },
   {
    "family": "F8",
    "id": "coverage_JPY",
-   "p": 5.174552696757256e-09,
+   "p": 7.110960234017249e-09,
    "what": "JPY baseline: 5-95% interval covers 90% (exact binomial)",
-   "p_holm": 1.0349105393514511e-08,
+   "p_holm": 1.4221920468034498e-08,
    "m": 3
   }
  ]

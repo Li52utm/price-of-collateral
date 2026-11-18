@@ -110,45 +110,45 @@ date,country,holder,share_pct,holding_bn
 2004-12-31,DE,Non-residents,47.2019,703.1520
 2004-12-31,DE,Other domestic,3.2408,48.2773
 2005-12-31,DE,Domestic central bank,0.6205,9.6861
-2005-12-31,DE,Domestic banks,35.4286,553.0470
+2005-12-31,DE,Domestic banks,35.4287,553.0490
 2005-12-31,DE,"Domestic insurers, pension and investment funds",10.9027,170.1940
-2005-12-31,DE,Non-residents,50.0402,781.1380
+2005-12-31,DE,Non-residents,50.0401,781.1360
 2005-12-31,DE,Other domestic,3.0080,46.9549
 2006-12-31,DE,Domestic central bank,0.6265,10.0927
-2006-12-31,DE,Domestic banks,32.4236,522.3120
+2006-12-31,DE,Domestic banks,32.4237,522.3140
 2006-12-31,DE,"Domestic insurers, pension and investment funds",11.6979,188.4410
-2006-12-31,DE,Non-residents,52.1322,839.7980
+2006-12-31,DE,Non-residents,52.1321,839.7960
 2006-12-31,DE,Other domestic,3.1198,50.2563
 2007-12-31,DE,Domestic central bank,0.6482,10.4944
-2007-12-31,DE,Domestic banks,30.0741,486.9170
+2007-12-31,DE,Domestic banks,30.0742,486.9190
 2007-12-31,DE,"Domestic insurers, pension and investment funds",11.1405,180.3710
-2007-12-31,DE,Non-residents,54.7259,886.0450
+2007-12-31,DE,Non-residents,54.7258,886.0430
 2007-12-31,DE,Other domestic,3.4114,55.2326
 2008-12-31,DE,Domestic central bank,0.6406,10.8094
-2008-12-31,DE,Domestic banks,30.0111,506.4190
+2008-12-31,DE,Domestic banks,30.0112,506.4210
 2008-12-31,DE,"Domestic insurers, pension and investment funds",10.7591,181.5540
-2008-12-31,DE,Non-residents,54.7079,923.1630
+2008-12-31,DE,Non-residents,54.7078,923.1610
 2008-12-31,DE,Other domestic,3.8813,65.4946
 2009-12-31,DE,Domestic central bank,0.6185,11.1620
-2009-12-31,DE,Domestic banks,29.8901,539.4270
+2009-12-31,DE,Domestic banks,29.8902,539.4280
 2009-12-31,DE,"Domestic insurers, pension and investment funds",10.7017,193.1330
 2009-12-31,DE,Non-residents,55.5001,1001.6100
-2009-12-31,DE,Other domestic,3.2896,59.3680
+2009-12-31,DE,Other domestic,3.2896,59.3670
 2010-12-31,DE,Domestic central bank,0.5422,11.4910
-2010-12-31,DE,Domestic banks,32.0538,679.2960
+2010-12-31,DE,Domestic banks,32.0538,679.2980
 2010-12-31,DE,"Domestic insurers, pension and investment funds",10.0056,212.0420
 2010-12-31,DE,Non-residents,53.9929,1144.2400
-2010-12-31,DE,Other domestic,3.4055,72.1710
+2010-12-31,DE,Other domestic,3.4054,72.1690
 2011-12-31,DE,Domestic central bank,0.5466,11.7849
-2011-12-31,DE,Domestic banks,28.9624,624.3950
+2011-12-31,DE,Domestic banks,28.9625,624.3960
 2011-12-31,DE,"Domestic insurers, pension and investment funds",9.8081,211.4510
-2011-12-31,DE,Non-residents,57.7143,1244.2500
-2011-12-31,DE,Other domestic,2.9686,63.9991
+2011-12-31,DE,Non-residents,57.7138,1244.2400
+2011-12-31,DE,Other domestic,2.9690,64.0081
 2012-12-31,DE,Domestic central bank,0.5426,12.1255
-2012-12-31,DE,Domestic banks,29.0832,649.9520
+2012-12-31,DE,Domestic banks,29.0833,649.9540
 2012-12-31,DE,"Domestic insurers, pension and investment funds",9.1239,203.9000
 2012-12-31,DE,Non-residents,58.1054,1298.5400
-2012-12-31,DE,Other domestic,3.1449,70.2825
+2012-12-31,DE,Other domestic,3.1448,70.2805
 2013-12-31,DE,Domestic central bank,0.5602,12.4382
 2013-12-31,DE,Domestic banks,28.9579,642.9460
 2013-12-31,DE,"Domestic insurers, pension and investment funds",8.8036,195.4640
@@ -184,36 +184,36 @@ date,country,holder,share_pct,holding_bn
 2019-12-31,DE,"Domestic insurers, pension and investment funds",8.8504,183.7160
 2019-12-31,DE,Non-residents,47.8786,993.8600
 2019-12-31,DE,Other domestic,3.2339,67.1300
-2020-12-31,DE,Domestic central bank,22.2492,522.3920
-2020-12-31,DE,Domestic banks,21.4902,504.5710
-2020-12-31,DE,"Domestic insurers, pension and investment funds",8.1164,190.5660
-2020-12-31,DE,Non-residents,45.6968,1072.9200
-2020-12-31,DE,Other domestic,2.4473,57.4610
-2021-12-31,DE,Domestic central bank,28.6208,716.0040
-2021-12-31,DE,Domestic banks,19.7821,494.8880
-2021-12-31,DE,"Domestic insurers, pension and investment funds",7.6331,190.9570
-2021-12-31,DE,Non-residents,41.7462,1044.3600
-2021-12-31,DE,Other domestic,2.2177,55.4810
-2022-12-31,DE,Domestic central bank,28.9025,742.5140
-2022-12-31,DE,Domestic banks,19.6969,506.0180
-2022-12-31,DE,"Domestic insurers, pension and investment funds",8.1834,210.2350
-2022-12-31,DE,Non-residents,40.7613,1047.1700
-2022-12-31,DE,Other domestic,2.4559,63.0930
-2023-12-31,DE,Domestic central bank,26.4693,696.2870
-2023-12-31,DE,Domestic banks,17.3834,457.2780
-2023-12-31,DE,"Domestic insurers, pension and investment funds",7.8760,207.1810
-2023-12-31,DE,Non-residents,45.2848,1191.2400
-2023-12-31,DE,Other domestic,2.9866,78.5640
-2024-12-31,DE,Domestic central bank,23.5207,633.6080
-2024-12-31,DE,Domestic banks,17.6161,474.5470
-2024-12-31,DE,"Domestic insurers, pension and investment funds",7.5740,204.0310
-2024-12-31,DE,Non-residents,48.2959,1301.0100
-2024-12-31,DE,Other domestic,2.9933,80.6340
-2025-12-31,DE,Domestic central bank,19.5253,554.1750
-2025-12-31,DE,Domestic banks,17.5842,499.0830
-2025-12-31,DE,"Domestic insurers, pension and investment funds",8.8029,249.8470
-2025-12-31,DE,Non-residents,51.3265,1456.7700
-2025-12-31,DE,Other domestic,2.7610,78.3650
+2020-12-31,DE,Domestic central bank,22.2485,522.3920
+2020-12-31,DE,Domestic banks,21.3763,501.9130
+2020-12-31,DE,"Domestic insurers, pension and investment funds",8.1161,190.5660
+2020-12-31,DE,Non-residents,45.8085,1075.5800
+2020-12-31,DE,Other domestic,2.4506,57.5390
+2021-12-31,DE,Domestic central bank,28.6202,716.0040
+2021-12-31,DE,Domestic banks,19.6611,491.8700
+2021-12-31,DE,"Domestic insurers, pension and investment funds",7.6330,190.9570
+2021-12-31,DE,Non-residents,41.8629,1047.3000
+2021-12-31,DE,Other domestic,2.2228,55.6090
+2022-12-31,DE,Domestic central bank,28.8955,742.5140
+2022-12-31,DE,Domestic banks,19.5639,502.7250
+2022-12-31,DE,"Domestic insurers, pension and investment funds",8.1815,210.2350
+2022-12-31,DE,Non-residents,40.8982,1050.9400
+2022-12-31,DE,Other domestic,2.4609,63.2360
+2023-12-31,DE,Domestic central bank,26.4671,696.2870
+2023-12-31,DE,Domestic banks,17.2469,453.7250
+2023-12-31,DE,"Domestic insurers, pension and investment funds",7.8753,207.1810
+2023-12-31,DE,Non-residents,45.4184,1194.8500
+2023-12-31,DE,Other domestic,2.9922,78.7170
+2024-12-31,DE,Domestic central bank,23.5164,633.6080
+2024-12-31,DE,Domestic banks,17.4771,470.8880
+2024-12-31,DE,"Domestic insurers, pension and investment funds",7.5726,204.0310
+2024-12-31,DE,Non-residents,48.4404,1305.1400
+2024-12-31,DE,Other domestic,2.9934,80.6530
+2025-12-31,DE,Domestic central bank,19.4723,554.1750
+2025-12-31,DE,Domestic banks,17.6442,502.1500
+2025-12-31,DE,"Domestic insurers, pension and investment funds",8.7840,249.9900
+2025-12-31,DE,Non-residents,51.2542,1458.6800
+2025-12-31,DE,Other domestic,2.8453,80.9750
 2020-12-31,ES,Domestic central bank,23.2594,313.2850
 2020-12-31,ES,Domestic banks,22.3776,301.4080
 2020-12-31,ES,"Domestic insurers, pension and investment funds",10.4040,140.1340
