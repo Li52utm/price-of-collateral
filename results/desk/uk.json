@@ -1,5 +1,5 @@
 {
- "data_as_of": "2026-11-17",
+ "data_as_of": "2026-11-18",
  "spread": {
   "by_year": {
    "2008": {
@@ -79,11 +79,11 @@
     "p95": -1.6000000000000014
    }
   },
-  "recent_median_bp": -2.0099999999999785,
-  "recent_p95_bp": -1.6090000000000009,
+  "recent_median_bp": -2.00499999999999,
+  "recent_p95_bp": -1.6000000000000014,
   "recent_share_above": 0.0,
-  "latest_bp": -1.670000000000016,
-  "latest_date": "2026-11-16"
+  "latest_bp": -1.6000000000000014,
+  "latest_date": "2026-11-17"
  },
  "weekly": {
   "latest_date": "2026-11-11",
