@@ -3,11 +3,11 @@
  "rule": {
   "USD": {
    "excess_bp": -4.078571428571429,
-   "hurdle_bp": 8.000000000000007,
-   "premium_bp": 8.000000000000007,
+   "hurdle_bp": 4.0000000000000036,
+   "premium_bp": 4.0000000000000036,
    "lock": false,
    "stale": false,
-   "term_date": "2026-11-18",
+   "term_date": "2026-11-19",
    "term_age_bd": 0
   },
   "EUR": {

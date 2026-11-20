@@ -1,17 +1,17 @@
 {
- "data_as_of": "2026-11-18",
+ "data_as_of": "2026-11-19",
  "rows": [
   {
    "bank": "ECB",
-   "date": "2026-11-18",
+   "date": "2026-11-19",
    "floor_name": "Deposit facility rate",
    "floor": 2.5,
    "backstop_name": "Main refinancing operations (full allotment)",
    "backstop": 2.65,
    "backstop_minus_floor_bp": 15.0,
    "market_name": "\u20acSTR",
-   "market": 2.442,
-   "headroom_bp": 20.8,
+   "market": 2.441,
+   "headroom_bp": 20.9,
    "extra": {
     "Marginal lending facility": 2.9
    },
@@ -20,15 +20,15 @@
   },
   {
    "bank": "Federal Reserve",
-   "date": "2026-11-18",
+   "date": "2026-11-19",
    "floor_name": "Interest on reserve balances",
    "floor": 3.9,
    "backstop_name": "Standing repo facility (top of the target range)",
    "backstop": 4.0,
    "backstop_minus_floor_bp": 10.0,
    "market_name": "SOFR",
-   "market": 3.9,
-   "headroom_bp": 10.0,
+   "market": 3.91,
+   "headroom_bp": 9.0,
    "extra": {
     "ON RRP award rate": 3.75,
     "Target range lower bound": 3.75
@@ -38,7 +38,7 @@
   },
   {
    "bank": "Bank of England",
-   "date": "2026-11-17",
+   "date": "2026-11-18",
    "floor_name": "Bank Rate (reserves remuneration)",
    "floor": 4.0,
    "backstop_name": "Short-Term Repo (Bank Rate + 0 bp)",
@@ -53,7 +53,7 @@
   },
   {
    "bank": "Bank of Japan",
-   "date": "2026-11-17",
+   "date": "2026-11-18",
    "floor_name": "Policy rate (current account remuneration)",
    "floor": 1.25,
    "backstop_name": "Complementary lending facility (basic loan rate)",
